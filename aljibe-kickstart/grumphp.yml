@@ -1,0 +1,91 @@
+grumphp:
+  git_hook_variables:
+    EXEC_GRUMPHP_COMMAND: ddev exec php
+  extensions:
+    - Metadrop\PhpCompatibilityTask\ExtensionLoader
+  hooks_dir: ~
+  hooks_preset: local
+  tasks:
+    git_commit_message:
+      enforce_no_subject_trailing_period: true
+      max_subject_width: 130
+      case_insensitive: false
+      matchers:
+        Must contain gitlab reference (if no reference use 0): '/(^Issue #[0-9]+:|^Merge branch.)/'
+        Space and uppercase after reference: '/(^Issue #[0-9]+: [A-Z]|^Merge branch.)/'
+    git_blacklist:
+      keywords:
+        - "var_dump"
+        - "print_r"
+        - "console.log"
+      whitelist_patterns: [ ]      
+      regexp_type: G
+      match_word: false
+    # Adjust here the format that must have
+    # the git branch names of your project.
+    git_branch_name:
+      whitelist:
+        - "feature\/[0-9A-Za-z\\s_-]*"
+        - "bugfix\/[0-9A-Za-z\\s_-]*"
+        - "hotfix\/[0-9A-Za-z\\s_-]*"
+        - develop
+      blacklist:        
+        - main
+        - release
+      additional_modifiers: ''
+      allow_detached_head: true
+    phplint: ~
+    yamllint: ~
+    composer: ~
+    jsonlint: ~
+    file_size:
+      max_size: 4M
+      ignore_patterns:
+        - '#tests/backstopjs/backstop_data/bitmaps_reference/(.*).png#'
+    phplint: ~
+    yamllint: ~
+    composer: ~
+    jsonlint: ~
+    phpmd:
+      exclude:
+        - tests/
+      ruleset: [ '/phpmd.xml.dist' ]
+      triggered_by:
+        - php
+        - inc
+        - module
+        - install
+        - profile
+        - theme
+        - feature
+        - info
+        - test
+    phpcs:
+      encoding: utf-8
+      triggered_by:
+        - php
+        - inc
+        - module
+        - install
+        - profile
+        - theme
+        - feature
+        - info
+        - txt
+        - test
+      standard: Drupal,DrupalPractice,PHPCompatibility
+    php_compatibility:
+      testVersion: "8.1"
+      triggered_by:
+        - php
+        - inc
+        - module
+        - install
+    phpstan:
+      autoload_file: ~
+      configuration: ~
+      force_patterns: []
+      ignore_patterns: []
+      triggered_by: ['php', 'module', 'inc', 'theme', 'install']
+      memory_limit: "-1"
+      use_grumphp_paths: true

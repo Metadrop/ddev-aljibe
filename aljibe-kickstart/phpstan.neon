@@ -1,0 +1,25 @@
+parameters:
+    level: 8
+    fileExtensions:
+        - php
+        - module
+        - inc
+        - theme
+        - install
+        - profile
+    scanDirectories:
+        - web/modules/contrib
+        - web/themes/contrib
+        - web/core
+    paths:
+        - web/modules/custom
+        - web/themes/custom
+    reportUnmatchedIgnoredErrors: false
+    ignoreErrors:
+        - message: '#.*return type has no value type specified.*#'
+        - message: '#.*has parameter .* with no type specified.*#'
+        - message: '#.*has no return type specified.*#'
+        - message: '#.*has parameter .* with no value type specified.*#'
+        # new static() is a best practice in Drupal, so we cannot fix that. See https://www.drupal.org/docs/develop/development-tools/phpstan/handling-unsafe-usage-of-new-static#s-ignoring-the-issue
+        - message: '#^Unsafe usage of new static#'
+

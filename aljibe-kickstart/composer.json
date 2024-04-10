@@ -1,0 +1,90 @@
+{
+    "name": "metadrop/aljibe",
+    "description": "Project template for Drupal 10",
+    "version": "1.0.0",
+    "type": "project",
+    "license": "GPL-2.0+",
+    "authors": [
+        {
+            "name": "",
+            "role": ""
+        }
+    ],
+    "repositories": [
+        {
+            "type": "composer",
+            "url": "https://packages.drupal.org/8"
+        }
+    ],
+    "replace": {
+        "sebastian/phpcpd": "*"
+    },
+    "require": {
+        "composer/installers": "^2.2",
+        "cweagans/composer-patches": "^1.7",
+        "drupal-composer/drupal-security-advisories": "9.x-dev",
+        "drupal/admin_toolbar": "^3.4",
+        "drupal/components": "^3.0@beta",
+        "drupal/config_split": "^2.0",
+        "drupal/core-composer-scaffold": "^10.0",
+        "drupal/core-recommended": "^10.0",
+        "drupal/environment_indicator": "^4.0",
+        "drupal/honeypot": "^2.0",
+        "drupal/metatag": "^2.0",
+        "drupal/pathauto": "^1.8",
+        "drupal/radix": "^5.0",
+        "drupal/redirect": "^1.6",
+        "drupal/simple_sitemap": "^4.1",
+        "drupal/stage_file_proxy": "^2.0",
+        "drupal/ultimate_cron": "^2.0@alpha",
+        "drupal/webform": "^6.2",
+        "drush/drush": "^12.0",
+        "metadrop/drupal-artifact-builder": "^1.4"
+    },
+    "require-dev": {
+        "metadrop/drupal-dev": "^2.0.0"
+    },
+    "conflict": {
+        "drupal/drupal": "*"
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true,
+    "config": {
+        "sort-packages": true,
+        "discard-changes": true,
+        "allow-plugins": {
+            "composer/installers": true,
+            "cweagans/composer-patches": true,
+            "drupal/core-composer-scaffold": true,
+            "dealerdirect/phpcodesniffer-composer-installer": true,
+            "phpstan/extension-installer": true,
+            "phpro/grumphp": true,
+            "metadrop/drupal-boilerplate-assistant": true,
+            "metadrop/composer-comments": true,
+            "php-http/discovery": true
+        }
+    },
+    "scripts": {
+        "drupal-scaffold": "DrupalComposer\\DrupalScaffold\\Plugin::scaffold"
+    },
+    "extra": {
+        "drupal-scaffold": {
+            "locations": {
+                "web-root": "./web"
+            }
+        },
+        "installer-paths": {
+            "web/core": ["type:drupal-core"],
+            "web/libraries/{$name}": ["type:drupal-library"],
+            "web/modules/contrib/{$name}": ["type:drupal-module"],
+            "web/profiles/contrib/{$name}": ["type:drupal-profile"],
+            "web/themes/contrib/{$name}": ["type:drupal-theme"],
+            "drush/Commands/contrib/{$name}": ["type:drupal-drush"],
+            "web/modules/custom/{$name}": ["type:drupal-custom-module"],
+            "web/profiles/custom/{$name}": ["type:drupal-custom-profile"],
+            "web/themes/custom/{$name}": ["type:drupal-custom-theme"]
+        },
+        "composer-exit-on-patch-failure": true,
+        "enable-patching": true
+    }
+}

@@ -1,0 +1,6 @@
+#!/bin/bash
+## Description: Launch behat tests
+## Usage: behat
+## Example: ddev behat
+
+behat --colors "$@"

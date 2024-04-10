@@ -1,0 +1,18 @@
+local:
+  uri: 'https://example.ddev.site'
+  root: '/var/www/html'
+
+pro:
+  uri: 'https://example.com'
+  root: ''
+  host: 'example.com'
+  user: ''
+  command:
+    sql:
+      sync:
+        options:
+          structure-tables-list: 'cache*,session,watchdog'
+    dump:
+      sync:
+        options:
+          structure-tables-list: 'cache*,session,watchdog'

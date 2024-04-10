@@ -1,0 +1,3 @@
+local:
+  uri: 'https://example.ddev.site'
+  root: '/var/www/html'

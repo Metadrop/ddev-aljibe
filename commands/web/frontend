@@ -1,0 +1,26 @@
+#!/bin/bash
+## Description: Build frontend assets
+## Usage: frontend [watch|dev|production|postinstall|stylint|stylint-fix|watch-poll|hot]
+## Example: ddev frontend production
+set -e
+
+# This command is executed on the theme directory.
+
+TASK=${1:-""}
+
+if [ -z "$1" ]
+then
+  echo "Parameter TASK is required. Usage: make frontend dev"
+  exit 1
+fi
+
+if [ -z "$THEME_PATH" ]
+then
+  echo "THEME_PATH is not defined, check that there is an .env file in .ddev folder."
+  exit 1
+fi
+
+cd
+echo "Running frontend dev"
+npm install --prefix ${THEME_PATH}
+npm run $1 --prefix ${THEME_PATH}
