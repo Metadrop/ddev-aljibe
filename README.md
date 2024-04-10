@@ -1,11 +1,12 @@
 # DDEV Aljibe
 
-DDEV Aljibe (ddev-aljibe) es un addon para DDEV que posibilita la instalación de un proyecto Drupal basado en Aljibe de forma sencilla y rápida, dejando listo para el desarrollo un nuevo proyecto en cuestión de pocos minutos.
+DDEV Aljibe (ddev-aljibe) is an addon for DDEV that enables the installation of a Drupal project based on Aljibe in a simple and fast way, leaving a new project ready for development in a few minutes.
 
-## Requisitos
-- [DDEV](https://ddev.readthedocs.io/en/stable/) 1.22 o superior
-- [Docker](https://www.docker.com/) 24 o superior
+## Requirements
+- [DDEV](https://ddev.readthedocs.io/en/stable/) 1.22 or higher
+- [Docker](https://www.docker.com/) 24 or higher
 
-## Instalación
-- Por ahora, al no estar publicado el proyecto, hay que hacerlo de forma manual:
-- Consulta la WIKI del proyecto.
+## Installation
+- See the following [Wiki](https://gitlab.metadrop.net/metadrop-group/ddev-aljibe/-/wikis/Instalaci%C3%B3n-local-y-ejecuci%C3%B3n-de-Aljibe)
+
+**NOTE**: Please note that Aljibe is not yet published, once published everything will be automatically downloaded from github.
