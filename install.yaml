@@ -10,8 +10,7 @@ post_install_actions:
   - |
     #ddev-nodisplay
     #ddev-description:Adding Aljibe Kickstart files
-     cp -rf aljibe-kickstart/* ${DDEV_APPROOT}/
-     cp -rf aljibe-kickstart/.* ${DDEV_APPROOT}/
+     cp -rTf aljibe-kickstart ${DDEV_APPROOT}
      rm -fR aljibe-kickstart
   - |
      ddev get ddev/ddev-adminer
