@@ -12,5 +12,4 @@ SITE=default
 	drush site:install --existing-config -y
 	drush cim -y
 	drush cr
-	drush image_derivatives:generate
 	drush uli
