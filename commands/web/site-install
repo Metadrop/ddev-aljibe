@@ -1,15 +1,15 @@
 #!/bin/bash
-## Description: Install drupal site
+## Description: Install given drupal site
 ## Usage: site-install
-## Example: ddev site-install
-SITE=default
-	chmod u+w web/sites/${SITE} -R
-	mkdir -p web/sites/default/files/behat/errors
-  composer install
-  vendor/bin/grumphp git:init
-  cp web/sites/${SITE}/example.settings.local.php web/sites/${SITE}/settings.local.php
-  cp web/sites/${SITE}/example.local.drush.yml web/sites/${SITE}/local.drush.yml
-	drush site:install --existing-config -y
-	drush cim -y
-	drush cr
-	drush uli
+## Example: ddev site-install default
+
+SITE=${1:-'default'}
+chmod u+w web/sites/${SITE} -R
+mkdir -p web/sites/${SITE}/files/behat/errors
+cp web/sites/${SITE}/example.settings.local.php web/sites/${SITE}/settings.local.php
+cp web/sites/${SITE}/example.local.drush.yml web/sites/${SITE}/local.drush.yml
+cd web/sites/${SITE} || exit
+drush @${SITE}.local site:install --existing-config -y --sites-subdir=${SITE}
+drush @${SITE}.local cim -y
+drush @${SITE}.local cr
+drush @${SITE}.local uli

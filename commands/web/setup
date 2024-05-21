@@ -1,0 +1,70 @@
+#!/bin/bash
+## Description: Configure environment and optionally install sites
+## Usage: setup [flags]
+## Flags: [{"Name":"noinstall","Usage":"setup --noinstall"}]
+## Example: ddev setup --noinstall
+
+# Initialize our own variables
+no_install=0
+SITES=(default)
+
+# A POSIX variable
+OPTIND=1         # Reset in case getopts has been used previously in the shell.
+
+has_argument() {
+    [[ ("$1" == *=* && -n ${1#*=}) || ( ! -z "$2" && "$2" != -*)  ]];
+}
+
+extract_argument() {
+  echo "${2:-${1#*=}}"
+}
+
+# Function to handle options and arguments
+handle_options() {
+  while [ $# -gt 0 ]; do
+    case $1 in
+      -n | --no-install)
+        no_install=1
+        shift
+        ;;
+      -s | --sites*)
+        if ! has_argument $@; then
+          echo "Site not specified." >&2
+          exit 0
+        fi
+        echo
+        IFS=',' read -a SITES <<< "$(extract_argument $@)"
+        shift
+        ;;
+      -a | --all)
+        SITES=()
+        shift
+        ;;
+      *)
+        echo "Invalid option: $1" >&2
+        exit 0
+        ;;
+    esac
+    shift
+  done
+}
+
+# Main script execution
+handle_options "$@"
+
+# Initialice local environment
+composer install
+vendor/bin/grumphp git:init
+
+# Check if --no-install option is not provided
+if [ "$no_install" -eq 0 ]; then
+    # If --sites option is provided, install each site
+    if [ ${#SITES[@]} -eq 0 ]; then
+        # Get all folders in web/sites
+        mapfile -t SITES < <(find ${DDEV_DOCROOT}/sites -mindepth 1 -maxdepth 1 -type d -exec basename {} \;)
+    fi
+    for SITE in "${SITES[@]}"; do
+        echo "Installing site: ${SITE}"
+        /mnt/ddev_config/commands/web/site-install $SITE
+    done
+fi
