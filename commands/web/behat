@@ -2,5 +2,5 @@
 ## Description: Launch behat tests
 ## Usage: behat
 ## Example: ddev behat
-
+export BEHAT_PARAMS="{\"extensions\" : {\"Behat\\\\MinkExtension\" : {\"base_url\" : \"$DDEV_PRIMARY_URL\"}}}"
 behat --colors "$@"

@@ -62,14 +62,30 @@ default:
       ajax_timeout: 5
       browserkit_http: ~
       browser_name: "chrome"
-      base_url: "http://apache"
+      base_url: "https://web"
       show_cmd: lynx %s
       files_path: "%paths.base%/tests/functional/behat/files"
       javascript_session: selenium2
       selenium2:
+        # wd_host: http://127.0.0.1:4444/wd/hub
         wd_host: http://hub:4444/wd/hub
         capabilities:
           browser: "chrome"
+          extra_capabilities:
+            chromeOptions:
+              w3c: false
+              args:
+                - '--no-sandbox'
+                - '--start-maximized'
+                - '--disable-gpu'
+                - '--disable-web-security'
+                - '--DNS-prefetch-disable'
+                - '--disable-translate'
+                - '--ignore-certificate-errors'
+                - '--test-type'
+                - '--disable-extensions'
+                - '--incognito'
+                - '--disable-infobars'
     NuvoleWeb\Drupal\DrupalExtension:
       services: "/var/www/html/vendor/metadrop/behat-contexts/services.yml"
       blackbox: ~
