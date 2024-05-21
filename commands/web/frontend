@@ -1,4 +1,5 @@
 #!/bin/bash
+#ddev-generated
 ## Description: Build frontend assets
 ## Usage: frontend [watch|dev|production|postinstall|stylint|stylint-fix|watch-poll|hot]
 ## Example: ddev frontend production

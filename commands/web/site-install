@@ -1,4 +1,5 @@
 #!/bin/bash
+#ddev-generated
 ## Description: Install given drupal site
 ## Usage: site-install
 ## Example: ddev site-install default

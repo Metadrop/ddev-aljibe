@@ -1,4 +1,5 @@
 #!/bin/bash
+#ddev-generated
 ## Description: Launch behat tests
 ## Usage: behat
 ## Example: ddev behat

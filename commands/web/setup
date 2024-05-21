@@ -1,4 +1,5 @@
 #!/bin/bash
+#ddev-generated
 ## Description: Configure environment and optionally install sites
 ## Usage: setup [flags]
 ## Flags: [{"Name":"noinstall","Usage":"setup --noinstall"}]

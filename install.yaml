@@ -2,9 +2,7 @@ name: ddev-aljibe
 
 project_files:
  - aljibe-kickstart
- - commands/web/behat
- - commands/web/frontend
- - commands/web/site-install
+ - commands/web
 
 post_install_actions:
   - |
