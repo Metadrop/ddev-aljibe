@@ -54,8 +54,10 @@ handle_options() {
 handle_options "$@"
 
 # Initialice local environment
-composer install
-vendor/bin/grumphp git:init
+ddev composer install
+ddev exec vendor/bin/grumphp git:init
+
+ADDITIONAL_HOSTNAMES=""
 
 # Check if --no-install option is not provided
 if [ "$no_install" -eq 0 ]; then
@@ -66,6 +68,17 @@ if [ "$no_install" -eq 0 ]; then
     fi
     for SITE in "${SITES[@]}"; do
         echo "Installing site: ${SITE}"
-        /mnt/ddev_config/commands/web/site-install $SITE
+        if [ "$ADDITIONAL_HOSTNAMES" != "default" ]; then
+          if [ "$ADDITIONAL_HOSTNAMES" == "" ]; then
+            ADDITIONAL_HOSTNAMES="${SITE}"
+          else
+            ADDITIONAL_HOSTNAMES="${ADDITIONAL_HOSTNAMES},${SITE}"
+          fi
+        fi
+        ddev site-install $SITE
     done
+    if [ "${ADDITIONAL_HOSTNAMES}" != "" ] && [ "${ADDITIONAL_HOSTNAMES}" != "default" ]; then
+      echo ${ADDITIONAL_HOSTNAMES}
+        ddev config --additional-hostnames="${ADDITIONAL_HOSTNAMES}"
+    fi
 fi

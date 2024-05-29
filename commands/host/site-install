@@ -1,0 +1,29 @@
+#!/bin/bash
+#ddev-generated
+## Description: Install given drupal site
+## Usage: site-install
+## Example: ddev site-install default
+SITE=${1:-'default'}
+## Check if drush alias for this site exists when drush @${SITE}.local return "could not be found"
+if [ "$(drush @${SITE}.local status 2>&1 | grep 'could not be found')" ]; then
+  echo "Drush alias for ${SITE} does not exist. Please create it first."
+else
+  chmod u+w ${DDEV_DOCROOT}/sites/${SITE} -R
+  mkdir -p ${DDEV_DOCROOT}/sites/${SITE}/files/behat/errors
+  if [ "$SITE" != "default" ]; then
+    if [ ! -f ${DDEV_DOCROOT}/sites/${SITE}/settings.ddev.php ]; then
+      cp ${DDEV_DOCROOT}/sites/default/settings.ddev.php ${DDEV_DOCROOT}/sites/${SITE}/settings.ddev.php
+      sed -i "s/\['database'\] = \"db\"/\['database'\] = \"db_${SITE}\"/g" ${DDEV_DOCROOT}/sites/${SITE}/settings.ddev.php
+    fi
+    echo "" | ddev import-db --database=db_${SITE} &> /dev/null
+  fi
+  cp ${DDEV_DOCROOT}/sites/${SITE}/example.settings.local.php ${DDEV_DOCROOT}/sites/${SITE}/settings.local.php
+  cp ${DDEV_DOCROOT}/sites/${SITE}/example.local.drush.yml ${DDEV_DOCROOT}/sites/${SITE}/local.drush.yml
+  cd ${DDEV_DOCROOT}/sites/${SITE} || exit
+  ddev drush @${SITE}.local :drop -y
+  ddev drush @${SITE}.local site:install --existing-config -y --sites-subdir=${SITE} || true
+  ddev drush @${SITE}.local cim -y || true
+  ddev drush @${SITE}.local cr || true
+  ddev drush @${SITE}.local uli || true
+fi
+

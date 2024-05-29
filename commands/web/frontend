@@ -22,6 +22,6 @@ then
 fi
 
 cd
-echo "Running frontend dev"
+echo "Running frontend $1 in ${THEME_PATH}"
 npm install --prefix ${THEME_PATH}
 npm run $1 --prefix ${THEME_PATH}
