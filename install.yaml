@@ -1,20 +1,17 @@
-name: ddev-aljibe
-
+name: aljibe
+description:
 project_files:
  - aljibe-kickstart
  - commands
 
 post_install_actions:
-  - |
-    #ddev-nodisplay
-    #ddev-description:Adding Aljibe Kickstart files
-     cp -rTf aljibe-kickstart ${DDEV_APPROOT}
-     rm -fR aljibe-kickstart
-  - |
-     ddev get ddev/ddev-adminer
-     ddev get ../ddev-addons/ddev-mkdocs
-     ddev get ../ddev-addons/ddev-backstopjs
-     ddev get ../ddev-addons/ddev-lighthouse
-     ddev get ../ddev-addons/ddev-selenium
-     ddev get ../ddev-addons/ddev-pa11y
-     ddev get ../ddev-addons/ddev-aljibe-assistant
+#   - |
+#     ddev aljibe-kickstart
+#   - |
+#      ddev get ddev/ddev-adminer
+#      ddev get ../ddev-addons/ddev-mkdocs
+#      ddev get ../ddev-addons/ddev-backstopjs
+#      ddev get ../ddev-addons/ddev-lighthouse
+#      ddev get ../ddev-addons/ddev-selenium
+#      ddev get ../ddev-addons/ddev-pa11y
+#      ddev get ../ddev-addons/ddev-aljibe-assistant

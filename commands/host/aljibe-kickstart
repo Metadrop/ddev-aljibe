@@ -1,0 +1,17 @@
+#!/bin/bash
+#ddev-generated
+## Description: Copy kickstar files to the project root
+## Usage: aljibe-kickstart
+## Flags: [{"Name":"noinstall","Usage":"setup --noinstall"}]
+## Example: ddev aljibe-kickstart
+
+echo "This will copy the Aljibe kickstart files to the project root and overwrite any existing files. Do you want to continue? (y/n)"
+read CONFIRMATION
+
+if [ "$CONFIRMATION" != "${CONFIRMATION#[Yy]}" ] ;then
+    cp -rTf aljibe-kickstart ${DDEV_APPROOT}
+    rm -fR aljibe-kickstart
+    echo "Kickstart files have been copied."
+else
+    echo "Operation cancelled."
+fi

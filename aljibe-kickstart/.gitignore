@@ -76,3 +76,7 @@ node_modules/
 
 # Generated artifact by metadrop/drupal-artifact-builder
 deploy-artifact
+
+# DDEV
+/.ddev/docker-compose.ci.yaml
+settings.ddev.site
