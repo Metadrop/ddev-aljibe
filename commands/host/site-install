@@ -3,8 +3,15 @@
 ## Description: Install given drupal site
 ## Usage: site-install
 ## Example: ddev site-install default
-SITE_PROFILES_FILE=".ddev/site-profiles"
-SITE=${1:-'default'}
+
+. $(dirname $0)/functions
+
+default_site=$(get_env_variable DEFAULT_SITE)
+if [ -z "$default_site" ]; then
+  default_site="default"
+fi
+
+SITE=${1:-$default_site}
 ENV=${2:-'local'}
 SITE_ALIAS=$SITE.$ENV
 DRUPAL_PROFILE=""
