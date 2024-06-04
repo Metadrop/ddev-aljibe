@@ -14,6 +14,7 @@ fi
 SITE=${1:-$default_site}
 ENV=${2:-'local'}
 SITE_ALIAS=$SITE.$ENV
+SITE_PROFILES_FILE=".ddev/site-profiles"
 DRUPAL_PROFILE=""
 
 if [ -f $SITE_PROFILES_FILE ]; then
