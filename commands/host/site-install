@@ -3,11 +3,20 @@
 ## Description: Install given drupal site
 ## Usage: site-install
 ## Example: ddev site-install default
+SITE_PROFILES_FILE=".ddev/site-profiles"
 SITE=${1:-'default'}
 ENV=${2:-'local'}
 SITE_ALIAS=$SITE.$ENV
+DRUPAL_PROFILE=""
+
+if [ -f $SITE_PROFILES_FILE ]; then
+  source  $SITE_PROFILES_FILE
+else
+  echo "No SITE_PROFILES_FILE found. If your site needs a custom profile, please create a $SITE_PROFILES_FILE file."
+fi
 
 cd  $DDEV_APPROOT || exit
+
 ## Check if drush alias for this site exists when drush @${SITE_ALIAS} return "could not be found"
 if [ "$(drush @${SITE_ALIAS} status 2>&1 | grep 'could not be found')" ]; then
   echo "Drush alias for ${SITE} does not exist. Please create it first."
@@ -30,7 +39,13 @@ else
   cp ${DDEV_DOCROOT}/${SITE_PATH}/example.local.drush.yml ${DDEV_DOCROOT}/${SITE_PATH}/local.drush.yml
 
   ddev drush @${SITE_ALIAS} sql:drop -y
-  ddev drush @${SITE_ALIAS} site:install --existing-config -y --sites-subdir=${SITE_PATH#sites/} || true
+  # if $DRUPAL_PROFILE is not empty, then install the site with the given profile
+  if [ ! -z "$DRUPAL_PROFILE" ]; then
+    ddev drush @${SITE_ALIAS} site:install $DRUPAL_PROFILE --existing-config -y --sites-subdir=${SITE_PATH#sites/} || true
+  else
+    ddev drush @${SITE_ALIAS} site:install --existing-config -y --sites-subdir=${SITE_PATH#sites/} || true
+  fi
+
   ddev drush @${SITE_ALIAS} cim -y || true
   ddev drush @${SITE_ALIAS} cr || true
   ddev drush @${SITE_ALIAS} uli || true

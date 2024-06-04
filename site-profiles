@@ -1,0 +1,32 @@
+#!/bin/bash
+
+
+## *** DO NOT REMOVE THIS FILE ***
+## This is an auxiliary file for site installation in Aljibe.
+## It is responsible for setting the DRUPAL_PROFILE variable based on
+## the name of the site being installed.
+## The ddev-generated tag has been omitted so that the necessary
+## logic can be added here without being overwritten by future updates.
+
+## The $1 parameter will contain always the drush alias name (without the environment suffix)
+## of the site being installed. This is the usually the name of the site folder in the sites directory too.
+##
+## Logic example:
+##
+## case $1 in
+##   main)
+##     DRUPAL_PROFILE=main_profile
+##     ;;
+##   alternative_site)
+##     DRUPAL_PROFILE=
+##     ;;
+##
+##   *)
+##     DRUPAL_PROFILE=secondary_profile
+##     ;;
+## esac
+
+
+#By default we dont se the Drupal Profile on install
+
+DRUPAL_PROFILE=""
