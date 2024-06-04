@@ -41,13 +41,14 @@ else
   ddev drush @${SITE_ALIAS} sql:drop -y
   # if $DRUPAL_PROFILE is not empty, then install the site with the given profile
   if [ ! -z "$DRUPAL_PROFILE" ]; then
-    ddev drush @${SITE_ALIAS} site:install $DRUPAL_PROFILE --existing-config -y --sites-subdir=${SITE_PATH#sites/}
+    ddev drush @${SITE_ALIAS} site:install $DRUPAL_PROFILE --existing-config -y --sites-subdir=${SITE_PATH#sites/} || true
   else
-    ddev drush @${SITE_ALIAS} site:install --existing-config -y --sites-subdir=${SITE_PATH#sites/}
+    ddev drush @${SITE_ALIAS} site:install --existing-config -y --sites-subdir=${SITE_PATH#sites/} || true
   fi
 
-  ddev drush @${SITE_ALIAS} cim -y
-  ddev drush @${SITE_ALIAS} cr
-  ddev drush @${SITE_ALIAS} uli
+  ddev drush @${SITE_ALIAS} cr || true
+  ddev drush @${SITE_ALIAS} cim -y || true
+  ddev drush @${SITE_ALIAS} cr || true
+  ddev drush @${SITE_ALIAS} uli || true
 fi
 
