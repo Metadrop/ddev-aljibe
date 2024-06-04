@@ -1,4 +1,5 @@
 #!/bin/bash
+#ddev-generated
 
 ## Get a environment variable.
 get_env_variable() {
