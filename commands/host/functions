@@ -4,8 +4,5 @@
 get_env_variable() {
   if [[ $(ddev exec printenv) == *"$@"* ]]; then
     ddev exec printenv $@
-  else
-    echo "Please provide a valid variable name."
-    return
   fi
 }
