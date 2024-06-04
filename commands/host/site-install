@@ -30,9 +30,9 @@ else
   cp ${DDEV_DOCROOT}/${SITE_PATH}/example.local.drush.yml ${DDEV_DOCROOT}/${SITE_PATH}/local.drush.yml
 
   ddev drush @${SITE_ALIAS} sql:drop -y
-  ddev drush @${SITE_ALIAS} site:install --existing-config -y --sites-subdir=${SITE_PATH#sites/} || true
-  ddev drush @${SITE_ALIAS} cim -y || true
-  ddev drush @${SITE_ALIAS} cr || true
-  ddev drush @${SITE_ALIAS} uli || true
+  ddev drush @${SITE_ALIAS} site:install --existing-config -y --sites-subdir=${SITE_PATH#sites/}
+  ddev drush @${SITE_ALIAS} cim -y
+  ddev drush @${SITE_ALIAS} cr
+  ddev drush @${SITE_ALIAS} uli
 fi
 
