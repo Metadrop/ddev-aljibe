@@ -1,4 +1,5 @@
 #!/bin/bash
+#ddev-generated
 ## Description: Launches a drush command in all sites
 ## Usage: all-sites-drush [drush command]
 
