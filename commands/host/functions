@@ -1,0 +1,15 @@
+#!/bin/bash
+
+if [ -z "$SITES" ]; then
+  SITES=()
+fi
+
+## Get all sites from the drush/sites folder.
+get_sites() {
+  FILES=()
+  mapfile -t FILES < <(find drush/sites -name '*.site.yml' -exec basename {} \;)
+
+  for FILE in "${FILES[@]}"; do
+      SITES+=($(echo $FILE | cut -d'.' -f1))
+  done
+}

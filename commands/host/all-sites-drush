@@ -1,0 +1,25 @@
+#!/bin/bash
+## Description: Launches a drush command in all sites
+## Usage: all-sites-drush [drush command]
+
+. $(dirname $0)/functions
+
+ENV='local'
+COMMAND=''
+SITES=()
+
+COMMAND=$@;
+if [ -z "$COMMAND" ]; then
+  echo "Please provide a drush command"
+  exit
+fi
+
+## Get all sites from the drush/sites folder.
+get_sites
+
+## Run the command in all sites.
+for SITE in "${SITES[@]}"; do
+  SITE_ALIAS=$SITE.$ENV
+  echo "Running drush $COMMAND in $SITE"
+  echo ddev drush @${SITE_ALIAS} $COMMAND
+done
