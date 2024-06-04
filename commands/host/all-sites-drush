@@ -21,5 +21,5 @@ get_sites
 for SITE in "${SITES[@]}"; do
   SITE_ALIAS=$SITE.$ENV
   echo "Running drush $COMMAND in $SITE"
-  echo ddev drush @${SITE_ALIAS} $COMMAND
+  ddev drush @${SITE_ALIAS} $COMMAND
 done
