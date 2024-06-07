@@ -77,8 +77,4 @@ if [ "$no_install" -eq 0 ]; then
         fi
         ddev site-install $SITE
     done
-    if [ "${ADDITIONAL_HOSTNAMES}" != "" ] && [ "${ADDITIONAL_HOSTNAMES}" != "default" ]; then
-      echo ${ADDITIONAL_HOSTNAMES}
-        ddev config --additional-hostnames="${ADDITIONAL_HOSTNAMES}"
-    fi
 fi
