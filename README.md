@@ -10,3 +10,15 @@ DDEV Aljibe (ddev-aljibe) is an addon for DDEV that enables the installation of 
 - See the following [Wiki](https://gitlab.metadrop.net/metadrop-group/ddev-aljibe/-/wikis/Instalaci%C3%B3n-local-y-ejecuci%C3%B3n-de-Aljibe)
 
 **NOTE**: Please note that Aljibe is not yet published, once published everything will be automatically downloaded from github.
+
+## Troubleshooting
+
+### Https not working
+
+It is needed to install mkcert and libnss3-tools, and then run:
+
+```
+mkcert -install
+```
+
+[More information](https://ddev.com/blog/ddev-local-trusted-https-certificates/)
