@@ -54,7 +54,7 @@ handle_options() {
 handle_options "$@"
 
 # Initialice local environment
-ddev composer install
+ddev composer install || exit 1
 ddev exec vendor/bin/grumphp git:init
 
 ADDITIONAL_HOSTNAMES=""
@@ -78,3 +78,6 @@ if [ "$no_install" -eq 0 ]; then
         ddev site-install $SITE
     done
 fi
+
+## Building frontend theme
+ddev frontend production

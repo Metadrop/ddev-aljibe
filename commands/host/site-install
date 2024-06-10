@@ -15,11 +15,12 @@ else
   echo "No SITE_PROFILES_FILE found. If your site needs a custom profile, please create a $SITE_PROFILES_FILE file."
 fi
 
-cd  $DDEV_APPROOT || exit
+cd  $DDEV_APPROOT || exit 1
 
 ## Check if drush alias for this site exists when drush @${SITE_ALIAS} return "could not be found"
-if [ "$(drush @${SITE_ALIAS} status 2>&1 | grep 'could not be found')" ]; then
-  echo "Drush alias for ${SITE} does not exist. Please create it first."
+if [ "$(ddev drush @${SITE_ALIAS} status 2>&1 | grep 'could not be found')" ]; then
+  echo "Drush alias for ${SITE} does not exist. Please create it first so that the site can be installed."
+  exit 1
 else
   SITE_PATH=$(ddev drush @${SITE_ALIAS} status --field=site)
   chmod u+w ${DDEV_DOCROOT}/${SITE_PATH} -R
@@ -38,16 +39,22 @@ else
   cp ${DDEV_DOCROOT}/${SITE_PATH}/example.settings.local.php ${DDEV_DOCROOT}/${SITE_PATH}/settings.local.php
   cp ${DDEV_DOCROOT}/${SITE_PATH}/example.local.drush.yml ${DDEV_DOCROOT}/${SITE_PATH}/local.drush.yml
 
-  ddev drush @${SITE_ALIAS} sql:drop -y
+  ddev drush @${SITE_ALIAS} sql:drop -y || exit 1
   # if $DRUPAL_PROFILE is not empty, then install the site with the given profile
   if [ ! -z "$DRUPAL_PROFILE" ]; then
-    ddev drush @${SITE_ALIAS} site:install $DRUPAL_PROFILE --existing-config -y --sites-subdir=${SITE_PATH#sites/} || true
+    ddev drush @${SITE_ALIAS} site:install $DRUPAL_PROFILE --existing-config -y --sites-subdir=${SITE_PATH#sites/} || exit 1
   else
-    ddev drush @${SITE_ALIAS} site:install --existing-config -y --sites-subdir=${SITE_PATH#sites/} || true
+    ddev drush @${SITE_ALIAS} site:install --existing-config -y --sites-subdir=${SITE_PATH#sites/} || exit 1
   fi
 
-  ddev drush @${SITE_ALIAS} cim -y || true
-  ddev drush @${SITE_ALIAS} cr || true
+  ddev drush @${SITE_ALIAS} cim -y || exit 1
+  ddev drush @${SITE_ALIAS} cr || exit 1
+
+  # Check if drupal module image_styles_derivative is enabled
+  if [ "$(ddev drush @${SITE_ALIAS} pm:list --status=enabled --filter=image_styles_generator --format=list | grep 'image_styles_generator')" ]; then
+    ddev drush @${SITE_ALIAS} image_derivatives:generate || true
+  fi
+
   ddev drush @${SITE_ALIAS} uli || true
 fi
 
