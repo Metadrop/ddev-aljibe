@@ -3,7 +3,8 @@
 ## Usage: behat
 ## Example: ddev behat
 
-PROFILE=${1:-default}
-ARGS=${*:2}
+FOLDER=${1:-local}
+PROFILE=${2:-default}
+ARGS=${*:3}
 
-behat --colors --profile=$PROFILE --config=/var/www/html/tests/behat/behat.yml $ARGS
+behat --colors --profile=$PROFILE --config=/var/www/html/tests/behat/$FOLDER/behat.yml $ARGS
