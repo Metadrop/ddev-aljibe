@@ -1,10 +1,12 @@
 #!/bin/bash
+#ddev-generated
 ## Description: Launch behat tests
 ## Usage: behat
 ## Example: ddev behat
 
 FOLDER=${1:-local}
-PROFILE=${2:-default}
+PROFILE=${2:+"--profile=$2"}
+PROFILE=${PROFILE:-""}
 ARGS=${*:3}
 
-behat --colors --profile=$PROFILE --config=/var/www/html/tests/behat/$FOLDER/behat.yml $ARGS
+behat --colors $PROFILE --config=/var/www/html/tests/behat/$FOLDER/behat.yml $ARGS
