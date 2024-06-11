@@ -4,9 +4,14 @@
 ## Usage: site-install
 ## Example: ddev site-install default
 SITE_PROFILES_FILE=".ddev/site-profiles"
-SITE=${1:-'default'}
+SITE=${1:-'self'}
 ENV=${2:-'local'}
-SITE_ALIAS=$SITE.$ENV
+if [ "$SITE" == "self" ]; then
+    SITE_ALIAS=$SITE
+else
+    SITE_ALIAS=$SITE.$ENV
+fi
+
 DRUPAL_PROFILE=""
 
 if [ -f $SITE_PROFILES_FILE ]; then
@@ -57,4 +62,5 @@ else
 
   ddev drush @${SITE_ALIAS} uli || true
 fi
+
 
