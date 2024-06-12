@@ -1,0 +1,43 @@
+#!/bin/bash
+
+#ddev-generated
+## Description: Get aljibe config values. Special case for theme_path, where we get a list of theme paths without keys.
+## Usage: aljibe-config [config_tag]
+## Example: "ddev aljibe-config theme_path"
+## Example: "ddev aljibe-config otherkey"
+
+KEY=$1
+
+if [ ! -f .ddev/aljibe.yaml ]; then
+  echo "Aljibe config file not found"
+  exit 1
+fi
+
+## Get all theme paths and return each line.
+if [ "$KEY" == "theme_paths" ]; then
+  readarray theme_paths < <(ddev exec "yq -I=0 '.theme_paths[]' /mnt/ddev_config/aljibe.yaml")
+  for theme_path in "${theme_paths[@]}"; do
+      echo -n "$theme_path"
+  done
+  exit 0
+fi
+
+## Get all theme paths keys and return each line.
+if [ "$KEY" == "theme_paths_keys" ]; then
+  readarray theme_paths < <(ddev exec "yq -I=0 '.theme_paths[]' /mnt/ddev_config/aljibe.yaml")
+  if [ ${#theme_paths[@]} -eq 0 ]; then
+    exit
+  fi
+  readarray theme_paths_keys < <(ddev exec "yq -I=0 '.theme_paths | keys' /mnt/ddev_config/aljibe.yaml || true" )
+  for key in "${theme_paths_keys[@]}"; do
+      echo -n "$key" | sed 's/^- //'
+  done
+  exit
+fi
+
+## Return other keys
+if [ -z "$KEY" ]; then
+  ddev exec yq -os /mnt/ddev_config/aljibe.yaml
+else
+  ddev exec yq ".$KEY" -os /mnt/ddev_config/aljibe.yaml | sed 's/^.*=//'
+fi

@@ -1,0 +1,16 @@
+#####
+##
+## Aljibe config file
+##
+## Here you can customize Aljibe related configs, feel free to add any other configuration you need.
+## This config can be obtained with ddev aljibe-config command.
+##
+## Examples:
+## - ddev aljibe-config theme_path
+##    Will obtain all theme_paths to be processed
+## - ddev aljibe-config default_site
+##    Will get the default site to be processed
+
+default_site: self
+theme_paths:
+  custom_theme: /var/www/html/web/themes/custom/custom_theme

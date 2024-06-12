@@ -76,19 +76,24 @@ if [ "$no_install" -eq 0 ]; then
             ADDITIONAL_HOSTNAMES="${ADDITIONAL_HOSTNAMES},${SITE}"
           fi
         fi
-        echo -e "\033[42;97m\n########################################################\n"
-        echo -e "\033[42;97;1mInstalling site:                 ${SITE}\n"
-        echo -e "\033[42;97m########################################################\033[0m\n"
+        echo -e "\033[32m\n########################################################\n"
+        echo -e "\033[32mInstalling site:\033[32;1m ${SITE}\n"
+        echo -e "\033[32;2m########################################################\033[0m\n"
 
-        ddev site-install $SITE
+#        ddev site-install $SITE
     done
 fi
 
 ## Building frontend theme
-if [ -n "$THEME_PATH" ]
-then
-  ddev frontend production
+echo -e "\033[32m\n########################################################\n"
+echo -e "\033[32mBuilding frontend themes\n"
+echo -e "\033[32m########################################################\033[0m\n"
+readarray -t themes < <(ddev aljibe-config theme_paths_keys)
+if [ ${#themes[@]} -eq 0 ]; then
+  echo "No themes found."
+  exit 0
 fi
+ddev aljibe-config theme_paths_keys | xargs ddev frontend production "$1"
 
 echo "Make sure that you have those additional hostnames added to your .ddev/config.yml file:"
 echo "additional_hostnames: [${ADDITIONAL_HOSTNAMES}]"

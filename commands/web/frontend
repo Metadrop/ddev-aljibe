@@ -7,6 +7,9 @@ set -e
 
 # This command is executed on the theme directory.
 
+readarray THEME_PATH_KEYS < <(yq -I=0 '.theme_paths | keys' /mnt/ddev_config/aljibe.yaml)
+readarray THEME_PATHS < <(yq -I=0 '.theme_paths[]' /mnt/ddev_config/aljibe.yaml)
+
 TASK=${1:-""}
 
 if [ -z "$1" ]
@@ -15,13 +18,24 @@ then
   exit 1
 fi
 
-if [ -z "$THEME_PATH" ]
+if [ -z "$2" ]
 then
-  echo "THEME_PATH is not defined, check that there is an .env file in .ddev folder."
-  exit 1
+  echo "All themes will be processed."
+  for THEME_PATH in "${THEME_PATHS[@]}"; do
+      echo "Running frontend $TASK in ${THEME_PATH}"
+      npm install --prefix ${THEME_PATH}
+      npm run $TASK --prefix ${THEME_PATH}
+      echo "Done frontend $TASK in ${THEME_PATH} \n\n"
+  done
+else
+  if [[ " ${THEME_PATH_KEYS[*]} " =~ "${2}" ]]; then
+    THEME_PATH=$(yq -I=0 ".theme_paths.$2" /mnt/ddev_config/aljibe.yaml)
+    echo "Running frontend $TASK in ${THEME_PATH}"
+    npm install --prefix ${THEME_PATH}
+    npm run $TASK --prefix ${THEME_PATH}
+    echo "Done frontend $TASK in ${THEME_PATH} \n\n"
+  else
+    echo "Theme ${2} not found in aljibe.yaml"
+    exit 1
+  fi
 fi
-
-cd
-echo "Running frontend $1 in ${THEME_PATH}"
-npm install --prefix ${THEME_PATH}
-npm run $1 --prefix ${THEME_PATH}

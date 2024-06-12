@@ -4,6 +4,8 @@ project_files:
  - aljibe-kickstart
  - commands
  - site-profiles
+ - web-build
+ - aljibe.yaml
 
 post_install_actions:
 # Auto install disabled by default
