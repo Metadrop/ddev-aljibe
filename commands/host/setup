@@ -85,7 +85,10 @@ if [ "$no_install" -eq 0 ]; then
 fi
 
 ## Building frontend theme
-ddev frontend production
+if [ -n "$THEME_PATH" ]
+then
+  ddev frontend production
+fi
 
 echo "Make sure that you have those additional hostnames added to your .ddev/config.yml file:"
 echo "additional_hostnames: [${ADDITIONAL_HOSTNAMES}]"
