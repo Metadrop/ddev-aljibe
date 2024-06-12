@@ -80,7 +80,7 @@ if [ "$no_install" -eq 0 ]; then
         echo -e "\033[32mInstalling site:\033[32;1m ${SITE}\n"
         echo -e "\033[32;2m########################################################\033[0m\n"
 
-#        ddev site-install $SITE
+        ddev site-install $SITE
     done
 fi
 
