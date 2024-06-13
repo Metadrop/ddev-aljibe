@@ -52,6 +52,7 @@ else
     ddev drush @${SITE_ALIAS} site:install --existing-config -y --sites-subdir=${SITE_PATH#sites/} || exit 1
   fi
 
+  ddev drush @${SITE_ALIAS} cr || exit 1
   ddev drush @${SITE_ALIAS} cim -y || exit 1
   ddev drush @${SITE_ALIAS} cr || exit 1
 
