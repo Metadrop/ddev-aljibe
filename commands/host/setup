@@ -64,6 +64,18 @@ handle_options "$@"
 ddev composer install || exit 1
 ddev exec vendor/bin/grumphp git:init
 
+## Building frontend theme
+echo -e "\033[32m\n########################################################\n"
+echo -e "\033[32mBuilding frontend themes\n"
+echo -e "\033[32m########################################################\033[0m\n"
+readarray -t themes < <(ddev aljibe-config theme_paths_keys)
+if [ ${#themes[@]} -eq 0 ]; then
+  echo "No themes found."
+  exit 0
+fi
+ddev aljibe-config theme_paths_keys | xargs ddev frontend production "$1"
+
+
 ADDITIONAL_HOSTNAMES=""
 
 # Check if --no-install option is not provided
@@ -83,17 +95,6 @@ if [ "$no_install" -eq 0 ]; then
         ddev site-install $SITE
     done
 fi
-
-## Building frontend theme
-echo -e "\033[32m\n########################################################\n"
-echo -e "\033[32mBuilding frontend themes\n"
-echo -e "\033[32m########################################################\033[0m\n"
-readarray -t themes < <(ddev aljibe-config theme_paths_keys)
-if [ ${#themes[@]} -eq 0 ]; then
-  echo "No themes found."
-  exit 0
-fi
-ddev aljibe-config theme_paths_keys | xargs ddev frontend production "$1"
 
 echo "Make sure that you have those additional hostnames added to your .ddev/config.yml file:"
 echo "additional_hostnames: [${ADDITIONAL_HOSTNAMES}]"
