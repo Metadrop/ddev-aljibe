@@ -69,12 +69,12 @@ echo -e "\033[32m\n########################################################\n"
 echo -e "\033[32mBuilding frontend themes\n"
 echo -e "\033[32m########################################################\033[0m\n"
 readarray -t themes < <(ddev aljibe-config theme_paths_keys)
-if [ ${#themes[@]} -eq 0 ]; then
-  echo "No themes found."
-  exit 0
-fi
-ddev aljibe-config theme_paths_keys | xargs ddev frontend production "$1"
 
+if [ ${#themes[@]} -gt 0 ]; then
+  ddev aljibe-config theme_paths_keys | xargs ddev frontend production "$1"
+else
+  echo "No themes found."
+fi
 
 ADDITIONAL_HOSTNAMES=""
 
