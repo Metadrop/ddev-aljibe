@@ -11,6 +11,7 @@ read CONFIRMATION
 if [ "$CONFIRMATION_GIT" != "n" ]; then
     cp -rTf ${DDEV_APPROOT}/.ddev/aljibe-kickstart ${DDEV_APPROOT}
     rm -fR ${DDEV_APPROOT}/.ddev/aljibe-kickstart
+    ddev config --project-type=drupal10 --docroot=web
     echo "Kickstart files have been copied."
 else
     echo "Operation cancelled."

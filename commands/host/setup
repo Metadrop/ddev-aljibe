@@ -11,12 +11,32 @@ source .ddev/.env
 set +a
 
 # Initialize our own variables
-no_install=0
+NO_INSTALL=0
+NO_THEMES=0
 
-SITES=${DEFAULT_SITE:-'self'}
+CONFIG_DEFAULT_SITE=$(ddev aljibe-config default_site)
+if [ "$CONFIG_DEFAULT_SITE" == 'null' ]; then
+  SITES=('self')
+else
+  SITES=("$CONFIG_DEFAULT_SITE")
+fi
+VERBOSE=0
+THEMES=()
 
 # A POSIX variable
 OPTIND=1         # Reset in case getopts has been used previously in the shell.
+
+help() {
+echo "Usage: $0 [options]"
+  echo
+  echo "Options:"
+  echo "  -h, --help        Show this help message and exit"
+  echo "  -n, --no-install  Do not install sites"
+  echo "  -s, --sites       Install specific sites"
+  echo "  -a, --all         Install all sites"
+  echo "  -v, --verbose     Show verbose output"
+  exit 0
+}
 
 
 has_argument() {
@@ -24,28 +44,60 @@ has_argument() {
 }
 
 extract_argument() {
-  echo "${2:-${1#*=}}"
+  if [[ $1 == *=* ]]; then
+    echo "${1#*=}"
+  else
+    echo "$2"
+  fi
 }
 
-# Function to handle options and arguments
 handle_options() {
   while [ $# -gt 0 ]; do
     case $1 in
+      -a | --all)
+        mapfile -t SITES < <(drush site:alias --fields=name --format=list --filter=.local | sed 's/@//' | sed 's/.local//')
+        shift
+        ;;
+      -h | --help)
+        help
+        shift
+        ;;
       -n | --no-install)
-        no_install=1
+        NO_INSTALL=1
+        shift
+        ;;
+      --no-themes)
+        NO_THEMES=1
         shift
         ;;
       -s | --sites*)
-        if ! has_argument "$@"; then
-          echo "Site not specified." >&2
-          exit 0
+        if [[ $1 == *=* ]]; then
+          IFS=',' read -a SITES <<< "$(extract_argument "$1")"
+          shift
+        else
+          if [ -z "$2" ]; then
+            echo "Sites not specified." >&2
+            exit 0
+          fi
+          IFS=',' read -a SITES <<< "$2"
+          shift 2
         fi
-        echo
-        IFS=',' read -a SITES <<< "$(extract_argument "$@")"
-        shift
         ;;
-      -a | --all)
-        mapfile -t SITES < <(drush site:alias --fields=name --format=list --filter=.local | sed 's/@//' | sed 's/.local//')
+      -t | --themes*)
+        if [[ $1 == *=* ]]; then
+          IFS=',' read -a THEMES <<< "$(extract_argument "$1")"
+          shift
+        else
+          if [ -z "$2" ]; then
+            echo "Themes not specified." >&2
+            exit 0
+          fi
+          IFS=',' read -a THEMES <<< "$2"
+          shift 2
+        fi
+        ;;
+      -v | --verbose)
+        VERBOSE=1
         shift
         ;;
       *)
@@ -53,7 +105,6 @@ handle_options() {
         exit 0
         ;;
     esac
-    shift
   done
 }
 
@@ -65,21 +116,38 @@ ddev composer install || exit 1
 ddev exec vendor/bin/grumphp git:init
 
 ## Building frontend theme
-echo -e "\033[32m\n########################################################\n"
-echo -e "\033[32mBuilding frontend themes\n"
-echo -e "\033[32m########################################################\033[0m\n"
-readarray -t themes < <(ddev aljibe-config theme_paths_keys)
+if [ "$NO_THEMES" -eq 0 ]; then
+  echo -e "\033[32m\n########################################################\n"
+  echo -e "\033[32mBuilding frontend themes \n"
+  echo -e "\033[32m########################################################\033[0m\n"
+  if [ ${#THEMES[@]} -eq 0 ]; then
+    readarray -t THEMES < <(ddev aljibe-config theme_paths_keys)
+  fi
 
-if [ ${#themes[@]} -gt 0 ]; then
-  ddev aljibe-config theme_paths_keys | xargs ddev frontend production "$1"
-else
-  echo "No themes found."
+  if [ ${#THEMES[@]} -eq 0 ]; then
+    echo "No themes found."
+  else
+     # Start the SPINNER in the background
+    (SPINNER="/|\\-/|\\-"; while :; do for i in `seq 0 7`; do echo -n "${SPINNER:$i:1}"; echo -en "\010"; sleep 0.2; done; done) &
+    SPINNER_PID=$!
+    for theme in "${THEMES[@]}"; do
+      echo -e "\033[32mBuilding theme:\033[32;1m ${theme}\033[0m"
+      if [ $VERBOSE -eq 1 ]; then
+        ddev frontend production "$theme"
+      else
+        ddev frontend production "$theme" &> /dev/null &
+      fi
+    done
+  fi
+
+  [ $VERBOSE -eq 0 ] && wait $!
+  kill $SPINNER_PID > /dev/null 2>&1 && echo -e "\033[2K"
 fi
 
 ADDITIONAL_HOSTNAMES=""
 
 # Check if --no-install option is not provided
-if [ "$no_install" -eq 0 ]; then
+if [ "$NO_INSTALL" -eq 0 ]; then
     for SITE in "${SITES[@]}"; do
         if [ "$ADDITIONAL_HOSTNAMES" != "default" ]; then
           if [ "$ADDITIONAL_HOSTNAMES" == "" ]; then
@@ -96,5 +164,7 @@ if [ "$no_install" -eq 0 ]; then
     done
 fi
 
-echo "Make sure that you have those additional hostnames added to your .ddev/config.yml file:"
-echo "additional_hostnames: [${ADDITIONAL_HOSTNAMES}]"
+if [ "$ADDITIONAL_HOSTNAMES" != "" ]; then
+  echo "Make sure that you have those additional hostnames added to your .ddev/config.yml file:"
+  echo "additional_hostnames: [${ADDITIONAL_HOSTNAMES}]"
+fi
