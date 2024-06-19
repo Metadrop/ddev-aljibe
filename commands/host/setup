@@ -111,6 +111,14 @@ handle_options() {
 # Main script execution
 handle_options "$@"
 
+# Launch pre setup hooks
+readarray -t PRE_SETUP_CMDS < <(ddev aljibe-config hooks.pre_setup)
+for cmd in "${PRE_SETUP_CMDS[@]}"; do
+  [ "$cmd" == "null" ] || eval "$(echo "$cmd" | sed "s/'/\\\'/g" | sed 's/"/\\"/g')"
+done
+
+
+
 # Initialice local environment
 ddev composer install || exit 1
 ddev exec vendor/bin/grumphp git:init
@@ -128,8 +136,6 @@ if [ "$NO_THEMES" -eq 0 ]; then
     echo "No themes found."
   else
      # Start the SPINNER in the background
-    (SPINNER="/|\\-/|\\-"; while :; do for i in `seq 0 7`; do echo -n "${SPINNER:$i:1}"; echo -en "\010"; sleep 0.2; done; done) &
-    SPINNER_PID=$!
     for theme in "${THEMES[@]}"; do
       echo -e "\033[32mBuilding theme:\033[32;1m ${theme}\033[0m"
       if [ $VERBOSE -eq 1 ]; then
@@ -139,9 +145,8 @@ if [ "$NO_THEMES" -eq 0 ]; then
       fi
     done
   fi
-
   [ $VERBOSE -eq 0 ] && wait $!
-  kill $SPINNER_PID > /dev/null 2>&1 && echo -e "\033[2K"
+
 fi
 
 ADDITIONAL_HOSTNAMES=""
@@ -168,3 +173,14 @@ if [ "$ADDITIONAL_HOSTNAMES" != "" ]; then
   echo "Make sure that you have those additional hostnames added to your .ddev/config.yml file:"
   echo "additional_hostnames: [${ADDITIONAL_HOSTNAMES}]"
 fi
+
+# Launch post setup hooks
+# Launch pre setup hooks
+readarray -t POST_SETUP_CMDS < <(ddev aljibe-config hooks.post_setup)
+for cmd in "${POST_SETUP_CMDS[@]}"; do
+  cmd=${cmd#\'}
+  cmd=${cmd%\'}
+#  ddev drush en cepaim_default_content_local -y
+  eval "$cmd"
+#  [ "$cmd" == "null" ] || eval "$(echo "$cmd" | sed "s/'/\\\'/g" | sed 's/"/\\"/g')"
+done

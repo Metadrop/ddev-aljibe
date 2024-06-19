@@ -5,7 +5,7 @@ project_files:
  - commands
  - site-profiles
  - web-build
- - aljibe.yaml
+ - aljibe.yaml.example
 
 post_install_actions:
 # Auto install disabled by default

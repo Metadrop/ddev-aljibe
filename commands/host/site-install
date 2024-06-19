@@ -39,7 +39,7 @@ else
       cp ${DDEV_DOCROOT}/sites/default/settings.ddev.php ${DDEV_DOCROOT}/${SITE_PATH}/settings.ddev.php
       sed -i "s/\['database'\] = \"db\"/\['database'\] = \"db_${DBNAME}\"/g" ${DDEV_DOCROOT}/${SITE_PATH}/settings.ddev.php
     fi
-    echo "" | ddev import-db --database=db_${DBNAME} &> /dev/null
+    ddev create-database db_${DBNAME} || exit 1
   fi
   cp ${DDEV_DOCROOT}/${SITE_PATH}/example.settings.local.php ${DDEV_DOCROOT}/${SITE_PATH}/settings.local.php
   cp ${DDEV_DOCROOT}/${SITE_PATH}/example.local.drush.yml ${DDEV_DOCROOT}/${SITE_PATH}/local.drush.yml

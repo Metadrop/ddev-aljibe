@@ -14,3 +14,16 @@
 default_site: self
 theme_paths:
   custom_theme: /var/www/html/web/themes/custom/custom_theme
+
+##
+# Some commands can be executed before and after the setup process.
+# They must be defined as a list of commands.
+# Example:
+#
+# hooks:
+#   pre_setup:
+#     - echo "Aljibe pre setup hook"
+#     - ddev snapshot
+#   post_setup:
+#     - echo "Aljibe post setup hook"
+#     - ddev drush uli --uid=2
