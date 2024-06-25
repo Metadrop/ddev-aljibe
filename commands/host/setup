@@ -5,11 +5,6 @@
 ## Flags: [{"Name":"noinstall","Usage":"setup --noinstall"}]
 ## Example: ddev setup --noinstall
 
-# Load environment variables
-set -a
-source .ddev/.env
-set +a
-
 # Initialize our own variables
 NO_INSTALL=0
 NO_THEMES=0
@@ -180,7 +175,6 @@ readarray -t POST_SETUP_CMDS < <(ddev aljibe-config hooks.post_setup)
 for cmd in "${POST_SETUP_CMDS[@]}"; do
   cmd=${cmd#\'}
   cmd=${cmd%\'}
-#  ddev drush en cepaim_default_content_local -y
   eval "$cmd"
 #  [ "$cmd" == "null" ] || eval "$(echo "$cmd" | sed "s/'/\\\'/g" | sed 's/"/\\"/g')"
 done

@@ -13,6 +13,13 @@ if [ ! -f .ddev/aljibe.yaml ]; then
   exit 1
 fi
 
+## Get default site
+if [ "$KEY" == "default_site" ]; then
+  ddev exec "yq -I=0 '.default_site' /mnt/ddev_config/aljibe.yaml"
+  exit 0
+
+fi
+
 ## Get all theme paths and return each line.
 if [ "$KEY" == "theme_paths" ]; then
   readarray theme_paths < <(ddev exec "yq -I=0 '.theme_paths[]' /mnt/ddev_config/aljibe.yaml")

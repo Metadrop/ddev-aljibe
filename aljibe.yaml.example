@@ -27,3 +27,7 @@ theme_paths:
 #   post_setup:
 #     - echo "Aljibe post setup hook"
 #     - ddev drush uli --uid=2
+##
+hooks:
+  pre_setup: []
+  post_setup: []
