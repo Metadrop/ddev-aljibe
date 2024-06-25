@@ -18,4 +18,5 @@ post_install_actions:
      ddev get Metadrop/ddev-lighthouse
      ddev get Metadrop/ddev-selenium
      ddev get Metadrop/ddev-pa11y
-     ddev get ../ddev-addons/ddev-aljibe-assistant
+     ddev get Metadrop/ddev-aljibe-assistant
+  - test -f aljibe.yaml || cp aljibe.yaml.example aljibe.yaml
