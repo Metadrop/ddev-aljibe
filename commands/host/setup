@@ -2,12 +2,14 @@
 #ddev-generated
 ## Description: Configure environment and optionally install sites
 ## Usage: setup [flags]
-## Flags: [{"Name":"noinstall","Usage":"setup --noinstall"}]
-## Example: ddev setup --noinstall
+## Example: ddev setup --no-install
 
 # Initialize our own variables
 NO_INSTALL=0
 NO_THEMES=0
+
+## Project must be running to run this command
+ddev start || exit 1
 
 CONFIG_DEFAULT_SITE=$(ddev aljibe-config default_site)
 if [ "$CONFIG_DEFAULT_SITE" == 'null' ]; then
@@ -22,20 +24,27 @@ THEMES=()
 OPTIND=1         # Reset in case getopts has been used previously in the shell.
 
 help() {
-echo "Usage: $0 [options]"
+echo "Usage: ddev setup [options]"
   echo
   echo "Options:"
   echo "  -h, --help        Show this help message and exit"
+  echo "  -a, --all         Install all sites"
+  echo "  -f, --no-themes   Do not process themes"
   echo "  -n, --no-install  Do not install sites"
   echo "  -s, --sites       Install specific sites"
-  echo "  -a, --all         Install all sites"
-  echo "  -v, --verbose     Show verbose output"
+  echo "  -t, --themes      Only process specified themes"
+  echo "  -v, --verbose     Show verbose output disabling parallel theme processing"
+  echo
+  echo "Examples:"
+  echo "  ddev setup -a -v          Install all sites with verbose output"
+  echo "  ddev setup -n -f          Do not install sites and do not process themes"
+  echo "  ddev setup -s=site1,site2 Install specific sites (site1 and site2)"
+  echo "  ddev setup -t=theme1      Only process specified theme (theme1)"
   exit 0
 }
 
-
 has_argument() {
-    [[ ("$1" == *=* && -n ${1#*=}) || ( ! -z "$2" && "$2" != -*)  ]];
+    [[ ("$1" == *=* && -n ${1#*=}) || ( -n "$2" && "$2" != -*)  ]];
 }
 
 extract_argument() {
@@ -55,13 +64,12 @@ handle_options() {
         ;;
       -h | --help)
         help
-        shift
         ;;
       -n | --no-install)
         NO_INSTALL=1
         shift
         ;;
-      --no-themes)
+      -f | --no-themes)
         NO_THEMES=1
         shift
         ;;
@@ -74,20 +82,20 @@ handle_options() {
             echo "Sites not specified." >&2
             exit 0
           fi
-          IFS=',' read -a SITES <<< "$2"
+          IFS=',' read -ar SITES <<< "$2"
           shift 2
         fi
         ;;
       -t | --themes*)
         if [[ $1 == *=* ]]; then
-          IFS=',' read -a THEMES <<< "$(extract_argument "$1")"
+          IFS=',' read -ar THEMES <<< "$(extract_argument "$1")"
           shift
         else
           if [ -z "$2" ]; then
             echo "Themes not specified." >&2
             exit 0
           fi
-          IFS=',' read -a THEMES <<< "$2"
+          IFS=',' read -ar THEMES <<< "$2"
           shift 2
         fi
         ;;
@@ -108,29 +116,31 @@ handle_options "$@"
 
 # Launch pre setup hooks
 readarray -t PRE_SETUP_CMDS < <(ddev aljibe-config hooks.pre_setup)
-for cmd in "${PRE_SETUP_CMDS[@]}"; do
-  [ "$cmd" == "null" ] || eval "$(echo "$cmd" | sed "s/'/\\\'/g" | sed 's/"/\\"/g')"
-done
+if [ ${#PRE_SETUP_CMDS[@]} -gt 0 ]; then
+  echo
+  echo -e "\033[32mRunning PRE SETUP commands (defined in .ddev/aljibe.yml): \033[0m\n"
+  for cmd in "${PRE_SETUP_CMDS[@]}"; do
+     echo "- running $cmd ... "
+     eval "$cmd"
+  done
+  echo -e "\033[32m\nPRE SETUP commands finished\n"
+fi
 
-
-
-# Initialice local environment
 ddev composer install || exit 1
 ddev exec vendor/bin/grumphp git:init
 
-## Building frontend theme
+# Building frontend theme
 if [ "$NO_THEMES" -eq 0 ]; then
-  echo -e "\033[32m\n########################################################\n"
-  echo -e "\033[32mBuilding frontend themes \n"
-  echo -e "\033[32m########################################################\033[0m\n"
+  echo
+  echo -e "\033[32mBuilding frontend themes: \033[0m\n"
   if [ ${#THEMES[@]} -eq 0 ]; then
-    readarray -t THEMES < <(ddev aljibe-config theme_paths_keys)
+    readarray -t THEMES < <(ddev aljibe-config theme_paths --keys)
   fi
-
   if [ ${#THEMES[@]} -eq 0 ]; then
-    echo "No themes found."
+    echo "No themes found, any theme will be processed. If there should be any theme processed, please add them to aljibe.yml"
+  elif [ ${#THEMES[@]} -eq 1 ]; then
+    ddev frontend production "${THEMES[0]}"
   else
-     # Start the SPINNER in the background
     for theme in "${THEMES[@]}"; do
       echo -e "\033[32mBuilding theme:\033[32;1m ${theme}\033[0m"
       if [ $VERBOSE -eq 1 ]; then
@@ -141,40 +151,25 @@ if [ "$NO_THEMES" -eq 0 ]; then
     done
   fi
   [ $VERBOSE -eq 0 ] && wait $!
-
 fi
 
-ADDITIONAL_HOSTNAMES=""
-
-# Check if --no-install option is not provided
+# Try to install sites if not --no-install is given
 if [ "$NO_INSTALL" -eq 0 ]; then
     for SITE in "${SITES[@]}"; do
-        if [ "$ADDITIONAL_HOSTNAMES" != "default" ]; then
-          if [ "$ADDITIONAL_HOSTNAMES" == "" ]; then
-            ADDITIONAL_HOSTNAMES="${SITE}"
-          else
-            ADDITIONAL_HOSTNAMES="${ADDITIONAL_HOSTNAMES},${SITE}"
-          fi
-        fi
-        echo -e "\033[32m\n########################################################\n"
-        echo -e "\033[32mInstalling site:\033[32;1m ${SITE}\n"
-        echo -e "\033[32;2m########################################################\033[0m\n"
-
-        ddev site-install $SITE
+        echo
+        echo -e "\033[32mInstalling site: ${SITE}  \033[0m\n"
+        ddev site-install "$SITE"
     done
 fi
 
-if [ "$ADDITIONAL_HOSTNAMES" != "" ]; then
-  echo "Make sure that you have those additional hostnames added to your .ddev/config.yml file:"
-  echo "additional_hostnames: [${ADDITIONAL_HOSTNAMES}]"
-fi
-
 # Launch post setup hooks
-# Launch pre setup hooks
 readarray -t POST_SETUP_CMDS < <(ddev aljibe-config hooks.post_setup)
-for cmd in "${POST_SETUP_CMDS[@]}"; do
-  cmd=${cmd#\'}
-  cmd=${cmd%\'}
-  eval "$cmd"
-#  [ "$cmd" == "null" ] || eval "$(echo "$cmd" | sed "s/'/\\\'/g" | sed 's/"/\\"/g')"
-done
+if [ ${#POST_SETUP_CMDS[@]} -gt 0 ]; then
+  echo
+  echo -e "\033[32mRunning POST SETUP commands (defined in .ddev/aljibe.yml): \033[0m\n"
+  for cmd in "${POST_SETUP_CMDS[@]}"; do
+     echo "- running $cmd ... "
+     eval "$cmd"
+  done
+  echo -e "\033[32m\nPOST SETUP commands finished\n"
+fi

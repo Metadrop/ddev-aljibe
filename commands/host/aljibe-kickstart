@@ -6,12 +6,31 @@
 ## Example: ddev aljibe-kickstart
 
 
-echo "This will copy the Aljibe kickstart files to the project root and overwrite any existing files. Do you want to continue? [Y/n]"
-read CONFIRMATION
-if [ "$CONFIRMATION_GIT" != "n" ]; then
+AUTO_CONFIRM=false
+
+while (( "$#" )); do
+  case "$1" in
+    -y|--yes)
+      AUTO_CONFIRM=true
+      shift
+      ;;
+    *)
+      shift
+      ;;
+  esac
+done
+
+if [ "$AUTO_CONFIRM" = true ]; then
+    CONFIRMATION=y
+else
+    echo "This will copy the Aljibe kickstart files to the project root and overwrite any existing files. Do you want to continue? [Y/n]"
+    read CONFIRMATION
+fi
+
+if [ "$CONFIRMATION" != "n" ]; then
     cp -rTf ${DDEV_APPROOT}/.ddev/aljibe-kickstart ${DDEV_APPROOT}
     rm -fR ${DDEV_APPROOT}/.ddev/aljibe-kickstart
-    ddev config --project-type=drupal10 --docroot=web
+    ddev config --project-type=drupal --docroot=web
     echo "Kickstart files have been copied."
 else
     echo "Operation cancelled."

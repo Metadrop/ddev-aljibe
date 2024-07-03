@@ -1,0 +1,23 @@
+#!/bin/bash
+#ddev-generated
+## Description: Syncs search api config with Solr service (ddev/ddev-solr ddev addon and search_api_solr_admin Drupal module required)
+## Usage: solr-sync <solr_server>
+## Example: ddev solr-sync solr
+
+
+if [ -z "$1" ]; then
+  echo "Please provide the Solr server name as the first argument."
+  exit 1
+fi
+
+if ! ddev get --installed | grep -q "ddev/ddev-solr"; then
+  echo "ddev-solr addon is not installed. Please install it to sync Solr config."
+  exit 1
+fi
+
+if ddev drush pm:list --status=enabled --filter=search_api_solr_admin --format=list | grep -q 'search_api_solr_admin'; then
+  ddev drush --numShards=1 search-api-solr:upload-configset $1
+  ddev drush search-api-solr:reload $1
+else
+  echo "search_api_solr_admin module is not enabled. Please enable it to sync Solr config."
+fi

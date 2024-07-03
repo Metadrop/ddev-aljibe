@@ -8,43 +8,71 @@
 
 KEY=$1
 
-if [ ! -f .ddev/aljibe.yaml ]; then
-  echo "Aljibe config file not found"
-  exit 1
+CONFIG_FILE=".ddev/aljibe.yaml"
+RETURN_KEYS=0
+
+if [ ! -f $CONFIG_FILE ]; then
+    echo "Aljibe config file not found"
+    exit 1
 fi
 
-## Get default site
-if [ "$KEY" == "default_site" ]; then
-  ddev exec "yq -I=0 '.default_site' /mnt/ddev_config/aljibe.yaml"
-  exit 0
-
-fi
-
-## Get all theme paths and return each line.
-if [ "$KEY" == "theme_paths" ]; then
-  readarray theme_paths < <(ddev exec "yq -I=0 '.theme_paths[]' /mnt/ddev_config/aljibe.yaml")
-  for theme_path in "${theme_paths[@]}"; do
-      echo -n "$theme_path"
-  done
-  exit 0
-fi
-
-## Get all theme paths keys and return each line.
-if [ "$KEY" == "theme_paths_keys" ]; then
-  readarray theme_paths < <(ddev exec "yq -I=0 '.theme_paths[]' /mnt/ddev_config/aljibe.yaml")
-  if [ ${#theme_paths[@]} -eq 0 ]; then
-    exit
-  fi
-  readarray theme_paths_keys < <(ddev exec "yq -I=0 '.theme_paths | keys' /mnt/ddev_config/aljibe.yaml || true" )
-  for key in "${theme_paths_keys[@]}"; do
-      echo -n "$key" | sed 's/^- //'
-  done
-  exit
-fi
-
-## Return other keys
 if [ -z "$KEY" ]; then
-  ddev exec yq -os /mnt/ddev_config/aljibe.yaml
-else
-  ddev exec yq ".$KEY" -os /mnt/ddev_config/aljibe.yaml | sed 's/^.*=//'
+    echo "Please provide a config key"
+    exit 1
 fi
+
+
+handle_options() {
+  while [ $# -gt 0 ]; do
+    case $1 in
+      -k | --keys)
+        RETURN_KEYS=1
+        shift
+        ;;
+    esac
+    shift
+  done
+}
+
+# Main script execution
+handle_options "$@"
+
+readConfigFile () {
+  ddev exec "yq -I=0 '.${1} // \"\"' /mnt/ddev_config/aljibe.yaml" || echo
+}
+
+TYPE=$(readConfigFile "$1 | kind")
+
+readArray () {
+  if [ $RETURN_KEYS -eq 1 ]; then
+    readarray theme_paths_keys < <(readConfigFile "$1 | keys")
+    for key in "${theme_paths_keys[@]}"; do
+        echo -n "$key" | sed 's/^- //'
+    done
+    return
+  else
+    readarray theme_paths < <(readConfigFile "$1[]")
+    for theme_path in "${theme_paths[@]}"; do
+        echo -n "$theme_path"
+    done
+  fi
+}
+
+readScalar () {
+  readConfigFile "$1"
+}
+
+case $TYPE in
+  "scalar")
+    readScalar "$KEY"
+    ;;
+  "seq")
+    readArray "$KEY"
+    ;;
+  "map")
+    readArray "$KEY"
+    ;;
+  *)
+    readScalar "$KEY"
+    ;;
+esac

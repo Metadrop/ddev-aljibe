@@ -6,4 +6,6 @@
 ## Usage: create-database [db-name]
 ## Example: ddev create-database another_db
 
-mysql -uroot -proot -hdb -e "CREATE DATABASE IF NOT EXISTS $1; GRANT ALL ON $1.* TO 'db'@'%';"
+mysql -uroot -proot -hdb -e "CREATE DATABASE IF NOT EXISTS $1; GRANT ALL ON $1.* TO 'db'@'%';" || exit 1
+
+echo "Database $1 created and user 'db' granted access to it."
