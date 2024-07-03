@@ -8,27 +8,29 @@ DDEV Aljibe (ddev-aljibe) is an addon for DDEV that enables the installation of 
 
 ## Creating a new project
 
-1. Create a folder for your new project (e.g. `mkdir my-new-project`)
-2. Configure a basic ddev project:
+Create a folder for your new project (e.g. `mkdir my-new-project`)
+Configure a basic ddev project:
 
     ddev config --auto
+   
 
-3. Install the Aljibe addon. This will install all the dependant addons too:
+Install the Aljibe addon. This will install all the dependant addons too:
 
     ddev get metadrop/ddev-aljibe
 
-4. Finally launch Aljibe Assistant. This will guide you throught the basic Drupal site instalation process:
+Launch Aljibe Assistant. This will guide you throught the basic Drupal site instalation process:
 
     ddev aljibe-assistant
 
-Once this process is finished, you will have a new Drupal project based on Aljibe ready for development.
+You are ready! you will have a new Drupal project based on Aljibe ready for development.
+
 
 ## Other Aljibe commands
 
 #### Project setup 
 Once the project has been created and uploaded to version control, anyone else working with it can clone it and with the following command you can have the project ready to work with.
 
-    ddev setup
+    ddev setup [--all] [--no-install] [--no-themes]
 
 #### Unique site install (Multisite)
 If you have a multisite instalation, you can install only one site by running:
