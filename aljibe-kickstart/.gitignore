@@ -80,6 +80,6 @@ deploy-artifact
 
 # DDEV
 /.ddev/docker-compose.ci.yaml
-settings.ddev.site
+settings.ddev.php
 
 aljibe-kickstart
