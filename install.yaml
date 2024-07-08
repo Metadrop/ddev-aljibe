@@ -1,22 +1,17 @@
 name: aljibe
 description:
 project_files:
- - aljibe-kickstart
  - commands
+ - scripts
+ - aljibe-kickstart
+ - aljibe.yaml.example
  - site-profiles
  - web-build
- - aljibe.yaml.example
 
 post_install_actions:
 # Auto install disabled by default
 #   - |
 #     ddev aljibe-kickstart
-  - |
-     ddev get ddev/ddev-adminer
-     ddev get Metadrop/ddev-mkdocs
-     ddev get Metadrop/ddev-backstopjs
-     ddev get Metadrop/ddev-lighthouse
-     ddev get Metadrop/ddev-selenium
-     ddev get Metadrop/ddev-pa11y
-     ddev get Metadrop/ddev-aljibe-assistant
+
+  - ./scripts/install-dependencies.sh
   - test -f aljibe.yaml || cp aljibe.yaml.example aljibe.yaml
