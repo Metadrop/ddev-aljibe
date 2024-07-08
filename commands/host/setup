@@ -17,7 +17,7 @@ if [ "$CONFIG_DEFAULT_SITE" == 'null' ]; then
 else
   SITES=("$CONFIG_DEFAULT_SITE")
 fi
-VERBOSE=0
+
 THEMES=()
 
 # A POSIX variable
@@ -33,10 +33,9 @@ echo "Usage: ddev setup [options]"
   echo "  -n, --no-install  Do not install sites"
   echo "  -s, --sites       Install specific sites"
   echo "  -t, --themes      Only process specified themes"
-  echo "  -v, --verbose     Show verbose output disabling parallel theme processing"
   echo
   echo "Examples:"
-  echo "  ddev setup -a -v          Install all sites with verbose output"
+  echo "  ddev setup -a          Install all sites"
   echo "  ddev setup -n -f          Do not install sites and do not process themes"
   echo "  ddev setup -s=site1,site2 Install specific sites (site1 and site2)"
   echo "  ddev setup -t=theme1      Only process specified theme (theme1)"
@@ -99,10 +98,6 @@ handle_options() {
           shift 2
         fi
         ;;
-      -v | --verbose)
-        VERBOSE=1
-        shift
-        ;;
       *)
         echo "Invalid option: $1" >&2
         exit 0
@@ -143,14 +138,9 @@ if [ "$NO_THEMES" -eq 0 ]; then
   else
     for theme in "${THEMES[@]}"; do
       echo -e "\033[32mBuilding theme:\033[32;1m ${theme}\033[0m"
-      if [ $VERBOSE -eq 1 ]; then
-        ddev frontend production "$theme"
-      else
-        ddev frontend production "$theme" &> /dev/null &
-      fi
+      ddev frontend production "$theme"
     done
   fi
-  [ $VERBOSE -eq 0 ] && wait $!
 fi
 
 # Try to install sites if not --no-install is given
