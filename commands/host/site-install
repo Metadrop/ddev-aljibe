@@ -41,6 +41,25 @@ else
     fi
     ddev create-database db_${DBNAME} || exit 1
   fi
+
+  # Take care of redis settings if needed
+  if [ -f ${DDEV_DOCROOT}/sites/default/settings.ddev.redis.php ]; then
+    cp ${DDEV_DOCROOT}/sites/default/settings.ddev.redis.php ${DDEV_DOCROOT}/${SITE_PATH}/settings.ddev.redis.php
+
+    SETTINGS_FILE_NAME="${DDEV_DOCROOT}/${SITE_PATH}/settings.php"
+    if grep "Include settings required for Redis cache" $SETTINGS_FILE_NAME; then
+      echo "Settings file already includes settings.ddev.redis.php"
+    else
+      echo "Settings file name: ${SETTINGS_FILE_NAME}"
+      grep -qF 'settings.ddev.redis.php' $SETTINGS_FILE_NAME || echo "
+      // Include settings required for Redis cache.
+      if ((file_exists(__DIR__ . '/settings.ddev.redis.php') && getenv('IS_DDEV_PROJECT') == 'true')) {
+        include __DIR__ . '/settings.ddev.redis.php';
+      }" >> $SETTINGS_FILE_NAME
+    fi
+  fi
+
+
   cp ${DDEV_DOCROOT}/${SITE_PATH}/example.settings.local.php ${DDEV_DOCROOT}/${SITE_PATH}/settings.local.php
   cp ${DDEV_DOCROOT}/${SITE_PATH}/example.local.drush.yml ${DDEV_DOCROOT}/${SITE_PATH}/local.drush.yml
 
@@ -63,5 +82,3 @@ else
 
   ddev drush @${SITE_ALIAS} uli || true
 fi
-
-
