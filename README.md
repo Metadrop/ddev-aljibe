@@ -74,3 +74,14 @@ mkcert -install
 
 
 [More information](https://ddev.com/blog/ddev-local-trusted-https-certificates/)
+
+### Can't debug with NetBeans
+Until https://github.com/apache/netbeans/issues/7562 is solved you need to create a file named `xdebug.ini` at `.ddev/php` with the following content:
+```
+[XDebug]
+xdebug.idekey = netbeans-xdebug
+```
+NOTE: The `netbeans-xdebug` is the default Session ID value in the the Debugging tab in the PHP Netbeans' configuration dialog. If you have changed it do it in the `xdebug.ini` file as well.
+
+
+
