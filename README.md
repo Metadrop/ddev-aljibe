@@ -15,7 +15,7 @@ Aljibe sits on top of DDEV and adds some containers, configuration and commands 
   - Pa11y: Accesibility checks
   - MkDocs: Documentation wiki
   - And more...
-  - 
+    
 
 ## Requirements
 - [DDEV](https://ddev.readthedocs.io/en/stable/) 1.23.1 or higher
