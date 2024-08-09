@@ -33,10 +33,6 @@ Install the Aljibe addon. This will install all the dependant addons too:
 
     ddev get metadrop/ddev-aljibe
 
-Prepare project files with kickstart:
-
-    ddev aljibe-kickstart -y
-
 Launch Aljibe Assistant. This will guide you throught the basic Drupal site instalation process:
 
     ddev aljibe-assistant
