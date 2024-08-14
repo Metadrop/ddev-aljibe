@@ -79,7 +79,7 @@ If you use ddev-solr addon and need to sync the solr config from the server, you
     ddev solr-sync
 
 ## Troubleshooting
-   - WIP
+
 ### Https not working
 
 It is needed to install mkcert and libnss3-tools, and then run:
