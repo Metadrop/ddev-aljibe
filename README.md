@@ -98,5 +98,18 @@ xdebug.idekey = netbeans-xdebug
 ```
 NOTE: The `netbeans-xdebug` is the default Session ID value in the the Debugging tab in the PHP Netbeans' configuration dialog. If you have changed it do it in the `xdebug.ini` file as well.
 
+### Xdebug profiler does not save the files
 
+Follow the instructions from [ddev xprofiler documentation](https://ddev.readthedocs.io/en/stable/users/debugging-profiling/xdebug-profiling/#basic-usage)
 
+```
+[XDebug]
+xdebug.mode=profile
+xdebug.start_with_request=yes
+# Set a ddev shared folder for the xprofile reports.
+xdebug.output_dir=/var/www/html/tmp/xprofile
+xdebug.profiler_output_name=trace.%c%p%r%u.out
+
+```
+
+Review the php info (/admin/reports/status/php) page to review that the xdebug variables are setup properly after run ddev xdebug on, restart the project if necessary.
