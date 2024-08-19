@@ -5,8 +5,15 @@
 ## Example: ddev behat
 
 FOLDER=${1:-local}
-PROFILE=${2:+"--profile=$2"}
-PROFILE=${PROFILE:-""}
-ARGS=${*:3}
+ARGS=${*:2}
 
-behat --colors $PROFILE --config=/var/www/html/tests/behat/$FOLDER/behat.yml $ARGS
+# Behat command warning
+if [ -n "$2" ]; then
+  if [[ "$2" != -* ]]; then
+    echo -e "\e[41m\e[97m** \e[1mWarning!!\e[0m\e[41m\e[97m looks like the second parámeter is not a behat option. Since Aljibe 0.2.2, profile is not longer the second parámeter.\e[0m\n"
+    echo -e "\e[41m\e[97m** \e[1mExample:\e[0m\e[41m\e[97m ddev behat local --profile=default\e[0m"
+    exit 1
+  fi
+fi
+
+behat --colors --config=/var/www/html/tests/behat/$FOLDER/behat.yml $ARGS
