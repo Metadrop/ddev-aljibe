@@ -83,4 +83,8 @@ deploy-artifact
 example.settings.local.php
 settings.ddev.php
 
+# Aljibe
 aljibe-kickstart
+
+# mkdocs
+docs/site
