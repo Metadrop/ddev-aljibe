@@ -4,12 +4,15 @@
 ## Usage: setup [flags]
 ## Example: ddev setup --no-install
 
+# Include the ddev_checks script
+source "$(dirname "$0")/includes/aljibe_includes"
+
 # Initialize our own variables
 NO_INSTALL=0
 NO_THEMES=0
 
 ## Project must be running to run this command
-ddev start || exit 1
+star_project
 
 CONFIG_DEFAULT_SITE=$(ddev aljibe-config default_site)
 if [ "$CONFIG_DEFAULT_SITE" == 'null' ]; then
@@ -42,18 +45,6 @@ echo "Usage: ddev setup [options]"
   exit 0
 }
 
-has_argument() {
-    [[ ("$1" == *=* && -n ${1#*=}) || ( -n "$2" && "$2" != -*)  ]];
-}
-
-extract_argument() {
-  if [[ $1 == *=* ]]; then
-    echo "${1#*=}"
-  else
-    echo "$2"
-  fi
-}
-
 handle_options() {
   while [ $# -gt 0 ]; do
     case $1 in
@@ -72,7 +63,7 @@ handle_options() {
         NO_THEMES=1
         shift
         ;;
-      -s | --sites*)
+      -s* | --sites*)
         if [[ $1 == *=* ]]; then
           IFS=',' read -a SITES <<< "$(extract_argument "$1")"
           shift
@@ -85,7 +76,7 @@ handle_options() {
           shift 2
         fi
         ;;
-      -t | --themes*)
+      -t* | --themes*)
         if [[ $1 == *=* ]]; then
           IFS=',' read -ar THEMES <<< "$(extract_argument "$1")"
           shift
@@ -110,17 +101,12 @@ handle_options() {
 handle_options "$@"
 
 # Launch pre setup hooks
-readarray -t PRE_SETUP_CMDS < <(ddev aljibe-config hooks.pre_setup)
-if [ ${#PRE_SETUP_CMDS[@]} -gt 0 ]; then
-  echo
-  echo -e "\033[32mRunning PRE SETUP commands (defined in .ddev/aljibe.yml): \033[0m\n"
-  for cmd in "${PRE_SETUP_CMDS[@]}"; do
-     echo "- running $cmd ... "
-     eval "$cmd"
-  done
-  echo -e "\033[32m\nPRE SETUP commands finished\n"
-fi
+echo -e "\033[32mRunning PRE SETUP commands (defined in .ddev/aljibe.yml): \033[0m\n"
+readarray -t CMDS < <(ddev aljibe-config hooks.pre_setup)
+run_commands "${CMDS[@]}"
+echo -e "\033[32m\nPRE SETUP commands finished\n"
 
+# Prepare Drupal and dev environment
 ddev composer install || exit 1
 ddev exec vendor/bin/grumphp git:init
 
@@ -153,13 +139,7 @@ if [ "$NO_INSTALL" -eq 0 ]; then
 fi
 
 # Launch post setup hooks
-readarray -t POST_SETUP_CMDS < <(ddev aljibe-config hooks.post_setup)
-if [ ${#POST_SETUP_CMDS[@]} -gt 0 ]; then
-  echo
-  echo -e "\033[32mRunning POST SETUP commands (defined in .ddev/aljibe.yml): \033[0m\n"
-  for cmd in "${POST_SETUP_CMDS[@]}"; do
-     echo "- running $cmd ... "
-     eval "$cmd"
-  done
-  echo -e "\033[32m\nPOST SETUP commands finished\n"
-fi
+echo -e "\033[32mRunning POST SETUP commands (defined in .ddev/aljibe.yml): \033[0m\n"
+readarray -t CMDS < <(ddev aljibe-config hooks.post_setup)
+run_commands "${CMDS[@]}"
+echo -e "\033[32m\nPOST SETUP commands finished\n"

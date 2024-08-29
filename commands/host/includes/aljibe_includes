@@ -1,0 +1,37 @@
+#!/bin/bash
+#ddev-generated
+
+## Check if a project is running. If it is not, start it.
+star_project() {
+  if [ "${DDEV_PROJECT_STATUS}" != "running" ] && [ -z "$no_recursion" ]; then
+      echo "Project ${DDEV_PROJECT} is not running, starting it"
+      ddev start
+  fi
+}
+
+## Helps checking if there are arguments in the command
+has_argument() {
+  [[ ("$1" == *=* && -n ${1#*=}) || ( -n "$2" && "$2" != -*) ]];
+}
+
+## Extracts the argument from the command
+extract_argument() {
+  if [[ $1 == *=* ]]; then
+    echo "${1#*=}"
+  else
+    echo "$2"
+  fi
+}
+
+run_commands() {
+  local CMDS=("$@")
+  if [ ${#CMDS[@]} -gt 0 ]; then
+    echo
+    echo -e "\033[32mRunning commands: \033[0m\n"
+    for cmd in "${CMDS[@]}"; do
+      echo "- running $cmd ... "
+      eval "$cmd"
+    done
+    echo -e "\033[32m\nCommands finished\n"
+  fi
+}

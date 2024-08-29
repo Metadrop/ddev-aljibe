@@ -3,6 +3,13 @@
 ## Description: Install given drupal site
 ## Usage: site-install
 ## Example: ddev site-install default
+
+# Include the ddev_checks script
+source "$(dirname "$0")/includes/aljibe_includes"
+
+## Project must be running to run this command
+star_project
+
 SITE_PROFILES_FILE=".ddev/site-profiles"
 SITE=${1:-'self'}
 ENV=${2:-'local'}
@@ -58,7 +65,6 @@ else
       }" >> $SETTINGS_FILE_NAME
     fi
   fi
-
 
   cp ${DDEV_DOCROOT}/${SITE_PATH}/example.settings.local.php ${DDEV_DOCROOT}/${SITE_PATH}/settings.local.php
   cp ${DDEV_DOCROOT}/${SITE_PATH}/example.local.drush.yml ${DDEV_DOCROOT}/${SITE_PATH}/local.drush.yml
