@@ -26,7 +26,6 @@ extract_argument() {
 run_commands() {
   local CMDS=("$@")
   if [ ${#CMDS[@]} -gt 0 ]; then
-    echo
     echo -e "\033[32mRunning commands: \033[0m\n"
     for cmd in "${CMDS[@]}"; do
       echo "- running $cmd ... "
