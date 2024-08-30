@@ -10,95 +10,77 @@ source "$(dirname "$0")/includes/aljibe_includes"
 # Initialize our own variables
 NO_INSTALL=0
 NO_THEMES=0
+SITES=()
+THEMES=()
 
 ## Project must be running to run this command
 star_project
-
-CONFIG_DEFAULT_SITE=$(ddev aljibe-config default_site)
-if [ "$CONFIG_DEFAULT_SITE" == 'null' ]; then
-  SITES=('self')
-else
-  SITES=("$CONFIG_DEFAULT_SITE")
-fi
-
-THEMES=()
-
-# A POSIX variable
-OPTIND=1         # Reset in case getopts has been used previously in the shell.
 
 help() {
 echo "Usage: ddev setup [options]"
   echo
   echo "Options:"
-  echo "  -h, --help        Show this help message and exit"
-  echo "  -a, --all         Install all sites"
-  echo "  -f, --no-themes   Do not process themes"
-  echo "  -n, --no-install  Do not install sites"
-  echo "  -s, --sites       Install specific sites"
-  echo "  -t, --themes      Only process specified themes"
+  echo "  -h, --help                       Show this help message and exit"
+  echo "  -a, --all                        Install all sites"
+  echo "  -f, --no-themes                  Do not process themes"
+  echo "  -n, --no-install                 Do not install sites"
+  echo "  -s, --sites <site1,site2>        Install specific sites"
+  echo "  -t, --themes <theme1,theme2>     Only process specified themes"
   echo
   echo "Examples:"
-  echo "  ddev setup -a          Install all sites"
-  echo "  ddev setup -n -f          Do not install sites and do not process themes"
-  echo "  ddev setup -s=site1,site2 Install specific sites (site1 and site2)"
-  echo "  ddev setup -t=theme1      Only process specified theme (theme1)"
+  echo "  ddev setup -a                    Install all sites"
+  echo "  ddev setup -n -f                 Do not install sites and do not process themes"
+  echo "  ddev setup -s site1,site2        Install specific sites (site1 and site2)"
+  echo "  ddev setup -t theme1             Only process specified theme (theme1)"
   exit 0
 }
 
-handle_options() {
-  while [ $# -gt 0 ]; do
-    case $1 in
-      -a | --all)
-        mapfile -t SITES < <(drush site:alias --fields=name --format=list --filter=.local | sed 's/@//' | sed 's/.local//')
-        shift
-        ;;
-      -h | --help)
-        help
-        ;;
-      -n | --no-install)
-        NO_INSTALL=1
-        shift
-        ;;
-      -f | --no-themes)
-        NO_THEMES=1
-        shift
-        ;;
-      -s* | --sites*)
-        if [[ $1 == *=* ]]; then
-          IFS=',' read -a SITES <<< "$(extract_argument "$1")"
-          shift
-        else
-          if [ -z "$2" ]; then
-            echo "Sites not specified." >&2
-            exit 0
-          fi
-          IFS=',' read -ar SITES <<< "$2"
-          shift 2
-        fi
-        ;;
-      -t* | --themes*)
-        if [[ $1 == *=* ]]; then
-          IFS=',' read -ar THEMES <<< "$(extract_argument "$1")"
-          shift
-        else
-          if [ -z "$2" ]; then
-            echo "Themes not specified." >&2
-            exit 0
-          fi
-          IFS=',' read -ar THEMES <<< "$2"
-          shift 2
-        fi
-        ;;
-      *)
-        echo "Invalid option: $1" >&2
-        exit 0
-        ;;
-    esac
-  done
-}
+options=$(getopt -o "ahnfs:t:" -l "all,help,no-install,no-themes,sites:,themes:" -- "$@")
 
-# Main script execution
-handle_options "$@"
+eval set -- "$options"
+
+while true; do
+  case "$1" in
+    -a | --all)
+      shift
+      mapfile -t SITES < <(drush site:alias --fields=name --format=list --filter=.local | sed 's/@//' | sed 's/.local//')
+      ;;
+    -f | --no-themes)
+      NO_THEMES=1
+      shift
+      ;;
+    -h|--help)
+      help
+      exit 0
+      ;;
+    -n | --no-install)
+      NO_INSTALL=1
+      shift
+      ;;
+    -s | --sites)
+      shift
+      IFS=',' read -a SITES <<< "$1"
+      ;;
+    -t | --themes)
+      shift
+      IFS=',' read -a THEMES <<< $1
+      ;;
+    --)
+      shift
+      break;;
+  esac
+shift
+done
+
+# If no sites provided, pick default one
+if [ -z "$SITES" ]; then
+  CONFIG_DEFAULT_SITE=$(ddev aljibe-config default_site)
+  if [ "$CONFIG_DEFAULT_SITE" == 'null' ]; then
+    SITES=('self')
+  else
+    SITES=("$CONFIG_DEFAULT_SITE")
+  fi
+fi
 
 # Launch pre setup hooks
 echo -e "\033[32mRunning PRE SETUP commands (defined in .ddev/aljibe.yml): \033[0m\n"
