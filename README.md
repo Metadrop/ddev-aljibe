@@ -1,3 +1,7 @@
+[![tests](https://github.com/Metadrop/ddev-aljibe/actions/workflows/tests.yml/badge.svg)](https://github.com/Metadrop/ddev-aljibe-assistant/actions/workflows/tests.yml)
+![GitHub Release](https://img.shields.io/github/v/release/Metadrop/ddev-aljibe)
+
+
 # DDEV Aljibe
 
 Aljibe (ddev-aljibe) is an add-on for DDEV for Drupal projects that adds several tools in a simple and fast way, leaving a new project ready for development in a few minutes.
