@@ -20,6 +20,19 @@ permissions:
   actions: write
 
 jobs:
+  code_quality:
+    strategy:
+      matrix:
+        ddev_version: [stable, HEAD]
+      fail-fast: false
+    runs-on: ubuntu-latest
+    steps:
+      - name: "Check out code"
+        uses: actions/checkout@v3
+      - name: "ShellChecker"
+        uses: a5k-actions/shellchecker@v0
+        with:
+          severity: error
   tests:
     strategy:
       matrix:
@@ -29,11 +42,8 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Run ShellCheck
-        uses: azohra/shell-linter@latest
-        with:
-          path: "scripts,commands"
-
+      - name: Action Setup Bash
+        uses: release-engineers/action-setup-bash@v1
       - uses: ddev/github-action-add-on-test@v2
         with:
           ddev_version: ${{ matrix.ddev_version }}
