@@ -14,5 +14,4 @@ post_install_actions:
 #     ddev aljibe-kickstart
 
   - ./scripts/install-dependencies.sh
-  - ./scripts/fix-adminer-norouter.sh
   - test -f aljibe.yaml || cp aljibe.yaml.example aljibe.yaml
