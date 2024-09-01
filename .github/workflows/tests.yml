@@ -2,7 +2,7 @@ name: tests
 on:
   pull_request:
   push:
-    branches: [ main ]
+    branches: [ main, develop ]
 
   schedule:
   - cron: '00 07 * * *'
@@ -36,7 +36,7 @@ jobs:
   tests:
     strategy:
       matrix:
-        ddev_version: [stable]
+        ddev_version: [stable,HEAD]
       fail-fast: false
 
     runs-on: ubuntu-latest
