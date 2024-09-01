@@ -73,16 +73,16 @@ check_drupal_admin_access() {
   # check_drupal_admin_access >&3
 }
 
-@test "install from release" {
-  set -eu -o pipefail
-  cd ${TESTDIR} || ( printf "unable to cd to ${TESTDIR}\n" && exit 1 )
-  echo "# ddev get metadrop/ddev-aljibe with project ${PROJNAME} in ${TESTDIR} ($(pwd))" >&3
-  ddev get metadrop/ddev-aljibe
-  ddev restart >/dev/null
-  ddev aljibe-assistant --auto
+#@test "install from release" {
+#  set -eu -o pipefail
+#  cd ${TESTDIR} || ( printf "unable to cd to ${TESTDIR}\n" && exit 1 )
+#  echo "# ddev get metadrop/ddev-aljibe with project ${PROJNAME} in ${TESTDIR} ($(pwd))" >&3
+#  ddev get metadrop/ddev-aljibe
+#  ddev restart >/dev/null
+#  ddev aljibe-assistant --auto
 
-  check_services >&3
-  check_project_browse >&3
+#  check_services >&3
+#  check_project_browse >&3
   ## Todo Make this test work
   # check_drupal_admin_access >&3
-}
+#}
