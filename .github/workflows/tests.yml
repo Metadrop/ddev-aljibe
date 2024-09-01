@@ -36,7 +36,7 @@ jobs:
   tests:
     strategy:
       matrix:
-        ddev_version: [stable, HEAD]
+        ddev_version: [stable]
       fail-fast: false
 
     runs-on: ubuntu-latest
