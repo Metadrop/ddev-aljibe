@@ -8,9 +8,6 @@ Aljibe (ddev-aljibe) is an add-on for DDEV for Drupal projects that adds several
 
 Aljibe sits on top of DDEV and adds some containers, configuration and commands to make the development of Drupal projects faster and easier.
 
-> [!WARNING]
-> Aljibe is still in Alpha stage!
-
 ## Included tools
 
   - Behat: BDD and Acceptance testig
