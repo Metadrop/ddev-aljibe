@@ -40,7 +40,9 @@ Launch Aljibe Assistant. This will guide you throught the basic Drupal site inst
 
 You are ready! you will have a new Drupal project based on Aljibe ready for development.
 
-## Transform project from boilerplate to ddev
+## Transform project from Metadrop Boilerplate to DDEV Aljibe
+
+DDEV Aljibe is a reimplementation of [Metadrop Boilerplate](https://github.com/Metadrop/drupal-boilerplate) on top of DDEV. If you want to port a Metadrop Boilerplate project into an DDEV Aljibe project follow this instructions:
 
 - Create folder ddev-addons, it will contain all ddev project necessary to build the ddev project:
 ```
