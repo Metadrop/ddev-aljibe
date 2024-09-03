@@ -49,16 +49,16 @@ mkdir ddev-addons
 - Clone [Aljibe assistant](https://gitlab.metadrop.net/metadrop-group/ddev-aljibe-assistant) and [Aljibe](https://gitlab.metadrop.net/metadrop-group/ddev-aljibe) on ddev-addons:
 
 ```
-     cd ddev-addons/
-     git clone git@gitlab.metadrop.net:metadrop-group/ddev-aljibe-assistant.git
-     git clone git@gitlab.metadrop.net:metadrop-group/ddev-aljibe.git   
+cd ddev-addons/
+git clone git@gitlab.metadrop.net:metadrop-group/ddev-aljibe-assistant.git
+git clone git@gitlab.metadrop.net:metadrop-group/ddev-aljibe.git   
 ```
 
 - Create a new folder to create the ddev project:
 
 ```
-     cd ../
-     mkdir my-new-project
+cd ../
+mkdir my-new-project
 ```
 
 - From the new folder run the following command:
@@ -76,70 +76,70 @@ ddev config --project-type=drupal10 --docroot 'web' --auto && ddev get ../ddev-a
 - Adapt the settings.php to include the settings.ddev.php:
 
 ```
-     // Automatically generated include for settings managed by ddev.
-     $ddev_settings = dirname(__FILE__) . '/settings.ddev.php';
-     if (getenv('IS_DDEV_PROJECT') == 'true' && is_readable($ddev_settings)) {
-     require $ddev_settings;
-     }
+// Automatically generated include for settings managed by ddev.
+$ddev_settings = dirname(__FILE__) . '/settings.ddev.php';
+if (getenv('IS_DDEV_PROJECT') == 'true' && is_readable($ddev_settings)) {
+require $ddev_settings;
+}
 ```
 
 - Remove from settings.local.php database, trusted host patterns and others that can conflict with settings.ddev.php.
 - Adapt the drush alias to the new url. Here's an example:
 
 ```
-    # Local environment
-    # BEGIN dev alias
-    local:
-      uri: 'https://yoursite.ddev.site'
-      root: '/var/www/html'
-    # END dev alias
+# Local environment
+# BEGIN dev alias
+local:
+  uri: 'https://yoursite.ddev.site'
+  root: '/var/www/html'
+# END dev alias
+
+# dev environment.
+# BEGIN dev alias
+dev:
+  uri: 'https://yoursite-dev'
+  root: 'yourserverpath'
+  host: 'yoursite-dev'
+  user: 'yourserveruser'
+  paths:
+    drush-script: 'yourserverpath/vendor/bin/drush'
+# END dev alias
     
-    # dev environment.
-    # BEGIN dev alias
-    dev:
-      uri: 'https://yoursite-dev'
-      root: 'yourserverpath'
-      host: 'yoursite-dev'
-      user: 'yourserveruser'
-      paths:
-        drush-script: 'yourserverpath/vendor/bin/drush'
-    # END dev alias
-        
-    # stg environment.
-    # BEGIN stg alias
-    stg:
-      uri: 'https://yoursite-stg'
-      root: 'yourserverpath'
-      host: 'yoursite-stg'
-      user: 'yourserveruser'
-      paths:
-        drush-script: 'yourserverpath/vendor/bin/drush'
-    # END stg alias
-    # BEGIN pro alias
-    pro:
-      uri: 'https://yoursite.com'
-      root:  'yourserverpath'
-      host: 'yoursite.com'
-      user: 'yourserveruser'
-      paths:
-        drush-script: 'yourserverpath/vendor/bin/drush'
-    # END pro alias
+# stg environment.
+# BEGIN stg alias
+stg:
+  uri: 'https://yoursite-stg'
+  root: 'yourserverpath'
+  host: 'yoursite-stg'
+  user: 'yourserveruser'
+  paths:
+    drush-script: 'yourserverpath/vendor/bin/drush'
+# END stg alias
+# BEGIN pro alias
+pro:
+  uri: 'https://yoursite.com'
+  root:  'yourserverpath'
+  host: 'yoursite.com'
+  user: 'yourserveruser'
+  paths:
+    drush-script: 'yourserverpath/vendor/bin/drush'
+# END pro alias
 ```
 
 - Update the **sites/default/local.drush.yml** with the new domain
 - Add the extra services (memcache, varnish, solr…)
 
 ```
-   # List the available services
-   ddev get list
-   # Get a service
-   ddev get ddev/ddev-memcached 
+# List the available services
+ddev get list
+# Get a service
+ddev get ddev/ddev-memcached 
 ```
 
 - Configure on .env variables as solr:
 
 ```
-   SOLR_CORENAME: default
+SOLR_CORENAME: default
 ```
 
 - Replace http://apache or http://nginx by http://web
@@ -149,8 +149,8 @@ mkcert --install
 ```
 - Add to config.yml to ddev the THEME_PATH:
     ```
-        web_environment:
-                - THEME_PATH=/var/www/html/web/themes/custom/your_theme
+    web_environment:
+            - THEME_PATH=/var/www/html/web/themes/custom/your_theme
     ```
 
     - Config also the nodejs_version with the same as the old project. Old version on .env file, variable **“NODE_TAG”**
@@ -268,19 +268,19 @@ To have this folder, we can do the following from the folder where we save the p
 
 1. Create the folder and got to that folder:
 ```
-  mkdir ddev-addons && cd ddev-addons
+mkdir ddev-addons && cd ddev-addons
 ```
 
 2. Clone the projects:
 ```
  
-        git clone git@gitlab.metadrop.net:metadrop-group/ddev-aljibe.git
-        git clone git@gitlab.metadrop.net:metadrop-group/ddev-aljibe-assistant.git
-        git clone git@github.com:Metadrop/ddev-backstopjs.git
-        git clone git@github.com:Metadrop/ddev-lighthouse.git
-        git clone git@github.com:Metadrop/ddev-mkdocs.git
-        git clone git@github.com:Metadrop/ddev-pa11y.git
-        git clone git@github.com:Metadrop/ddev-selenium.git   
+git clone git@gitlab.metadrop.net:metadrop-group/ddev-aljibe.git
+git clone git@gitlab.metadrop.net:metadrop-group/ddev-aljibe-assistant.git
+git clone git@github.com:Metadrop/ddev-backstopjs.git
+git clone git@github.com:Metadrop/ddev-lighthouse.git
+git clone git@github.com:Metadrop/ddev-mkdocs.git
+git clone git@github.com:Metadrop/ddev-pa11y.git
+git clone git@github.com:Metadrop/ddev-selenium.git   
     
 ```
 #### Installing Aljibe:
@@ -289,11 +289,11 @@ To launch ddev-aljibe, we must go to the test-aljibe folder, or to the folder wh
 
 1.  Configure a basic ddev project:
 ```
-  ddev config --auto 
+ddev config --auto 
 ```
 2. Install ddev-aljibe from local:
 ```
-  ddev get ../ddev-addons/ddev-aljibe
+ddev get ../ddev-addons/ddev-aljibe
 ```
 3. Launch the Aljibe assistant:
 ```
