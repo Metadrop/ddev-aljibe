@@ -9,9 +9,5 @@ project_files:
  - web-build
 
 post_install_actions:
-# Auto install disabled by default
-#   - |
-#     ddev aljibe-kickstart
-
   - ./scripts/install-dependencies.sh
   - test -f aljibe.yaml || cp aljibe.yaml.example aljibe.yaml
