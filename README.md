@@ -44,136 +44,27 @@ You are ready! you will have a new Drupal project based on Aljibe ready for deve
 
 DDEV Aljibe is a reimplementation of [Metadrop Boilerplate](https://github.com/Metadrop/drupal-boilerplate) on top of DDEV. If you want to port a Metadrop Boilerplate project into an DDEV Aljibe project follow this instructions:
 
-- Create folder ddev-addons, it will contain all ddev project necessary to build the ddev project:
-```
-mkdir ddev-addons
-```
-- Clone [Aljibe assistant](https://gitlab.metadrop.net/metadrop-group/ddev-aljibe-assistant) and [Aljibe](https://gitlab.metadrop.net/metadrop-group/ddev-aljibe) on ddev-addons:
+1. Clone the project without install it and remove all docker related files 
+2. Run basic ddev-config:
+	- `ddev config --auto`
+3. Install Aljibe:
+	- `ddev get metadrop/ddev-aljibe`
+4. Run again ddev config, but this time go throught the assistant to set project type to Drupal, docroot folder, etc...
+5. Edit .ddev/config.yml to fine tune the environment.
+6. Edit .ddev/aljibe.yml to set deault site name (the folder inside sites) and all themes to be transpiled
+7. update .gitignore to look like [this](https://github.com/Metadrop/ddev-aljibe/blob/main/aljibe-kickstart/.gitignore).
 
-```
-cd ddev-addons/
-git clone git@gitlab.metadrop.net:metadrop-group/ddev-aljibe-assistant.git
-git clone git@gitlab.metadrop.net:metadrop-group/ddev-aljibe.git   
-```
-
-- Create a new folder to create the ddev project:
-
-```
-cd ../
-mkdir my-new-project
-```
-
-- From the new folder run the following command:
-```
-ddev config --project-type=drupal10 --docroot 'web' --auto && ddev get ../ddev-addons/ddev-aljibe
-```
-- Remove the folder .ddev/aljibe-kickstart/
-- Clone the old project without install the site, to avoid folders like contrib modules/themes or vendor
-- Copy all the code from the old project to the new folder.
-- Create a new branch.
-- Add .ddev
-- Remove the .env file
-- Create an empty .env file on .ddev folder
-- Add settings.ddev*.php to .gitignore
-- Adapt the settings.php to include the settings.ddev.php:
-
-```
-// Automatically generated include for settings managed by ddev.
-$ddev_settings = dirname(__FILE__) . '/settings.ddev.php';
-if (getenv('IS_DDEV_PROJECT') == 'true' && is_readable($ddev_settings)) {
-require $ddev_settings;
-}
-```
+If you come from a boilerplate project:
 
 - Remove from settings.local.php database, trusted host patterns and others that can conflict with settings.ddev.php.
-- Adapt the drush alias to the new url. Here's an example:
-
-```
-# Local environment
-# BEGIN dev alias
-local:
-  uri: 'https://yoursite.ddev.site'
-  root: '/var/www/html'
-# END dev alias
-
-# dev environment.
-# BEGIN dev alias
-dev:
-  uri: 'https://yoursite-dev'
-  root: 'yourserverpath'
-  host: 'yoursite-dev'
-  user: 'yourserveruser'
-  paths:
-    drush-script: 'yourserverpath/vendor/bin/drush'
-# END dev alias
-    
-# stg environment.
-# BEGIN stg alias
-stg:
-  uri: 'https://yoursite-stg'
-  root: 'yourserverpath'
-  host: 'yoursite-stg'
-  user: 'yourserveruser'
-  paths:
-    drush-script: 'yourserverpath/vendor/bin/drush'
-# END stg alias
-# BEGIN pro alias
-pro:
-  uri: 'https://yoursite.com'
-  root:  'yourserverpath'
-  host: 'yoursite.com'
-  user: 'yourserveruser'
-  paths:
-    drush-script: 'yourserverpath/vendor/bin/drush'
-# END pro alias
-```
-
-- Update the **sites/default/local.drush.yml** with the new domain
-- Add the extra services (memcache, varnish, solr…)
-
-```
-# List the available services
-ddev get list
-# Get a service
-ddev get ddev/ddev-memcached 
-```
-
-- Configure on .env variables as solr:
-
-```
-SOLR_CORENAME: default
-```
-
-- Replace http://apache or http://nginx by http://web
-- Install certs, this only needs to be launched if after open the website on a browser says that the site is unsafe:
-```
-mkcert --install
-```
-- Add to config.yml to ddev the THEME_PATH:
-    ```
-    web_environment:
-            - THEME_PATH=/var/www/html/web/themes/custom/your_theme
-    ```
-
-    - Config also the nodejs_version with the same as the old project. Old version on .env file, variable **“NODE_TAG”**
-      Review the min node tag
-
-    ```
-    nodejs_version: "16"
-    ```
-- Config the theme and the sites on .ddev/aljibe.yaml:
-```
-theme_paths:
-  your_theme: /var/www/html/web/themes/custom/your_theme
-```
+- Adapt the drush alias to the new url.
+- Review tests folder structure as in aljibe, all tests (behat.yml included) are inside tests folder and replace http://apache or http://nginx by http://web.
+- Config also the nodejs_version in .ddev/config.yml with the same as the old project. Old version on .env file, variable **“NODE_TAG”**
 - Adapt grumphp changing EXEC_GRUMPHP_COMMAND on grumphp.yml to “ddev exec”
 - Launch ddev setup:
     - If monosite: `ddev setup`
     - If multisite:`ddev setup —all` or `ddev setup --sites=site1`
-    - If the site is not installed use `ddev drush -- si --existing-config -y`
-    - Or import an existing database: `ddev import-db --file=./tmp/db.sql.gz`
-- Ignore settings.ddev.php from .gitignore
-
+    
 ## Aljibe commands
 
 #### Project setup 
