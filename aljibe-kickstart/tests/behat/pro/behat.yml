@@ -11,6 +11,7 @@ default:
   suites:
     default:
       paths:
+        - "%paths.base%/../common/features/"
         - "%paths.base%/features/"
       filters:
         tags: "~@exclude"

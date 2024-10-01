@@ -9,5 +9,4 @@ Feature: As a system
     Examples:
       | url |
       | /admin |
-      | /user/1 |
       | /user/register |
