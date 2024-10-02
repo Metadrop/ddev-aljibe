@@ -90,7 +90,7 @@ else
     ddev_drush cr
     ddev_drush cim -y
     ddev_drush cr
-    run_hooks "ppst_site_install_config"
+    run_hooks "post_site_install_config"
   fi
   run_hooks "post_site_install"
   ddev status
