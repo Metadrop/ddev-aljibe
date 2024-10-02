@@ -1,7 +1,6 @@
 [![tests](https://github.com/Metadrop/ddev-aljibe/actions/workflows/tests.yml/badge.svg)](https://github.com/Metadrop/ddev-aljibe/actions/workflows/tests.yml) ![project is maintained](https://img.shields.io/maintenance/yes/2024.svg)
 ![GitHub Release](https://img.shields.io/github/v/release/Metadrop/ddev-aljibe)
 
-
 # DDEV Aljibe
 
 Aljibe (ddev-aljibe) is an add-on for DDEV for Drupal projects that adds several tools in a simple and fast way, leaving a new project ready for development in a few minutes.
@@ -12,7 +11,7 @@ Aljibe sits on top of DDEV and adds some containers, configuration and commands 
 
   - Behat: BDD and Acceptance testig
   - BackstopJS: Visual regression testing
-  - Lighthouse: Audit website quality
+  - Unlighthouse: Audit all website quality
   - Pa11y: Accesibility checks
   - MkDocs: Documentation wiki
   - And more...
@@ -22,13 +21,12 @@ Aljibe sits on top of DDEV and adds some containers, configuration and commands 
 - [DDEV](https://ddev.readthedocs.io/en/stable/) 1.23.1 or higher
 - [Docker](https://www.docker.com/) 24 or higher
 
-## Creating a new project
+## Starting a new project with Aljibe
 
 Create a folder for your new project (e.g. `mkdir my-new-project`)
 Configure a basic ddev project:
 
     ddev config --auto
-   
 
 Install the Aljibe addon. This will install all the dependant addons too:
 
@@ -38,7 +36,7 @@ Launch Aljibe Assistant. This will guide you throught the basic Drupal site inst
 
     ddev aljibe-assistant
 
-You are ready! you will have a new Drupal project based on Aljibe ready for development.
+You are ready! you will have a new Drupal project based on Aljibe ready for development!
 
 ## Migrate legacy projects to DDEV Aljibe
 
@@ -54,7 +52,7 @@ To transform a legacy project to Ddev Aljibe, the following steps must be follow
 6. Edit .ddev/aljibe.yml to set deault site name (the folder inside sites) and all themes to be transpiled
 7. update .gitignore to look like [this](https://github.com/Metadrop/ddev-aljibe/blob/main/aljibe-kickstart/.gitignore).
 
-If you come from a boilerplate project:
+If you come from a [boilerplate](https://github.com/Metadrop/drupal-boilerplate) project:
 
 - Remove from settings.local.php database, trusted host patterns and others that can conflict with settings.ddev.php.
 - Adapt the drush alias to the new url.
@@ -65,9 +63,9 @@ If you come from a boilerplate project:
     - If monosite: `ddev setup`
     - If multisite:`ddev setup —all` or `ddev setup --sites=site1`
     
-## Aljibe commands
+## Usage
 
-#### Project setup 
+#### Project setup in other machines 
 Once the project has been created and uploaded to version control, anyone else working with it can clone it and with the following command you can have the project ready to work with.
 
     ddev setup [--all] [--no-install] [--no-themes]
@@ -109,15 +107,12 @@ If you use ddev-solr addon and need to sync the solr config from the server, you
 
 ## Troubleshooting
 
-### Https not working
+### https not working
 
+Follow ddev [install recomendations](https://ddev.readthedocs.io/en/stable/users/install/ddev-installation/#linux). 
 It is needed to install mkcert and libnss3-tools, and then run:
 
-
-mkcert -install
-
-
-[More information](https://ddev.com/blog/ddev-local-trusted-https-certificates/)
+    mkcert -install
 
 ### Can't debug with NetBeans
 Until https://github.com/apache/netbeans/issues/7562 is solved you need to create a file named `xdebug.ini` at `.ddev/php` with the following content:
@@ -142,53 +137,3 @@ xdebug.profiler_output_name=trace.%c%p%r%u.out
 ```
 
 Review the php info (/admin/reports/status/php) page to review that the xdebug variables are setup properly after run ddev xdebug on, restart the project if necessary.
-
-## How to develop Aljibe
-
-To work on the development of Aljibe, if we do a lot of tests we can reach the limit of github, so it is convenient to have everything in local. For this we should have a structure like this:
-
-- tests-aljibe <- Here we test the creation of projects with the steps explained below. This folder can have any name you want.
-- ddev-addons <- Here are all the addons from Metadrop:
-    - ddev-aljibe
-    - ddev-aljibe-assistant
-    - ddev-backstopjs
-    - ddev-lighthouse
-    - ddev-mkdocs
-    - ddev-pa11y
-    - ddev-selenium
-
-To have this folder, we can do the following from the folder where we save the projects:
-
-1. Create the folder and got to that folder:
-```
-mkdir ddev-addons && cd ddev-addons
-```
-
-2. Clone the projects:
-```
- 
-git clone git@gitlab.metadrop.net:metadrop-group/ddev-aljibe.git
-git clone git@gitlab.metadrop.net:metadrop-group/ddev-aljibe-assistant.git
-git clone git@github.com:Metadrop/ddev-backstopjs.git
-git clone git@github.com:Metadrop/ddev-lighthouse.git
-git clone git@github.com:Metadrop/ddev-mkdocs.git
-git clone git@github.com:Metadrop/ddev-pa11y.git
-git clone git@github.com:Metadrop/ddev-selenium.git   
-    
-```
-#### Installing Aljibe:
-
-To launch ddev-aljibe, we must go to the test-aljibe folder, or to the folder where we want to install it. Remember that as long as we don't have Aljibe public, this folder must be at the same level as the ‘ddev-addons’ folder. Inside this folder, just launch these 3 commands:
-
-1.  Configure a basic ddev project:
-```
-ddev config --auto 
-```
-2. Install ddev-aljibe from local:
-```
-ddev get ../ddev-addons/ddev-aljibe
-```
-3. Launch the Aljibe assistant:
-```
-ddev aljibe-assistant
-```
