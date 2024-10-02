@@ -67,6 +67,86 @@ If you come from a [boilerplate](https://github.com/Metadrop/drupal-boilerplate)
 - Launch ddev setup:
     - If monosite: `ddev setup`
     - If multisite:`ddev setup —all` or `ddev setup --sites=site1`
+
+
+## Advanced Configuration
+
+The `aljibe.yml` file allows you to customize various aspects of the Aljibe setup. Below are the available options and how to use them:
+
+#### `default_site`
+This option sets the default site name to be processed. It is used when no specific site name is provided.
+
+```yaml
+default_site: self
+```
+
+
+#### `theme_paths`
+This section allows you to define paths to custom themes that need to be processed. Each theme should be listed with a unique key.
+
+```yaml
+theme_paths:
+  custom_theme: /var/www/html/web/themes/custom/custom_theme
+```
+
+
+#### `hooks`
+Hooks are commands that can be executed at different stages of the setup process. They are defined as lists of commands under various hook points.
+
+- `pre_setup`: Commands to run before the setup process.
+- `post_setup`: Commands to run after the setup process.
+- `pre_site_install`: Commands to run before any type site installation.
+- `post_site_install`: Commands to run after any type site installation.
+- `pre_site_install_config`: Commands to run before the site installation from config.
+- `post_site_install_config`: Commands to run after the site installation from config.
+- `pre_site_install_db`: Commands to run before the site installation from database.
+- `post_site_install_db`: Commands to run after the site installation from database.
+
+Example:
+
+```yaml
+hooks:
+  pre_setup:
+    - echo "Aljibe pre setup hook"
+    - ddev snapshot
+  post_setup:
+    - echo "Aljibe post setup hook"
+    - ddev drush uli --uid=2
+  pre_site_install: []
+  post_site_install: []
+    - ddev @${SITE_ALIAS} drush cr
+  pre_site_install_config: []
+  post_site_install_config: []
+  pre_site_install_db: []
+  post_site_install_db: []
+```
+
+Available variables for site_install hooks are:
+- DRUPAL_PROFILE: The profile used to install the site.
+- SITE_PATH: The path to the site to be installed relative to web/sites
+- SITE_ALIAS: The drush alias of the site to be installed, without the @.
+
+Available variables for setup hooks are:
+- NO_THEMES: If the setup command was called with the --no-themes flag
+- NO_INSTALL: If the setup command was called with the --no-install flag
+- SITES: The sites to be installed
+- CONFIG_DEFAULT_SITE: The default site to be installed
+
+In addition, all the variables [provided by ddev](https://ddev.readthedocs.io/en/stable/users/extend/custom-commands/#command-line-completion) are available on all hooks.
+
+You can add any other configuration you need to the `aljibe.yml` file. This config can be obtained with the `ddev aljibe-config` command.
+
+Example commands to obtain specific configurations:
+
+- To obtain all theme paths to be processed:
+  ```sh
+  ddev aljibe-config theme_path
+  ```
+
+- To get the default site to be processed:
+  ```sh
+  ddev aljibe-config default_site
+  ```
     
 ## Usage
 
@@ -110,7 +190,7 @@ If you use ddev-solr addon and need to sync the solr config from the server, you
     
     ddev poweroff
 
-## Troubleshooting
+# Troubleshooting
 
 ### https not working
 
