@@ -1,90 +1,23 @@
 #!/bin/bash
 #ddev-generated
 ## Description: Install given drupal site
-## Usage: site-install
-## Example: ddev site-install default
+## Usage: site-install-from-db SITE DBFILE
+## Example: ddev site-install-from-db default dbfile.sql.gz
 
-# Include the ddev_checks script
-source "$(dirname "$0")/includes/aljibe_includes"
-
-## Project must be running to run this command
-star_project
-
-SITE_PROFILES_FILE=".ddev/site-profiles"
+# If site is not given, assume 'self'
 SITE=${1:-'self'}
-ENV=${2:-'local'}
-if [ "$SITE" == "self" ]; then
-    SITE_ALIAS=$SITE
-else
-    SITE_ALIAS=$SITE.$ENV
-fi
 
-DRUPAL_PROFILE=""
-
-if [ -f $SITE_PROFILES_FILE ]; then
-  source  $SITE_PROFILES_FILE
-else
-  echo "No SITE_PROFILES_FILE found. If your site needs a custom profile, please create a $SITE_PROFILES_FILE file."
-fi
-
-cd  $DDEV_APPROOT || exit 1
-
-## Check if drush alias for this site exists when drush @${SITE_ALIAS} return "could not be found"
-if [ "$(ddev drush @${SITE_ALIAS} status 2>&1 | grep 'could not be found')" ]; then
-  echo "Drush alias for ${SITE} does not exist. Please create it first so that the site can be installed."
+# If DBFILE is not passed as second parameter return error
+if [ -z "$2" ]; then
+  echo "A database file is required as second parameter"
   exit 1
-else
-  SITE_PATH=$(ddev drush @${SITE_ALIAS} status --field=site)
-  chmod u+w ${DDEV_DOCROOT}/${SITE_PATH} -R
-  mkdir -p ${DDEV_DOCROOT}/${SITE_PATH}/files/behat/errors
-
-  # Ensure that the settings.ddev.php file exists and is properly configured
-  if [ "$SITE" != "default" ]; then
-    # Remove dots and colons from the site name to make it a valid database name
-    DBNAME=$(echo $SITE | sed 's/[^a-zA-Z0-9]//g')
-    if [ ! -f ${DDEV_DOCROOT}/${SITE_PATH}/settings.ddev.php ]; then
-      cp ${DDEV_DOCROOT}/sites/default/settings.ddev.php ${DDEV_DOCROOT}/${SITE_PATH}/settings.ddev.php
-      sed -i "s/\['database'\] = \"db\"/\['database'\] = \"db_${DBNAME}\"/g" ${DDEV_DOCROOT}/${SITE_PATH}/settings.ddev.php
-    fi
-    ddev create-database db_${DBNAME} || exit 1
-  fi
-
-  # Take care of redis settings if needed
-  if [ -f ${DDEV_DOCROOT}/sites/default/settings.ddev.redis.php ]; then
-    cp ${DDEV_DOCROOT}/sites/default/settings.ddev.redis.php ${DDEV_DOCROOT}/${SITE_PATH}/settings.ddev.redis.php
-
-    SETTINGS_FILE_NAME="${DDEV_DOCROOT}/${SITE_PATH}/settings.php"
-    if grep "Include settings required for Redis cache" $SETTINGS_FILE_NAME; then
-      echo "Settings file already includes settings.ddev.redis.php"
-    else
-      echo "Settings file name: ${SETTINGS_FILE_NAME}"
-      grep -qF 'settings.ddev.redis.php' $SETTINGS_FILE_NAME || echo "
-      // Include settings required for Redis cache.
-      if ((file_exists(__DIR__ . '/settings.ddev.redis.php') && getenv('IS_DDEV_PROJECT') == 'true')) {
-        include __DIR__ . '/settings.ddev.redis.php';
-      }" >> $SETTINGS_FILE_NAME
-    fi
-  fi
-
-  cp ${DDEV_DOCROOT}/${SITE_PATH}/example.settings.local.php ${DDEV_DOCROOT}/${SITE_PATH}/settings.local.php
-  cp ${DDEV_DOCROOT}/${SITE_PATH}/example.local.drush.yml ${DDEV_DOCROOT}/${SITE_PATH}/local.drush.yml
-
-  ddev drush @${SITE_ALIAS} sql:drop -y || exit 1
-  # if $DRUPAL_PROFILE is not empty, then install the site with the given profile
-  if [ ! -z "$DRUPAL_PROFILE" ]; then
-    ddev drush @${SITE_ALIAS} site:install $DRUPAL_PROFILE --existing-config -y --sites-subdir=${SITE_PATH#sites/} || exit 1
-  else
-    ddev drush @${SITE_ALIAS} site:install --existing-config -y --sites-subdir=${SITE_PATH#sites/} || exit 1
-  fi
-
-  ddev drush @${SITE_ALIAS} cr || exit 1
-  ddev drush @${SITE_ALIAS} cim -y || exit 1
-  ddev drush @${SITE_ALIAS} cr || exit 1
-
-  # Check if drupal module image_styles_derivative is enabled
-  if [ "$(ddev drush @${SITE_ALIAS} pm:list --status=enabled --filter=image_styles_generator --format=list | grep 'image_styles_generator')" ]; then
-    ddev drush @${SITE_ALIAS} image_derivatives:generate || true
-  fi
-
-  ddev launch $(ddev drush uli)
 fi
+
+# If DBFILE does not exist return error
+if [ ! -f "$2" ]; then
+  echo "Database file $2 does not exist"
+  exit 1
+fi
+
+# Call site install with the database file
+ddev site-install $SITE $2

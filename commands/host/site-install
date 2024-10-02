@@ -1,6 +1,6 @@
 #!/bin/bash
 #ddev-generated
-## Description: Install given drupal site
+## Description: Install given drupal site. A db can be passed as second parámeter
 ## Usage: site-install
 ## Example: ddev site-install default
 
@@ -12,15 +12,21 @@ star_project
 
 SITE_PROFILES_FILE=".ddev/site-profiles"
 SITE=${1:-'self'}
-ENV=${2:-'local'}
+
+DB_FILE=${2:-''}
+
+ENV='local'
 if [ "$SITE" == "self" ]; then
     SITE_ALIAS=$SITE
 else
     SITE_ALIAS=$SITE.$ENV
 fi
 
-DRUPAL_PROFILE=""
+ddev_drush() {
+  ddev drush @${SITE_ALIAS} "$@"
+}
 
+DRUPAL_PROFILE=""
 if [ -f $SITE_PROFILES_FILE ]; then
   source  $SITE_PROFILES_FILE
 else
@@ -30,11 +36,11 @@ fi
 cd  $DDEV_APPROOT || exit 1
 
 ## Check if drush alias for this site exists when drush @${SITE_ALIAS} return "could not be found"
-if [ "$(ddev drush @${SITE_ALIAS} status 2>&1 | grep 'could not be found')" ]; then
+if [ "$(ddev_drush status 2>&1 | grep 'could not be found')" ]; then
   echo "Drush alias for ${SITE} does not exist. Please create it first so that the site can be installed."
   exit 1
 else
-  SITE_PATH=$(ddev drush @${SITE_ALIAS} status --field=site)
+  SITE_PATH=$(ddev_drush status --field=site)
   chmod u+w ${DDEV_DOCROOT}/${SITE_PATH} -R
   mkdir -p ${DDEV_DOCROOT}/${SITE_PATH}/files/behat/errors
 
@@ -69,22 +75,25 @@ else
   cp ${DDEV_DOCROOT}/${SITE_PATH}/example.settings.local.php ${DDEV_DOCROOT}/${SITE_PATH}/settings.local.php
   cp ${DDEV_DOCROOT}/${SITE_PATH}/example.local.drush.yml ${DDEV_DOCROOT}/${SITE_PATH}/local.drush.yml
 
-  ddev drush @${SITE_ALIAS} sql:drop -y || exit 1
-  # if $DRUPAL_PROFILE is not empty, then install the site with the given profile
-  if [ ! -z "$DRUPAL_PROFILE" ]; then
-    ddev drush @${SITE_ALIAS} site:install $DRUPAL_PROFILE --existing-config -y --sites-subdir=${SITE_PATH#sites/} || exit 1
+  ddev_drush sql:drop -y || exit 1
+
+  # If a database file is given, import it to the site if not, install the site
+  run_hooks "pre_site_install"
+  if [ ! -z "$DB_FILE" ]; then
+    run_hooks "pre_site_install_db"
+    ddev import-db --file $DB_FILE --database db_${DBNAME} || exit 1
+    ddev_drush deploy
+    run_hooks "post_site_install_db"
   else
-    ddev drush @${SITE_ALIAS} site:install --existing-config -y --sites-subdir=${SITE_PATH#sites/} || exit 1
+    run_hooks "pre_site_install_config"
+    ddev_drush site:install ${DRUPAL_PROFILE:+$DRUPAL_PROFILE }--existing-config -y --sites-subdir=${SITE_PATH#sites/} || exit 1
+    ddev_drush cr
+    ddev_drush cim -y
+    ddev_drush cr
+    run_hooks "ppst_site_install_config"
   fi
-
-  ddev drush @${SITE_ALIAS} cr || exit 1
-  ddev drush @${SITE_ALIAS} cim -y || exit 1
-  ddev drush @${SITE_ALIAS} cr || exit 1
-
-  # Check if drupal module image_styles_derivative is enabled
-  if [ "$(ddev drush @${SITE_ALIAS} pm:list --status=enabled --filter=image_styles_generator --format=list | grep 'image_styles_generator')" ]; then
-    ddev drush @${SITE_ALIAS} image_derivatives:generate || true
-  fi
-
-  ddev launch $(ddev drush uli)
+  run_hooks "post_site_install"
+  ddev status
+  echo "Now you can login to your site:\n"
+  ddev_drush uli
 fi

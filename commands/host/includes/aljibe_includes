@@ -23,14 +23,24 @@ extract_argument() {
   fi
 }
 
+# Run commands from an array of commands
+#   $@: commands to run
+# Example: run_commands "echo 'Hello world'"
 run_commands() {
   local CMDS=("$@")
   if [ ${#CMDS[@]} -gt 0 ]; then
-    echo -e "\033[32mRunning commands: \033[0m\n"
     for cmd in "${CMDS[@]}"; do
       echo "- running $cmd ... "
       eval "$cmd"
     done
-    echo -e "\033[32m\nCommands finished\n"
   fi
+}
+
+# Run hooks from the aljibe-config file
+#   $1: hook name
+# Example: run_hooks "pre-install"
+run_hooks() {
+  echo -e "\033[32mRunning $1 commands: \033[0m\n"
+  readarray -t CMDS < <(ddev aljibe-config hooks.$1)
+  run_commands "${CMDS[@]}"
 }

@@ -101,10 +101,7 @@ handle_options() {
 handle_options "$@"
 
 # Launch pre setup hooks
-echo -e "\033[32mRunning PRE SETUP commands (defined in .ddev/aljibe.yml): \033[0m\n"
-readarray -t CMDS < <(ddev aljibe-config hooks.pre_setup)
-run_commands "${CMDS[@]}"
-echo -e "\033[32m\nPRE SETUP commands finished\n"
+run_hooks "pre_setup"
 
 # Prepare Drupal and dev environment
 ddev composer install || exit 1
@@ -139,7 +136,4 @@ if [ "$NO_INSTALL" -eq 0 ]; then
 fi
 
 # Launch post setup hooks
-echo -e "\033[32mRunning POST SETUP commands (defined in .ddev/aljibe.yml): \033[0m\n"
-readarray -t CMDS < <(ddev aljibe-config hooks.post_setup)
-run_commands "${CMDS[@]}"
-echo -e "\033[32m\nPOST SETUP commands finished\n"
+run_hooks "post_setup"
