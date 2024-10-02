@@ -63,7 +63,7 @@ nbproject/
 /tmp/*
 
 ## DDEV
-settings.ddev.php
+settings.ddev*.php
 
 ## Aljibe
 aljibe-kickstart
