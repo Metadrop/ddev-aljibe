@@ -45,16 +45,14 @@ To transform a legacy project to Ddev Aljibe, the following steps must be follow
 1. Clone the project without install it and remove all docker related files 
 2. Run basic ddev-config:
 
-
-    ddev config --auto
+        ddev config --auto
+   
 4. Install Aljibe:
 
-
-	ddev get metadrop/ddev-aljibe
+        ddev get metadrop/ddev-aljibe
 4. Run again ddev config, but this time go throught the assistant to set project type to Drupal, docroot folder, etc...
    
-
-    ddev config
+        ddev config
 5. Edit .ddev/config.yml to fine tune the environment.
 6. Edit .ddev/aljibe.yml to set deault site name (the folder inside sites) and all themes to be transpiled
 7. update .gitignore to look like [this](https://github.com/Metadrop/ddev-aljibe/blob/main/aljibe-kickstart/.gitignore).
