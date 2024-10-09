@@ -6,7 +6,6 @@ project_files:
  - aljibe-kickstart
  - aljibe.yaml.example
  - site-profiles
- - web-build
  - config.aljibe.yaml
 
 post_install_actions:
