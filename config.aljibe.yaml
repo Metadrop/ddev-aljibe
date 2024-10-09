@@ -1,0 +1,3 @@
+hooks:
+ post-start:
+   - exec: test -f /var/www/html/vendor/bin/composer && rm -f /usr/local/bin/composer && ln -s  /var/www/html/vendor/bin/composer /usr/local/bin/composer
