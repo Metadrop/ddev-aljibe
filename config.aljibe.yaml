@@ -5,6 +5,5 @@ hooks:
    - exec: |
            if [ -f /var/www/html/vendor/bin/composer ] && \
               [ "$(readlink /usr/local/bin/composer)" != "/var/www/html/vendor/bin/composer" ]; then \
-              rm -f /usr/local/bin/composer && \
-              ln -s /var/www/html/vendor/bin/composer /usr/local/bin/composer; \
+              ln -sf /var/www/html/vendor/bin/composer /usr/local/bin/composer; \
            fi
