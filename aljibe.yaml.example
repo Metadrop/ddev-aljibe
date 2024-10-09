@@ -32,7 +32,8 @@ hooks:
   pre_setup: []
   post_setup: []
   pre_site_install: []
-  post_site_install: []
+  post_site_install:
+    - drush @${SITE_ALIAS} uli
   pre_site_install_config: []
   post_site_install_config: []
   pre_site_install_db: []
