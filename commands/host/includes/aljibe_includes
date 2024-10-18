@@ -44,3 +44,8 @@ run_hooks() {
   readarray -t CMDS < <(ddev aljibe-config hooks.$1)
   run_commands "${CMDS[@]}"
 }
+
+## Get all sites list from the drush/sites folder.
+get_sites() {
+  mapfile -t SITES < <(find drush/sites -name '*.site.yml' -exec basename {} \; | cut -d'.' -f1)
+}
