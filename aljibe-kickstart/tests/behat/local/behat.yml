@@ -1,6 +1,7 @@
 default:
   autoload:
-    "": "%paths.base%/bootstrap/"
+    - '%paths.base%/bootstrap/'
+    - '%paths.base%/../common/boostrap/'
   formatters:
     pretty:
       verbose: false
