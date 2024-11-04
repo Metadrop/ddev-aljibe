@@ -58,7 +58,7 @@
             "dealerdirect/phpcodesniffer-composer-installer": true,
             "phpstan/extension-installer": true,
             "phpro/grumphp": true,
-            "metadrop/drupal-boilerplate-assistant": true,
+            "metadrop/backstopjs-addons": true,
             "metadrop/composer-comments": true,
             "php-http/discovery": true
         }
