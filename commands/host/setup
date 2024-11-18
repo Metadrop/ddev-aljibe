@@ -49,7 +49,7 @@ handle_options() {
   while [ $# -gt 0 ]; do
     case $1 in
       -a | --all)
-        mapfile -t SITES < <(drush site:alias --fields=name --format=list --filter=.local | sed 's/@//' | sed 's/.local//')
+        SITES=all
         shift
         ;;
       -h | --help)
@@ -128,6 +128,9 @@ fi
 
 # Try to install sites if not --no-install is given
 if [ "$NO_INSTALL" -eq 0 ]; then
+    if [ "$SITES" == "all" ]; then
+        mapfile -t SITES < <(ddev drush site:alias --fields=name --format=list --filter=.local | sed 's/@//' | sed 's/.local//')
+    fi
     for SITE in "${SITES[@]}"; do
         echo
         echo -e "\033[32mInstalling site: ${SITE}  \033[0m\n"
