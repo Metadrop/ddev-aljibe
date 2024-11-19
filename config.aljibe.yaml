@@ -1,4 +1,2 @@
 #ddev-generated
-# Custom config to alter composer executable in case Drupal is defining a custom version.
-# See https://github.com/ddev/ddev/issues/6602 for more details.
 hooks:
