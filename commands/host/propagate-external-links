@@ -1,0 +1,37 @@
+#!/usr/bin/python
+
+## Description: Generates .ddev/docker-compose.external_links.yaml and adds external_links to all services to enable access to domains in the web container.
+## Usage: propagate-external-links
+## Example: "ddev propagate-external-links"
+
+import subprocess
+import yaml
+
+# Get processed docker compose config.
+command = ("ddev", "debug", "compose-config")
+result = subprocess.run(command, capture_output=True, text=True)
+output = result.stdout.strip()
+compose = yaml.safe_load(output)
+
+# Get list of services, but 'web'.
+services_list = compose['services'].keys() - ['web']
+
+# Get 'web' service external links and transform to link to 'web' instead of 'ddev-router'.
+# We prefer 'web' because it works equally and it is a self contained solution (the router
+# may not be available).
+web_external_links = compose['services']['web']['external_links']
+web_external_links_to_web = [x.replace('ddev-router:', 'web:') for x in web_external_links]
+
+# Generate a compose file that declares the above external_links for all services.
+# We need to filter the list to avoid duplicate items.
+data = dict()
+data['services'] = dict()
+for service in services_list:
+    service_current_external_links = compose['services'][service].get('external_links', [])
+    service_extra_external_links = [x for x in web_external_links_to_web if x not in service_current_external_links]
+
+    data['services'][service] = dict()
+    data['services'][service]['external_links'] = service_extra_external_links
+
+with open('.ddev/docker-compose.external_links.yaml', 'w') as file:
+    yaml.dump(data, file)
