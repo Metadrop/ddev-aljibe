@@ -59,6 +59,7 @@
             "phpstan/extension-installer": true,
             "phpro/grumphp": true,
             "metadrop/backstopjs-addons": true,
+            "liborm85/composer-vendor-cleaner": true,
             "metadrop/composer-comments": true,
             "php-http/discovery": true
         }
