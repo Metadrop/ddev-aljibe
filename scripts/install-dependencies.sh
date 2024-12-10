@@ -8,7 +8,7 @@ fi
 
 # Function to check if an addon is installed
 check_addon_installed() {
-    ddev add-on get --installed | grep "$1" -q
+    ddev add-on list --installed --skip-hooks | grep "$1" -q
 }
 
 # Function to install addon if conditions are met
@@ -24,13 +24,13 @@ install_addon() {
 
 # Install addons
 install_addon "ddev-adminer" "ddev/ddev-adminer"
-install_addon "ddev-mkdocs" "Metadrop/ddev-mkdocs"
-install_addon "ddev-backstopjs" "Metadrop/ddev-backstopjs"
-install_addon "ddev-lighthouse" "Metadrop/ddev-lighthouse"
-install_addon "ddev-selenium" "Metadrop/ddev-selenium"
-install_addon "ddev-pa11y" "Metadrop/ddev-pa11y"
-install_addon "ddev-unlighthouse" "Metadrop/ddev-unlighthouse"
-install_addon "ddev-aljibe-assistant" "Metadrop/ddev-aljibe-assistant"
+install_addon "ddev-mkdocs" "metadrop/ddev-mkdocs"
+install_addon "ddev-backstopjs" "metadrop/ddev-backstopjs"
+install_addon "ddev-lighthouse" "metadrop/ddev-lighthouse"
+install_addon "ddev-selenium" "metadrop/ddev-selenium"
+install_addon "ddev-pa11y" "metadrop/ddev-pa11y"
+install_addon "ddev-unlighthouse" "metadrop/ddev-unlighthouse"
+install_addon "ddev-aljibe-assistant" "metadrop/ddev-aljibe-assistant"
 
 # Check for memcached and install redis if needed
 if ! check_addon_installed "memcached"; then
