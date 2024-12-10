@@ -46,7 +46,7 @@
     },
     "require-dev": {
         "metadrop/drupal-dev": "^2.0.0",
-        "ewcomposer/unpack": "dev-master",
+        "ewcomposer/unpack": "dev-master"
     },
     "conflict": {
         "drupal/drupal": "*"
@@ -67,7 +67,9 @@
             "liborm85/composer-vendor-cleaner": true,
             "metadrop/composer-comments": true,
             "php-http/discovery": true,
-            "liborm85/composer-vendor-cleaner": true
+            "tbachert/spi": true,
+            "mxr576/ddqg-composer-audit": true,
+            "ewcomposer/unpack": true
         }
     },
     "scripts": {
