@@ -1,6 +1,11 @@
 #!/bin/sh
 #ddev-generated
 
+# Check if aljibe.yaml exists in parent directory
+if [ -f "../aljibe.yaml" ]; then
+    ALJIBE_INSTALLED=1
+fi
+
 
 ddev add-on get ddev/ddev-adminer
 ddev add-on get Metadrop/ddev-mkdocs
