@@ -32,15 +32,25 @@ install_addon() {
     fi
 }
 
-# Install addons
-install_addon "ddev-adminer" "ddev/ddev-adminer"
-install_addon "ddev-mkdocs" "metadrop/ddev-mkdocs"
-install_addon "ddev-backstopjs" "metadrop/ddev-backstopjs"
-install_addon "ddev-lighthouse" "metadrop/ddev-lighthouse"
-install_addon "ddev-selenium" "metadrop/ddev-selenium"
-install_addon "ddev-pa11y" "metadrop/ddev-pa11y"
-install_addon "ddev-unlighthouse" "metadrop/ddev-unlighthouse"
-install_addon "ddev-aljibe-assistant" "metadrop/ddev-aljibe-assistant"
+# Define array of addons to install
+# Format: "addon_name|addon_path"
+ADDONS=(
+    "ddev-adminer|ddev/ddev-adminer"
+    "ddev-mkdocs|metadrop/ddev-mkdocs"
+    "ddev-backstopjs|metadrop/ddev-backstopjs"
+    "ddev-lighthouse|metadrop/ddev-lighthouse"
+    "ddev-selenium|metadrop/ddev-selenium"
+    "ddev-pa11y|metadrop/ddev-pa11y"
+    "ddev-unlighthouse|metadrop/ddev-unlighthouse"
+    "ddev-aljibe-assistant|metadrop/ddev-aljibe-assistant"
+)
+
+# Install addons from array
+for addon in "${ADDONS[@]}"; do
+    addon_name=$(echo "$addon" | cut -d'|' -f1)
+    addon_path=$(echo "$addon" | cut -d'|' -f2)
+    install_addon "$addon_name" "$addon_path"
+done
 
 # Check for memcached and install redis if needed
 if ! check_addon_installed "memcached"; then
