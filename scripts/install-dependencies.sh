@@ -1,27 +1,30 @@
 #!/bin/sh
 #ddev-generated
 
-# Check if aljibe.yaml exists in parent directory
+# Initialize ALJIBE_INSTALLED to 0 and check if aljibe.yaml exists
+ALJIBE_INSTALLED=0
 if [ -f "../aljibe.yaml" ]; then
     ALJIBE_INSTALLED=1
 fi
 
 # Function to check if an addon is installed
 check_addon_installed() {
-    ddev add-on list --installed --skip-hooks | grep -i "$1" -q
+    if ddev add-on list --installed --skip-hooks 2>/dev/null | grep -i "$1" -q; then
+        return 0  # Found
+    else
+        return 1  # Not found
+    fi
 }
 
 # Function to install addon if conditions are met
 install_addon() {
-    local addon_name="$1"
-    local addon_path="$2"
+    local addon_name=$(echo "$1" | tr '[:upper:]' '[:lower:]')
+    local addon_path=$(echo "$2" | tr '[:upper:]' '[:lower:]')
     
-    # Install if Aljibe is not installed, or if both Aljibe and the addon are installed
-    if [ -z "$ALJIBE_INSTALLED" ] || ([ -n "$ALJIBE_INSTALLED" ] && check_addon_installed "$addon_name"); then
-        echo $ALJIBE_INSTALLED
-        echo check_addon_installed "$addon_name"
+    # Install if Aljibe is not installed (ALJIBE_INSTALLED=0), or if both Aljibe and the addon are installed
+    if [ "$ALJIBE_INSTALLED" -eq 0 ] || ([ "$ALJIBE_INSTALLED" -eq 1 ] && check_addon_installed "$addon_name"); then
         echo "**** Installing $addon_name..."
-        ddev add-on get "$addon_path" 2&> /dev/null
+        ddev add-on get "$addon_path" 2>/dev/null
     else
         echo "XXXX Skipping $addon_name installation"
     fi
