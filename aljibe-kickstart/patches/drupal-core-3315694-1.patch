@@ -1,0 +1,13 @@
+diff --git a/core/lib/Drupal/Core/Recipe/RecipeCommand.php b/core/lib/Drupal/Core/Recipe/RecipeCommand.php
+index 3040e40960..6d6f496ada 100644
+--- a/core/lib/Drupal/Core/Recipe/RecipeCommand.php
++++ b/core/lib/Drupal/Core/Recipe/RecipeCommand.php
+@@ -192,7 +192,7 @@ private function rollBackToCheckpoint(Checkpoint $checkpoint): void {
+    *   Exception thrown if kernel does not boot.
+    */
+   protected function boot() {
+-    $kernel = new DrupalKernel('prod', $this->classLoader);
++    $kernel = new DrupalKernel('prod', $this->classLoader, FALSE);
+     $kernel::bootEnvironment();
+     $kernel->setSitePath($this->getSitePath());
+     Settings::initialize($kernel->getAppRoot(), $kernel->getSitePath(), $this->classLoader);

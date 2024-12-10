@@ -1,0 +1,13 @@
+diff --git a/core/lib/Drupal/Core/StreamWrapper/StreamWrapperManager.php b/core/lib/Drupal/Core/StreamWrapper/StreamWrapperManager.php
+index 1c08700dc69109ee3d9d6a3cfdbd2227b07cef34..93b7419d93fe718b711fabf2b12d785cb57b3e7c 100644
+--- a/core/lib/Drupal/Core/StreamWrapper/StreamWrapperManager.php
++++ b/core/lib/Drupal/Core/StreamWrapper/StreamWrapperManager.php
+@@ -162,6 +162,8 @@ public function addStreamWrapper($service_id, $class, $scheme) {
+       'type' => $class::getType(),
+       'service_id' => $service_id,
+     ];
++
++    $this->registerWrapper($scheme, $class, $class::getType());
+   }
+ 
+   /**
