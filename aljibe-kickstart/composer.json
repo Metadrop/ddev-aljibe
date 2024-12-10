@@ -46,12 +46,11 @@
             "dealerdirect/phpcodesniffer-composer-installer": true,
             "phpstan/extension-installer": true,
             "phpro/grumphp": true,
-            "metadrop/drupal-boilerplate-assistant": true,
+            "metadrop/backstopjs-addons": true,
+            "liborm85/composer-vendor-cleaner": true,
             "metadrop/composer-comments": true,
             "php-http/discovery": true,
             "tbachert/spi": true,
-            "liborm85/composer-vendor-cleaner": true,
-            "metadrop/backstopjs-addons": true,
             "mxr576/ddqg-composer-audit": true
         }
     },
@@ -74,6 +73,11 @@
             "web/modules/custom/{$name}": ["type:drupal-custom-module"],
             "web/profiles/custom/{$name}": ["type:drupal-custom-profile"],
             "web/themes/custom/{$name}": ["type:drupal-custom-theme"]
+        },
+        "dev-files": {
+            "bin": [
+                "composer"
+            ]
         },
         "composer-exit-on-patch-failure": true,
         "enable-patching": true
