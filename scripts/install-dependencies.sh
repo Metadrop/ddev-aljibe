@@ -18,7 +18,12 @@ install_addon() {
     
     # Install if Aljibe is not installed, or if both Aljibe and the addon are installed
     if [ -z "$ALJIBE_INSTALLED" ] || ([ -n "$ALJIBE_INSTALLED" ] && check_addon_installed "$addon_name"); then
-        ddev add-on get "$addon_path"
+        echo $ALJIBE_INSTALLED
+        echo check_addon_installed "$addon_name"
+        echo "**** Installing $addon_name..."
+        ddev add-on get "$addon_path" 2&> /dev/null
+    else
+        echo "XXXX Skipping $addon_name installation"
     fi
 }
 
