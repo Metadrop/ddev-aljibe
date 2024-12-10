@@ -1,6 +1,18 @@
 #!/bin/sh
 #ddev-generated
 
+# Define array of addons to install
+# Format: "addon_name|addon_path"
+ADDONS=(
+    "ddev-adminer|ddev/ddev-adminer"
+    "ddev-mkdocs|metadrop/ddev-mkdocs"
+    "ddev-backstopjs|metadrop/ddev-backstopjs"
+    "ddev-selenium|metadrop/ddev-selenium"
+    "ddev-pa11y|metadrop/ddev-pa11y"
+    "ddev-unlighthouse|metadrop/ddev-unlighthouse"
+    "ddev-aljibe-assistant|metadrop/ddev-aljibe-assistant"
+)
+
 # Initialize ALJIBE_INSTALLED to 0 and check if aljibe.yaml exists
 ALJIBE_INSTALLED=0
 if [ -f "../aljibe.yaml" ]; then
@@ -24,26 +36,13 @@ install_addon() {
     local addon_path=$(echo "$2" | tr '[:upper:]' '[:lower:]')
 
     # Install if Aljibe is not installed (ALJIBE_INSTALLED=0), or if both Aljibe and the addon are installed
-    if [ "$ALJIBE_INSTALLED" -eq 0 ] || ([ "$ALJIBE_INSTALLED" -eq 1 ] && [ check_addon_installed "$addon_name" -eq 1 ]); then
+     if [ "$ALJIBE_INSTALLED" -eq 0 ] || ([ "$ALJIBE_INSTALLED" -eq 1 ] && ! check_addon_installed "$addon_name"); then
         echo "**** Installing $addon_name..."
         ddev add-on get "$addon_path"
-    else
+     else
         echo "XXXX Skipping $addon_name installation"
-    fi
+     fi
 }
-
-# Define array of addons to install
-# Format: "addon_name|addon_path"
-ADDONS=(
-    "ddev-adminer|ddev/ddev-adminer"
-    "ddev-mkdocs|metadrop/ddev-mkdocs"
-    "ddev-backstopjs|metadrop/ddev-backstopjs"
-    "ddev-lighthouse|metadrop/ddev-lighthouse"
-    "ddev-selenium|metadrop/ddev-selenium"
-    "ddev-pa11y|metadrop/ddev-pa11y"
-    "ddev-unlighthouse|metadrop/ddev-unlighthouse"
-    "ddev-aljibe-assistant|metadrop/ddev-aljibe-assistant"
-)
 
 # Install addons from array
 for addon in "${ADDONS[@]}"; do
