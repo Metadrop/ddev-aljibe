@@ -8,7 +8,7 @@ fi
 
 # Function to check if an addon is installed
 check_addon_installed() {
-    ddev add-on list --installed --skip-hooks | grep "$1" -q
+    ddev add-on list --installed --skip-hooks | grep -i "$1" -q
 }
 
 # Function to install addon if conditions are met
