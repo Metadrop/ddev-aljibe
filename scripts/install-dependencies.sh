@@ -1,6 +1,7 @@
 #!/bin/sh
 #ddev-generated
 
+
 ddev add-on get ddev/ddev-adminer
 ddev add-on get Metadrop/ddev-mkdocs
 ddev add-on get Metadrop/ddev-backstopjs
