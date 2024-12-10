@@ -13,8 +13,8 @@ check_addon_installed() {
 
 # Function to install addon if conditions are met
 install_addon() {
-    local addon_name="$1"
-    local addon_path="$2"
+    local addon_name=$(echo "$1" | tr '[:upper:]' '[:lower:]')
+    local addon_path=$(echo "$2" | tr '[:upper:]' '[:lower:]')
     
     # Install if Aljibe is not installed, or if both Aljibe and the addon are installed
     if [ -z "$ALJIBE_INSTALLED" ] || ([ -n "$ALJIBE_INSTALLED" ] && check_addon_installed "$addon_name"); then
