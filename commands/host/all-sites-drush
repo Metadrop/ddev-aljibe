@@ -16,7 +16,7 @@ if [ -z "$COMMAND" ]; then
 fi
 
 ## Get all sites from the drush/sites folder.
-get_sites
+set_sites_variable
 
 ## Run the command in all sites.
 for SITE in "${SITES[@]}"; do
