@@ -1,17 +1,30 @@
 #!/bin/bash
 #ddev-generated
 ## Description: Copy kickstar files to the project root
-## Usage: aljibe-kickstart
+## Usage: aljibe-kickstart [options]
 ## Flags: [{"Name":"noinstall","Usage":"setup --noinstall"}]
 ## Example: ddev aljibe-kickstart
 
-
+DRUPAL_VERSION=d11
 AUTO_CONFIRM=false
+
+# Check if ${DDEV_APPROOT}/.ddev/kickstart/ exists, if not show a warning and exit
+if [ ! -d "${DDEV_APPROOT}/.ddev/kickstart" ]; then
+    echo "No kickstart files found in ${DDEV_APPROOT}/.ddev/kickstart/"
+    echo "If you want to kickstart your project again, reinstall aljibe add-on:"
+    echo "  - ddev add-on get metadrop/ddev-aljibe"
+    echo "And then launch aljibe-kickstart command again."
+    exit 1
+fi
 
 while (( "$#" )); do
   case "$1" in
     -y|--yes)
       AUTO_CONFIRM=true
+      shift
+      ;;
+    d10)
+      DRUPAL_VERSION=d10
       shift
       ;;
     *)
@@ -28,10 +41,9 @@ else
 fi
 
 if [ "$CONFIRMATION" != "n" ]; then
-    cp -rTf ${DDEV_APPROOT}/.ddev/aljibe-kickstart ${DDEV_APPROOT}
-    rm -fR ${DDEV_APPROOT}/.ddev/aljibe-kickstart
-    ddev config --project-type=drupal --docroot=web
-    echo "Kickstart files have been copied."
+    cp -rTf ${DDEV_APPROOT}/.ddev/kickstart/common ${DDEV_APPROOT}
+    cp -rTf ${DDEV_APPROOT}/.ddev/kickstart/${DRUPAL_VERSION} ${DDEV_APPROOT}
+    echo "Kickstart files have been copied. Make sure yout .gitignore file ignores .ddev/kickstart directory."
 else
-    echo "Operation cancelled."
+    echo "Kickstart operation cancelled."
 fi
