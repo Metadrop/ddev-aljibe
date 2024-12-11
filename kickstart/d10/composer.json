@@ -22,26 +22,26 @@
     "require": {
         "composer/installers": "^2.2",
         "cweagans/composer-patches": "^1.7",
-        "drupal/admin_toolbar": "^3.4",
-        "drupal/components": "^3.0@beta",
+        "drupal/admin_toolbar": "^3.5",
+        "drupal/components": "^3.0",
         "drupal/config_split": "^2.0",
         "drupal/core-composer-scaffold": "^10.0",
         "drupal/core-recommended": "^10.0",
         "drupal/environment_indicator": "^4.0",
         "drupal/honeypot": "^2.0",
-        "drupal/metatag": "^2.0",
-        "drupal/pathauto": "^1.8",
+        "drupal/metatag": "^2.1",
+        "drupal/pathauto": "^1.13",
         "drupal/radix": "^5.0",
-        "drupal/redirect": "^1.6",
-        "drupal/simple_sitemap": "^4.1",
-        "drupal/stage_file_proxy": "^2.0",
-        "drupal/ultimate_cron": "^2.0@alpha",
+        "drupal/redirect": "^1.10",
+        "drupal/simple_sitemap": "^4.2",
+        "drupal/stage_file_proxy": "^3.0",
+        "drupal/ultimate_cron": "^2.0@beta",
         "drupal/webform": "^6.2",
-        "drush/drush": "^12.0",
-        "metadrop/drupal-artifact-builder": "^1.4"
+        "drush/drush": "^13.0",
+        "metadrop/drupal-artifact-builder": "^2.0.2"
     },
     "require-dev": {
-        "metadrop/drupal-dev": "^2.0.0"
+        "metadrop/drupal-dev": "^2.6.0"
     },
     "conflict": {
         "drupal/drupal": "*"
@@ -54,13 +54,16 @@
         "allow-plugins": {
             "composer/installers": true,
             "cweagans/composer-patches": true,
-            "drupal/core-composer-scaffold": true,
             "dealerdirect/phpcodesniffer-composer-installer": true,
-            "phpstan/extension-installer": true,
-            "phpro/grumphp": true,
-            "metadrop/drupal-boilerplate-assistant": true,
+            "drupal/core-composer-scaffold": true,
+            "liborm85/composer-vendor-cleaner": true,
+            "metadrop/backstopjs-addons": true,
             "metadrop/composer-comments": true,
-            "php-http/discovery": true
+            "mxr576/ddqg-composer-audit": true,
+            "php-http/discovery": true,
+            "phpro/grumphp": true,
+            "phpstan/extension-installer": true,
+            "tbachert/spi": true
         }
     },
     "scripts": {
@@ -82,6 +85,11 @@
             "web/modules/custom/{$name}": ["type:drupal-custom-module"],
             "web/profiles/custom/{$name}": ["type:drupal-custom-profile"],
             "web/themes/custom/{$name}": ["type:drupal-custom-theme"]
+        },
+        "dev-files": {
+            "bin": [
+                "composer"
+            ]
         },
         "composer-exit-on-patch-failure": true,
         "enable-patching": true

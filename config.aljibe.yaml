@@ -2,9 +2,3 @@
 # Custom config to alter composer executable in case Drupal is defining a custom version.
 # See https://github.com/ddev/ddev/issues/6602 for more details.
 hooks:
-  pre-composer:
-   - exec: |
-           if [ -f /var/www/html/vendor/bin/composer ] && \
-              [ "$(readlink /usr/local/bin/composer)" != "/var/www/html/vendor/bin/composer" ]; then \
-              ln -sf /var/www/html/vendor/bin/composer /usr/local/bin/composer; \
-           fi
