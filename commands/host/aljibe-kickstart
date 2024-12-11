@@ -1,7 +1,7 @@
 #!/bin/bash
 #ddev-generated
 ## Description: Copy kickstar files to the project root
-## Usage: aljibe-kickstart
+## Usage: aljibe-kickstart [options]
 ## Flags: [{"Name":"noinstall","Usage":"setup --noinstall"}]
 ## Example: ddev aljibe-kickstart
 
@@ -16,7 +16,6 @@ if [ ! -d "${DDEV_APPROOT}/.ddev/kickstart" ]; then
     echo "And then launch aljibe-kickstart command again."
     exit 1
 fi
-
 
 while (( "$#" )); do
   case "$1" in
@@ -44,8 +43,7 @@ fi
 if [ "$CONFIRMATION" != "n" ]; then
     cp -rTf ${DDEV_APPROOT}/.ddev/kickstart/common ${DDEV_APPROOT}
     cp -rTf ${DDEV_APPROOT}/.ddev/kickstart/${DRUPAL_VERSION} ${DDEV_APPROOT}
-    # rm -fR ${DDEV_APPROOT}/.ddev/kickstart
     echo "Kickstart files have been copied. Make sure yout .gitignore file ignores .ddev/kickstart directory."
 else
-    echo "Operation cancelled."
+    echo "Kickstart operation cancelled."
 fi
