@@ -49,7 +49,7 @@ handle_options() {
   while [ $# -gt 0 ]; do
     case $1 in
       -a | --all)
-        get_sites
+        set_sites_variable
         shift
         ;;
       -h | --help)
