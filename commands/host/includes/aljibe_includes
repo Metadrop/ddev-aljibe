@@ -46,6 +46,6 @@ run_hooks() {
 }
 
 ## Get all sites list from the drush/sites folder.
-get_sites() {
+set_sites_variable() {
   mapfile -t SITES < <(find drush/sites -name '*.site.yml' -exec basename {} \; | cut -d'.' -f1)
 }
