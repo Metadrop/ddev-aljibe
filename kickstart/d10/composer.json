@@ -12,6 +12,10 @@
     ],
     "repositories": [
         {
+            "type": "vcs",
+            "url": "https://github.com/woredeyonas/Drupal-Recipe-Unpack.git"
+        },
+        {
             "type": "composer",
             "url": "https://packages.drupal.org/8"
         }
@@ -41,7 +45,8 @@
         "metadrop/drupal-artifact-builder": "^2.0.2"
     },
     "require-dev": {
-        "metadrop/drupal-dev": "^2.6.0"
+        "metadrop/drupal-dev": "^2.6.0",
+        "ewcomposer/unpack": "dev-master"
     },
     "conflict": {
         "drupal/drupal": "*"
@@ -63,18 +68,28 @@
             "php-http/discovery": true,
             "phpro/grumphp": true,
             "phpstan/extension-installer": true,
-            "tbachert/spi": true
+            "tbachert/spi": true,
+            "ewcomposer/unpack": true
         }
     },
     "scripts": {
         "drupal-scaffold": "DrupalComposer\\DrupalScaffold\\Plugin::scaffold"
     },
     "extra": {
+        "patches": {
+            "drupal/core": {
+                "Stream wrappers not registered when installing module's default config - https://www.drupal.org/project/drupal/issues/3416735": "https://git.drupalcode.org/project/drupal/-/merge_requests/10421.diff",
+                "Allow recipe command to write to the container ensuring that cache does not be cleared after a recipe installs a module - https://www.drupal.org/project/drupal/issues/3315694": "patches/drupal-core-3315694-1.patch"
+            }
+        },
         "drupal-scaffold": {
             "locations": {
                 "web-root": "./web"
             }
         },
+        "installer-types": [
+            "drupal-recipe"
+        ],
         "installer-paths": {
             "web/core": ["type:drupal-core"],
             "web/libraries/{$name}": ["type:drupal-library"],
@@ -84,7 +99,10 @@
             "drush/Commands/contrib/{$name}": ["type:drupal-drush"],
             "web/modules/custom/{$name}": ["type:drupal-custom-module"],
             "web/profiles/custom/{$name}": ["type:drupal-custom-profile"],
-            "web/themes/custom/{$name}": ["type:drupal-custom-theme"]
+            "web/themes/custom/{$name}": ["type:drupal-custom-theme"],
+            "web/recipes/{$name}": [
+                "type:drupal-recipe"
+            ]
         },
         "dev-files": {
             "bin": [
