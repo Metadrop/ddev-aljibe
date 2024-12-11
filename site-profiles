@@ -1,6 +1,5 @@
 #!/bin/bash
 
-
 ## *** DO NOT REMOVE THIS FILE ***
 ## This is an auxiliary file for site installation in Aljibe.
 ## It is responsible for setting the DRUPAL_PROFILE variable based on

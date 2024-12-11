@@ -54,15 +54,16 @@
         "allow-plugins": {
             "composer/installers": true,
             "cweagans/composer-patches": true,
-            "drupal/core-composer-scaffold": true,
             "dealerdirect/phpcodesniffer-composer-installer": true,
-            "phpstan/extension-installer": true,
-            "phpro/grumphp": true,
-            "metadrop/backstopjs-addons": true,
+            "drupal/core-composer-scaffold": true,
             "liborm85/composer-vendor-cleaner": true,
+            "metadrop/backstopjs-addons": true,
             "metadrop/composer-comments": true,
+            "mxr576/ddqg-composer-audit": true,
             "php-http/discovery": true,
-            "liborm85/composer-vendor-cleaner": true
+            "phpro/grumphp": true,
+            "phpstan/extension-installer": true,
+            "tbachert/spi": true
         }
     },
     "scripts": {

@@ -3,7 +3,7 @@ description:
 project_files:
  - commands
  - scripts
- - aljibe-kickstart
+ - kickstart
  - aljibe.yaml.example
  - site-profiles
  - config.aljibe.yaml

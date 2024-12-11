@@ -6,7 +6,6 @@
 ## Example: ddev aljibe-kickstart
 
 DRUPAL_VERSION=d11
-PROJECT_TYPE=drupal11
 AUTO_CONFIRM=false
 
 # Check if ${DDEV_APPROOT}/.ddev/kickstart/ exists, if not show a warning and exit
@@ -27,7 +26,6 @@ while (( "$#" )); do
       ;;
     d10)
       DRUPAL_VERSION=d10
-      PROJECT_TYPE=drupal10
       shift
       ;;
     *)
@@ -45,10 +43,9 @@ fi
 
 if [ "$CONFIRMATION" != "n" ]; then
     cp -rTf ${DDEV_APPROOT}/.ddev/kickstart/common ${DDEV_APPROOT}
-    cp -rTf ${DDEV_APPROOT}/.ddev/kickstart/common/${DRUPAL_VERSION} ${DDEV_APPROOT}
-    rm -fR ${DDEV_APPROOT}/.ddev/kickstart
-    ddev config --project-type=${PROJECT_TYPE} --docroot=web
-    echo "Kickstart files have been copied."
+    cp -rTf ${DDEV_APPROOT}/.ddev/kickstart/${DRUPAL_VERSION} ${DDEV_APPROOT}
+    # rm -fR ${DDEV_APPROOT}/.ddev/kickstart
+    echo "Kickstart files have been copied. Make sure yout .gitignore file ignores .ddev/kickstart directory."
 else
     echo "Operation cancelled."
 fi
