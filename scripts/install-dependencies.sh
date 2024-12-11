@@ -22,10 +22,8 @@ fi
 # Function to check if an addon is installed
 check_addon_installed() {
     if ddev add-on list --installed --skip-hooks | grep -i "$1" -q; then
-        echo "** $1 ound"
         return 1  # Found
     else
-        echo "XX $1 not found"
         return 0  # Not found
     fi
 }
@@ -37,10 +35,10 @@ install_addon() {
 
     # Install if Aljibe is not installed (ALJIBE_INSTALLED=0), or if both Aljibe and the addon are installed
     if [ "$ALJIBE_INSTALLED" -eq 0 ] || ([ "$ALJIBE_INSTALLED" -eq 1 ] && ! check_addon_installed "$addon_name"); then
-        echo "**** Installing $addon_name..."
+        echo "**** $addon_name found. Installing/Updating it."
         ddev add-on get "$addon_path"
     else
-        echo "XXXX Skipping $addon_name installation"
+        echo "XXXX $addon_name not found. Skipping installation."
     fi
 }
 
