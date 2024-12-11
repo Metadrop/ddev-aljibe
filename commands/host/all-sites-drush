@@ -1,0 +1,26 @@
+#!/bin/bash
+#ddev-generated
+## Description: Launches a drush command on all of the sites
+## Usage: all-sites-drush [drush command]
+
+source "$(dirname "$0")/includes/aljibe_includes"
+
+ENV='local'
+COMMAND=''
+SITES=()
+
+COMMAND=$@;
+if [ -z "$COMMAND" ]; then
+  echo "Please provide a drush command"
+  exit
+fi
+
+## Get all sites from the drush/sites folder.
+set_sites_variable
+
+## Run the command in all sites.
+for SITE in "${SITES[@]}"; do
+  SITE_ALIAS=$SITE.$ENV
+  echo "Running drush $COMMAND in $SITE"
+  ddev drush @${SITE_ALIAS} $COMMAND
+done
