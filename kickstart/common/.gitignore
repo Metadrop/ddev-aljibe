@@ -30,6 +30,7 @@
 /web/core/
 /web/modules/contrib/
 /web/themes/contrib/
+/web/recipes/
 /web/profiles/contrib/
 /web/libraries/
 
