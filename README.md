@@ -18,7 +18,7 @@ Aljibe sits on top of DDEV and adds some containers, configuration and commands 
 
 ## Requirements
 
-- [DDEV](https://ddev.readthedocs.io/en/stable/) 1.23.1 or higher
+- [DDEV](https://ddev.readthedocs.io/en/stable/) v1.24.0 or higher
 - [Docker](https://www.docker.com/) 24 or higher
 
 ## Starting a new project with Aljibe
