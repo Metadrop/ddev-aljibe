@@ -32,7 +32,7 @@ ddev config --auto
 
 Install the Aljibe addon. This will install all the dependant addons too:
 
-For DDEV v1.23.5 or above run:
+For DDEV v1.24.0 or above run:
 
 ```sh
 ddev add-on get metadrop/ddev-aljibe
