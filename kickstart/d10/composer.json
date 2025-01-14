@@ -27,6 +27,7 @@
         "composer/installers": "^2.2",
         "cweagans/composer-patches": "^1.7",
         "drupal/admin_toolbar": "^3.5",
+        "drupal/artisan": "^1.1",
         "drupal/components": "^3.0",
         "drupal/config_split": "^2.0",
         "drupal/core-composer-scaffold": "^10.0",
@@ -35,7 +36,6 @@
         "drupal/honeypot": "^2.0",
         "drupal/metatag": "^2.1",
         "drupal/pathauto": "^1.13",
-        "drupal/radix": "^5.0",
         "drupal/redirect": "^1.10",
         "drupal/simple_sitemap": "^4.2",
         "drupal/stage_file_proxy": "^3.0",
@@ -78,9 +78,7 @@
     "extra": {
         "patches": {
             "drupal/core": {
-                "Stream wrappers not registered when installing module's default config - https://www.drupal.org/project/drupal/issues/3416735": "https://git.drupalcode.org/project/drupal/-/merge_requests/10421.diff",
-                "Allow recipe command to write to the container ensuring that cache does not be cleared after a recipe installs a module - https://www.drupal.org/project/drupal/issues/3315694": "patches/drupal-core-3315694-1.patch"
-            }
+                "Stream wrappers not registered when installing module's default config - https://www.drupal.org/project/drupal/issues/3416735": "https://git.drupalcode.org/project/drupal/-/merge_requests/10421.diff"            }
         },
         "drupal-scaffold": {
             "locations": {
