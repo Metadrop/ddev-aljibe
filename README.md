@@ -85,7 +85,7 @@ To transform a legacy project to Ddev Aljibe, the following steps must be follow
 
 1. Edit .ddev/config.yml to fine tune the environment.
 1. Edit .ddev/aljibe.yml to set deault site name (the folder inside sites) and all themes to be transpiled
-1. update .gitignore to look like [this](https://github.com/Metadrop/ddev-aljibe/blob/main/aljibe-kickstart/.gitignore).
+1. update .gitignore to look like [this](https://github.com/Metadrop/ddev-aljibe/blob/main/kickstart/common/.gitignore).
 
 If you come from a [boilerplate](https://github.com/Metadrop/drupal-boilerplate) project:
 
