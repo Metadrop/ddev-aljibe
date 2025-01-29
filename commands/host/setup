@@ -49,7 +49,7 @@ handle_options() {
   while [ $# -gt 0 ]; do
     case $1 in
       -a | --all)
-        SITES=all
+        INSTALL_ALL=1
         shift
         ;;
       -h | --help)
@@ -128,8 +128,8 @@ fi
 
 # Try to install sites if not --no-install is given
 if [ "$NO_INSTALL" -eq 0 ]; then
-    if [ "$SITES" == "all" ]; then
-        mapfile -t SITES < <(ddev drush site:alias --fields=name --format=list --filter=.local | sed 's/@//' | sed 's/.local//')
+    if [ "$INSTALL_ALL" -eq 1 ]; then
+        SITES=($(get_all_installable_sites))
     fi
     for SITE in "${SITES[@]}"; do
         echo

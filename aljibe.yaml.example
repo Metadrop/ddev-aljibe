@@ -3,7 +3,8 @@
 ##
 ## Aljibe config file
 ##
-## Here you can customize Aljibe related configs, feel free to add any other configuration you need.
+## Here you can customize Aljibe related configs, feel free to add any other
+## configuration you need.
 ## This config can be obtained with ddev aljibe-config command.
 ##
 ## Examples:
@@ -15,6 +16,17 @@
 default_site: self
 theme_paths:
   custom_theme: /var/www/html/web/themes/custom/custom_theme
+
+##
+# The installable_sites_aliases variable is an optional list of Drush aliases for installable
+# sites. It allows overriding the default behavior of Aljibe, which detects all
+# .local aliases when running ddev setup -a, installing only the
+# sites defined here.
+##
+# installable_sites_aliases:
+#   - site1.local
+#   - site2.custom
+#   - site3.ddev
 
 ##
 # Some commands can be executed before and after the setup process.

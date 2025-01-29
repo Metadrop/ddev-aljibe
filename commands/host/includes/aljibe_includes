@@ -49,3 +49,14 @@ run_hooks() {
 set_sites_variable() {
   mapfile -t SITES < <(find drush/sites -name '*.site.yml' -exec basename {} \; | cut -d'.' -f1)
 }
+
+get_all_installable_sites() {
+  local INSTALLABLE_SITES_ALIASES
+  readarray -t INSTALLABLE_SITES_ALIASES_LIST < <(ddev aljibe-config installable_sites_aliases)
+  if [ -n "${INSTALLABLE_SITES_ALIASES_LIST[*]}" ]; then
+    echo "${INSTALLABLE_SITES_ALIASES_LIST[@]}"
+  else
+    mapfile -t INSTALLABLE_SITES_ALIASES_LIST < <(ddev drush site:alias --fields=name --format=list --filter=.local | sed 's/@//' | sed 's/.local//')
+    echo "${INSTALLABLE_SITES_ALIASES_LIST[@]}"
+  fi
+}

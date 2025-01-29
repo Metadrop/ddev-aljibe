@@ -16,7 +16,7 @@ SITE=${1:-'self'}
 DB_FILE=${2:-''}
 
 ENV='local'
-if [ "$SITE" == "self" ]; then
+if [[ "$SITE" == *.* || "$SITE" == "self" ]]; then
     SITE_ALIAS=$SITE
 else
     SITE_ALIAS=$SITE.$ENV
