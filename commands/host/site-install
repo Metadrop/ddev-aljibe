@@ -72,8 +72,8 @@ else
     fi
   fi
 
-  cp ${DDEV_DOCROOT}/${SITE_PATH}/example.settings.local.php ${DDEV_DOCROOT}/${SITE_PATH}/settings.local.php
-  cp ${DDEV_DOCROOT}/${SITE_PATH}/example.local.drush.yml ${DDEV_DOCROOT}/${SITE_PATH}/local.drush.yml
+  [ -f "${DDEV_DOCROOT}/${SITE_PATH}/example.settings.local.php" ] && cp "${DDEV_DOCROOT}/${SITE_PATH}/example.settings.local.php" "${DDEV_DOCROOT}/${SITE_PATH}/settings.local.php"
+  [ -f "${DDEV_DOCROOT}/${SITE_PATH}/example.local.drush.yml" ] && cp "${DDEV_DOCROOT}/${SITE_PATH}/example.local.drush.yml" "${DDEV_DOCROOT}/${SITE_PATH}/local.drush.yml"
 
   ddev_drush sql:drop -y || exit 1
 
