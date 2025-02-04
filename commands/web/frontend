@@ -14,7 +14,7 @@ TASK=${1:-""}
 
 if [ -z "$1" ]
 then
-  echo "Parameter TASK is required. Usage: make frontend dev"
+  echo "Parameter TASK is required. Usage: ddev frontend dev"
   exit 1
 fi
 

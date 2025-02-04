@@ -58,20 +58,12 @@ To launch local, or env tests, you can run:
 ddev behat [local|pro|other_behat_folder] [suite]
 ```
 
-#### Launch backstopjs tests
+#### Backstopjs tests
 
-To launch backstopjs tests, you can run:
-
-```sh
-ddev backstopjs local test
-```
-
-#### Generate backstopjs references
-
-To generate backstopjs references, you can run:
+To launch backstopjs tests, or regenerate references, you can run:
 
 ```sh
-ddev backstopjs local reference
+ddev backstopjs [local|pro|other_behat_folder] [test|reference]
 ```
 
 #### Run pa11y tests
@@ -83,8 +75,6 @@ ddev pa11y [site_url]
 ``` 
 For example `ddev pa11y http://web`
 
-
-
 ### Working with frontend themes
 #### Process custom themes CSS
 
@@ -94,7 +84,9 @@ By default there is one theme defined in .ddev/aljibe.yml. You can add multiple 
 ddev frontend production [theme_name]
 ```
 
-where theme_name is the key defined in .ddev/aljibe.yml. You can run a watch command to process the CSS on the fly:
+where theme_name is the key defined in .ddev/aljibe.yml. 
+
+You can run a watch command to process the CSS on the fly:
 
 ```sh
 ddev frontend watch [theme_name]
@@ -112,7 +104,19 @@ ddev create-database <db_name>
 
 > **Note:** This command will create a database accesible with the same user and password from the main one. If you want to persist this across multiples setups, you can add this command to te pre-setup hooks in .ddev/aljibe.yml file.
 
+#### Customize sites to install on --all flag
+
+You can edit the aljibe.yaml file and add the names of the different sites you want 
+to install under the installable_sites_aliases key. This allows you to have multiple 
+sites, but by default, only specific ones will be installed with the --all flag. 
+Additional sites can be installed later using the ddev site-install command.
+
 ### Other commands
+#### Running drush on all sites
+
+```sh
+ddev all-sites-drush <drush_command>
+```
 
 #### Sync solr config
 
@@ -139,16 +143,8 @@ ddev config --auto
 
 Install the Aljibe addon. This will install all the dependant addons too:
 
-For DDEV v1.24.0 or above run:
-
 ```sh
 ddev add-on get metadrop/ddev-aljibe
-```
-
-For earlier versions of DDEV run:
-
-```sh
-ddev get metadrop/ddev-aljibe
 ```
 
 Launch Aljibe Assistant. This will guide you throught the basic Drupal site instalation process:
@@ -171,18 +167,10 @@ To transform a legacy project to Ddev Aljibe, the following steps must be follow
     ```
 
 1. Install Aljibe:
-
-    For DDEV v1.23.5 or above run:
-
     ```sh
     ddev add-on get metadrop/ddev-aljibe
     ```
 
-    For earlier versions of DDEV run:
-
-    ```sh
-    ddev get metadrop/ddev-aljibe
-    ```
 
 1. Run again ddev config, but this time go throught the assistant to set project type to Drupal, docroot folder, etc...
 
