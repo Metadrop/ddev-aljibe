@@ -2,26 +2,110 @@
 ![GitHub Release](https://img.shields.io/github/v/release/Metadrop/ddev-aljibe)
 
 # DDEV Aljibe
-
-Aljibe (ddev-aljibe) is an add-on for DDEV for Drupal projects that adds several tools in a simple and fast way, leaving a new project ready for development in a few minutes.
+## About Aljibe
+Ddev Aljibe is an add-on for DDEV for Drupal projects that adds several tools in a simple and fast way, leaving a new project ready for development in a few minutes.
 
 Aljibe sits on top of DDEV and adds some containers, configuration and commands to make the development of Drupal projects faster and easier.
 
-## Included tools
-
-- Behat: BDD and Acceptance testig
-- BackstopJS: Visual regression testing
-- Unlighthouse: Audit all website quality
-- Pa11y: Accesibility checks
-- MkDocs: Documentation wiki
-- And more...
-
-## Requirements
+### Requirements
 
 - [DDEV](https://ddev.readthedocs.io/en/stable/) v1.24.0 or higher
 - [Docker](https://www.docker.com/) 24 or higher
 
-## Starting a new project with Aljibe
+### Included tools
+
+- Behat: BDD and Acceptance testig
+- [BackstopJS](https://github.com/Metadrop/ddev-backstopjs): Visual regression testing
+- [Unlighthouse](https://github.com/Metadrop/ddev-unlighthouse): Audit all website quality
+- [Pa11y](https://github.com/Metadrop/ddev-pa11y): Accesibility checks
+- [MkDocs](https://github.com/Metadrop/ddev-mkdocs): Documentation wiki
+- [Adminer](https://github.com/ddev/ddev-adminer): Database manager
+
+> **Note:** This tool is based on DDEV, so any DDEV add-on can work with this: `ddev add-on list --all`
+
+## How to use it
+
+If you haven't already cloned or created an Aljibe project, please follow the [Setup guide](#setup-a-new-project-with-aljibe).
+
+Once the project has been configured, or if you have cloned an already setup Aljibe project, run this command to have the project ready to work with.
+
+```sh
+ddev setup [--all] [--no-install] [--no-themes]
+```
+
+Use --all to install all sites on Multisite, --no-install to prepare only the environment, and --no-themes if you don't need to transpile the CSS/JS of the themes.
+
+### Unique site install (Multisite)
+
+If you have a multisite instalation, you can install only one site by running:
+
+```sh
+ddev site-install <site_name>
+```
+
+### Create a secondary database
+
+If you need to create a secondary database, you can run:
+
+```sh
+ddev create-database <db_name>
+```
+
+**NOTE**: This command will create a database accesible with the same user and password from the main one. If you want to persist this across multiples setups, you can add this command to te pre-setup hooks in .ddev/aljibe.yml file.
+
+### Launch behat tests
+
+To launch local, or env tests, you can run:
+
+```sh
+ddev behat [local|pro|other_behat_folder] [suite]
+```
+
+### Process custom themes CSS
+
+By default there is one theme defined in .ddev/aljibe.yml. You can add multiple themes. To process them, run:
+
+```sh
+ddev frontend production [theme_name]
+```
+
+where theme_name is the key defined in .ddev/aljibe.yml. You can run a watch command to process the CSS on the fly:
+
+```sh
+ddev frontend watch [theme_name]
+```
+
+### Sync solr config
+
+If you use ddev-solr addon and need to sync the solr config from the server, you can run:
+
+```sh
+ddev solr-sync
+```
+
+### Launch backstopjs tests
+
+To launch backstopjs tests, you can run:
+
+```sh
+ddev backstopjs local test
+```
+
+### Generate backstopjs references
+
+To generate backstopjs references, you can run:
+
+```sh
+ddev backstopjs local reference
+```
+
+### Power off ddev
+
+```sh
+ddev poweroff
+```
+
+## Setup a new project with Aljibe
 
 Create a folder for your new project (e.g. `mkdir my-new-project`)
 Configure a basic ddev project:
@@ -52,7 +136,7 @@ ddev aljibe-assistant
 
 You are ready! you will have a new Drupal project based on Aljibe ready for development!
 
-## Migrate legacy projects to DDEV Aljibe
+## Setup legacy projects to DDEV Aljibe
 
 To transform a legacy project to Ddev Aljibe, the following steps must be followed, always taking into account the particularities of each project:
 
@@ -181,70 +265,6 @@ Example commands to obtain specific configurations:
   ```sh
   ddev aljibe-config default_site
   ```
-
-## Usage
-
-### Project setup in other machines
-
-Once the project has been created and uploaded to version control, anyone else working with it can clone it and with the following command you can have the project ready to work with.
-
-```sh
-ddev setup [--all] [--no-install] [--no-themes]
-```
-
-### Unique site install (Multisite)
-
-If you have a multisite instalation, you can install only one site by running:
-
-```sh
-ddev site-install <site_name>
-```
-
-### Create a secondary database
-
-If you need to create a secondary database, you can run:
-
-```sh
-ddev create-database <db_name>
-```
-
-**NOTE**: This command will create a database accesible with the same user and password from the main one. If you want to persist this across multiples setups, you can add this command to te pre-setup hooks in .ddev/aljibe.yml file.
-
-### Launch behat tests
-
-To launch local, or env tests, you can run:
-
-```sh
-ddev behat [local|pro|other_behat_folder] [suite]
-```
-
-### Process custom themes CSS
-
-By default there is one theme defined in .ddev/aljibe.yml. You can add multiple themes. To process them, run:
-
-```sh
-ddev frontend production [theme_name]
-```
-
-where theme_name is the key defined in .ddev/aljibe.yml. You can run a watch command to process the CSS on the fly:
-
-```sh
-ddev frontend watch [theme_name]
-```
-
-### Sync solr config
-
-If you use ddev-solr addon and need to sync the solr config from the server, you can run:
-
-```sh
-ddev solr-sync
-```
-
-### Power off ddev
-
-```sh
-ddev poweroff
-```
 
 ## Troubleshooting
 
