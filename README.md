@@ -269,7 +269,7 @@ Available variables for setup hooks are:
 
 In addition, all the variables [provided by ddev](https://ddev.readthedocs.io/en/stable/users/extend/custom-commands/#command-line-completion) are available on all hooks.
 
-#### installable_sites_aliases
+#### `installable_sites_aliases`
 
 You can add the names of the different sites you want install when running 
 `ddev setup --all`. Additional sites can still be installed later using the `ddev site-install MYSITE` command.
@@ -284,7 +284,7 @@ installable_sites_aliases:
 > considered as ".local" aliases, but if you have a different alias, you can specify it
 > and .local will not be appended.
 
-#### Get configuration
+## Get configuration
 You can add any other configuration you need to the `aljibe.yml` file. This config can be obtained with the `ddev aljibe-config` command.
 
 Example commands to obtain specific configurations:
