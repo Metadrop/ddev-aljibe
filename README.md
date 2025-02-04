@@ -154,7 +154,7 @@ ddev aljibe-assistant
 
 You are ready! you will have a new Drupal project based on Aljibe ready for development!
 
-## Add Aljibe to an existing projects
+## Add Aljibe to existing projects
 
 To transform a legacy project to Ddev Aljibe, the following steps must be followed, always taking into account the particularities of each project:
 
