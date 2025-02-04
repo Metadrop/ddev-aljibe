@@ -27,6 +27,7 @@ Aljibe sits on top of DDEV and adds some containers, configuration and commands 
 
 If you haven't already cloned or created an Aljibe project, please follow the [Setup guide](#setup-a-new-project-with-aljibe).
 
+### Start working
 Once the project has been configured, or if you have cloned an already setup Aljibe project, run this command to have the project ready to work with.
 
 ```sh
@@ -35,25 +36,18 @@ ddev setup [--all] [--no-install] [--no-themes]
 
 Use --all to install all sites on Multisite, --no-install to prepare only the environment, and --no-themes if you don't need to transpile the CSS/JS of the themes.
 
-### Unique site install (Multisite)
+After this, you are **ready to work on your project.**
+
+#### Unique site install (Multisite)
 
 If you have a multisite instalation, you can install only one site by running:
 
 ```sh
 ddev site-install <site_name>
 ```
+### Running tests
 
-### Create a secondary database
-
-If you need to create a secondary database, you can run:
-
-```sh
-ddev create-database <db_name>
-```
-
-**NOTE**: This command will create a database accesible with the same user and password from the main one. If you want to persist this across multiples setups, you can add this command to te pre-setup hooks in .ddev/aljibe.yml file.
-
-### Launch behat tests
+#### Behat tests
 
 To launch local, or env tests, you can run:
 
@@ -61,7 +55,35 @@ To launch local, or env tests, you can run:
 ddev behat [local|pro|other_behat_folder] [suite]
 ```
 
-### Process custom themes CSS
+#### Launch backstopjs tests
+
+To launch backstopjs tests, you can run:
+
+```sh
+ddev backstopjs local test
+```
+
+#### Generate backstopjs references
+
+To generate backstopjs references, you can run:
+
+```sh
+ddev backstopjs local reference
+```
+
+#### Run pa11y tests
+
+To run pa11y against a site, you can run:
+
+```sh
+ddev pa11y [site_url]
+``` 
+For example `ddev pa11y http://web`
+
+
+
+### Working with frontend themes
+#### Process custom themes CSS
 
 By default there is one theme defined in .ddev/aljibe.yml. You can add multiple themes. To process them, run:
 
@@ -75,7 +97,21 @@ where theme_name is the key defined in .ddev/aljibe.yml. You can run a watch com
 ddev frontend watch [theme_name]
 ```
 
-### Sync solr config
+### Customize your environment
+
+#### Create a secondary database
+
+If you need to create a secondary database, you can run:
+
+```sh
+ddev create-database <db_name>
+```
+
+> **Note:** This command will create a database accesible with the same user and password from the main one. If you want to persist this across multiples setups, you can add this command to te pre-setup hooks in .ddev/aljibe.yml file.
+
+### Other commands
+
+#### Sync solr config
 
 If you use ddev-solr addon and need to sync the solr config from the server, you can run:
 
@@ -83,23 +119,7 @@ If you use ddev-solr addon and need to sync the solr config from the server, you
 ddev solr-sync
 ```
 
-### Launch backstopjs tests
-
-To launch backstopjs tests, you can run:
-
-```sh
-ddev backstopjs local test
-```
-
-### Generate backstopjs references
-
-To generate backstopjs references, you can run:
-
-```sh
-ddev backstopjs local reference
-```
-
-### Power off ddev
+#### Power off ddev
 
 ```sh
 ddev poweroff
