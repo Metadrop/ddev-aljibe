@@ -13,7 +13,13 @@
 ## - ddev aljibe-config default_site
 ##    Will get the default site to be processed
 
+# This is the default site to be installed with ddev setup command
 default_site: self
+
+##
+# This is the default theme to be processed with ddev frontend command.
+# Multiple themes can be defined in the theme_paths variable,
+# so they are available to be processed with the ddev frontend command.
 theme_paths:
   custom_theme: /var/www/html/web/themes/custom/custom_theme
 

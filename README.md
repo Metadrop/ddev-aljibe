@@ -82,7 +82,8 @@ For example `ddev pa11y http://web`
 ### Working with frontend themes
 #### Process custom themes CSS
 
-By default there is one theme defined in .ddev/aljibe.yml. You can add multiple themes. To process them, run:
+By default there is one theme defined in .ddev/aljibe.yml with the name "custom_theme". 
+You can [add multiple themes](#advanced-configuration). To transpile them, run:
 
 ```sh
 ddev frontend production [theme_name]
@@ -96,11 +97,12 @@ You can run a watch command to process the CSS on the fly:
 ddev frontend watch [theme_name]
 ```
 
-The **production** and **watch* parameters are scripts defined in the **package.json** of the default Aljibe theme.
+The **production** and **watch** parameters are scripts defined in the **package.json** of the default Aljibe theme.
 Any scripts or commands defined there can be executed with the `ddev frontend [my_script]` command.
 
 ### Customize your environment
 
+### Other commands
 #### Create a secondary database
 
 If you need to create a secondary database, you can run:
@@ -111,7 +113,6 @@ ddev create-database <db_name>
 
 > **Note:** This command will create a database accesible with the same user and password from the main one. If you want to persist this across multiples setups, you can add this command to te pre-setup hooks in .ddev/aljibe.yml file.
 
-### Other commands
 #### Running drush on all sites
 
 ```sh
@@ -155,7 +156,7 @@ ddev aljibe-assistant
 
 You are ready! you will have a new Drupal project based on Aljibe ready for development!
 
-## Setup legacy projects to DDEV Aljibe
+## Add Aljibe to an existing projects
 
 To transform a legacy project to Ddev Aljibe, the following steps must be followed, always taking into account the particularities of each project:
 
@@ -199,11 +200,15 @@ The `aljibe.yml` file allows you to customize various aspects of the Aljibe setu
 
 ### `default_site`
 
-This option sets the default site name to be processed. It is used when no specific site name is provided.
+This option sets the default site name to be installed on setup command. 
+It is used when no specific site name is provided when running. For example,
+with this configuration:
 
 ```yaml
-default_site: self
+default_site: my_site
 ```
+`dev setup` will install the site "my_site", the same way as `dev setup my_site`.   
+
 > **NOTE**: The site names must mustch the drush aliases. Names without dots are
 > considered as ".local" aliases, but if you have a different alias, you can specify it
 > and .local will not be appended.
@@ -211,7 +216,8 @@ default_site: self
 
 ### `theme_paths`
 
-This section allows you to define paths to custom themes that need to be processed. Each theme should be listed with a unique key.
+This section allows you to define paths to custom themes. Each theme should be 
+listed with a unique key. Those themes works with the `ddev frontend` command.
 
 ```yaml
 theme_paths:
@@ -265,12 +271,10 @@ Available variables for setup hooks are:
 
 In addition, all the variables [provided by ddev](https://ddev.readthedocs.io/en/stable/users/extend/custom-commands/#command-line-completion) are available on all hooks.
 
-#### Customize sites to install on --all flag
+#### installable_sites_aliases
 
-You can edit the aljibe.yaml file and add the names of the different sites you want
-to install under the installable_sites_aliases key. This allows you to have multiple
-sites, but by default, only specific ones will be installed with the --all flag.
-Additional sites can be installed later using the `ddev site-install MYSITE` command.
+You can add the names of the different sites you want install when running 
+`ddev setup --all`. Additional sites can still be installed later using the `ddev site-install MYSITE` command.
 
 ```yaml
 installable_sites_aliases:
