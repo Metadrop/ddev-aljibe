@@ -60,11 +60,15 @@ ddev behat [local|pro|other_behat_folder] [suite]
 
 #### Backstopjs tests
 
-To launch backstopjs tests, or regenerate references, you can run:
+To launch backstopjs commands you can run:
 
 ```sh
-ddev backstopjs [local|pro|other_behat_folder] [test|reference]
+ddev backstopjs [local|pro|other_backstop_folder] [backstop_command]
 ```
+
+For example `ddev backstopjs local test` to run the tests on the local environment.
+Or `ddev backstopjs pro reference` to create a reference of the production environment.
+
 
 #### Run pa11y tests
 
@@ -92,6 +96,9 @@ You can run a watch command to process the CSS on the fly:
 ddev frontend watch [theme_name]
 ```
 
+The **production** and **watch* parameters are scripts defined in the **package.json** of the default Aljibe theme.
+Any scripts or commands defined there can be executed with the `ddev frontend [my_script]` command.
+
 ### Customize your environment
 
 #### Create a secondary database
@@ -103,13 +110,6 @@ ddev create-database <db_name>
 ```
 
 > **Note:** This command will create a database accesible with the same user and password from the main one. If you want to persist this across multiples setups, you can add this command to te pre-setup hooks in .ddev/aljibe.yml file.
-
-#### Customize sites to install on --all flag
-
-You can edit the aljibe.yaml file and add the names of the different sites you want 
-to install under the installable_sites_aliases key. This allows you to have multiple 
-sites, but by default, only specific ones will be installed with the --all flag. 
-Additional sites can be installed later using the ddev site-install command.
 
 ### Other commands
 #### Running drush on all sites
@@ -204,6 +204,10 @@ This option sets the default site name to be processed. It is used when no speci
 ```yaml
 default_site: self
 ```
+> **NOTE**: The site names must mustch the drush aliases. Names without dots are
+> considered as ".local" aliases, but if you have a different alias, you can specify it
+> and .local will not be appended.
+
 
 ### `theme_paths`
 
@@ -261,6 +265,24 @@ Available variables for setup hooks are:
 
 In addition, all the variables [provided by ddev](https://ddev.readthedocs.io/en/stable/users/extend/custom-commands/#command-line-completion) are available on all hooks.
 
+#### Customize sites to install on --all flag
+
+You can edit the aljibe.yaml file and add the names of the different sites you want
+to install under the installable_sites_aliases key. This allows you to have multiple
+sites, but by default, only specific ones will be installed with the --all flag.
+Additional sites can be installed later using the `ddev site-install MYSITE` command.
+
+```yaml
+installable_sites_aliases:
+  - site1
+  - site2
+  - site3.mylocal
+```
+> **NOTE**: The site names must mustch the drush aliases. Names without dots are 
+> considered as ".local" aliases, but if you have a different alias, you can specify it
+> and .local will not be appended.
+
+#### Get configuration
 You can add any other configuration you need to the `aljibe.yml` file. This config can be obtained with the `ddev aljibe-config` command.
 
 Example commands to obtain specific configurations:
