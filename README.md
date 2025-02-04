@@ -34,7 +34,10 @@ Once the project has been configured, or if you have cloned an already setup Alj
 ddev setup [--all] [--no-install] [--no-themes]
 ```
 
-Use --all to install all sites on Multisite, --no-install to prepare only the environment, and --no-themes if you don't need to transpile the CSS/JS of the themes.
+Use:
+- `--all` to install all sites on Multisite
+- `--no-install` to prepare only the environment
+- `--no-themes` if you don't need to transpile the CSS/JS of the themes.
 
 After this, you are **ready to work on your project.**
 
