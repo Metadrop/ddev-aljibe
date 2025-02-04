@@ -100,8 +100,6 @@ ddev frontend watch [theme_name]
 The **production** and **watch** parameters are scripts defined in the **package.json** of the default Aljibe theme.
 Any scripts or commands defined there can be executed with the `ddev frontend [my_script]` command.
 
-### Customize your environment
-
 ### Other commands
 #### Create a secondary database
 
