@@ -30,7 +30,7 @@
         "drupal/core-composer-scaffold": "^11.0",
         "drupal/core-recommended": "^11.0",
         "drush/drush": "^13.0",
-        "metadrop/drupal-artifact-builder": "^1.4"
+        "metadrop/drupal-artifact-builder": "^2.0.2"
     },
     "require-dev": {
         "metadrop/drupal-dev": "^2.6.0",
