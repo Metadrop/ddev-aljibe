@@ -25,15 +25,6 @@ $config['config_split.config_split.local']['status'] = TRUE;
 //$config['config_split.config_split.stg']['status'] = TRUE;
 //$config['config_split.config_split.pro']['status'] = TRUE;
 
-/** Trusted host configuration. */
-$settings['trusted_host_patterns'] = [
-  '^.+\.localhost$', # localhost access
-  'apache$',
-  'nginx$',
-];
-
-
-
 /** Skip file system permissions hardening. Not a security issue when developing locally. */
 $settings['skip_permissions_hardening'] = TRUE;
 
