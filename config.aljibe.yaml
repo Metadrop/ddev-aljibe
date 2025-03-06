@@ -1,4 +1,10 @@
 #ddev-generated
-# Custom config to alter composer executable in case Drupal is defining a custom version.
-# See https://github.com/ddev/ddev/issues/6602 for more details.
+fail_on_hook_fail: True
 hooks:
+  pre-start:
+   - exec-host: |
+       if pip3 show PyYAML &>/dev/null; then
+         ddev propagate-external-links
+       else
+         echo "[ERROR] Aljibe requires python with yaml extension."
+       fi
