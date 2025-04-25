@@ -10,6 +10,7 @@ source "$(dirname "$0")/includes/aljibe_includes"
 # Initialize our own variables
 NO_INSTALL=0
 NO_THEMES=0
+INSTALL_ALL=0
 
 ## Project must be running to run this command
 star_project
@@ -112,7 +113,10 @@ if [ "$NO_THEMES" -eq 0 ]; then
   echo
   echo -e "\033[32mBuilding frontend themes: \033[0m\n"
   if [ ${#THEMES[@]} -eq 0 ]; then
-    readarray -t THEMES < <(ddev aljibe-config theme_paths --keys)
+    THEMES=()
+    while IFS= read -r line; do
+      THEMES+=("$line")
+    done < <(ddev aljibe-config theme_paths --keys)
   fi
   if [ ${#THEMES[@]} -eq 0 ]; then
     echo "No themes found, any theme will be processed. If there should be any theme processed, please add them to aljibe.yml"
@@ -140,3 +144,4 @@ fi
 
 # Launch post setup hooks
 run_hooks "post_setup"
+

@@ -41,22 +41,36 @@ run_commands() {
 # Example: run_hooks "pre-install"
 run_hooks() {
   echo -e "\033[32mRunning $1 commands: \033[0m\n"
-  readarray -t CMDS < <(ddev aljibe-config hooks.$1)
+  CMDS=()
+  while IFS= read -r line; do
+    CMDS+=("$line")
+  done < <(ddev aljibe-config hooks.$1)
   run_commands "${CMDS[@]}"
 }
 
 ## Get all sites list from the drush/sites folder.
 set_sites_variable() {
-  mapfile -t SITES < <(find drush/sites -name '*.site.yml' -exec basename {} \; | cut -d'.' -f1)
+  SITES=()
+  while IFS= read -r line; do
+    SITES+=("$line")
+  done < <(find drush/sites -name '*.site.yml' -exec basename {} \; | cut -d'.' -f1)
 }
 
 get_all_installable_sites() {
   local INSTALLABLE_SITES_ALIASES
-  readarray -t INSTALLABLE_SITES_ALIASES_LIST < <(ddev aljibe-config installable_sites_aliases)
+  INSTALLABLE_SITES_ALIASES_LIST=()
+  while IFS= read -r line; do
+    INSTALLABLE_SITES_ALIASES_LIST+=("$line")
+  done < <(ddev aljibe-config installable_sites_aliases)
+
   if [ -n "${INSTALLABLE_SITES_ALIASES_LIST[*]}" ]; then
     echo "${INSTALLABLE_SITES_ALIASES_LIST[@]}"
   else
-    mapfile -t INSTALLABLE_SITES_ALIASES_LIST < <(ddev drush site:alias --fields=name --format=list --filter=.local | sed 's/@//' | sed 's/.local//')
+    INSTALLABLE_SITES_ALIASES_LIST=()
+    while IFS= read -r line; do
+      INSTALLABLE_SITES_ALIASES_LIST+=("$line")
+    done < <(ddev drush site:alias --fields=name --format=list --filter=.local | sed 's/@//' | sed 's/.local//')
     echo "${INSTALLABLE_SITES_ALIASES_LIST[@]}"
   fi
 }
+

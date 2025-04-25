@@ -45,16 +45,13 @@ TYPE=$(readConfigFile "$1 | kind")
 
 readArray () {
   if [ $RETURN_KEYS -eq 1 ]; then
-    readarray theme_paths_keys < <(readConfigFile "$1 | keys")
-    for key in "${theme_paths_keys[@]}"; do
-        echo -n "$key" | sed 's/^- //'
-    done
-    return
+    while IFS= read -r key; do
+      echo -n "$key" | sed 's/^- //'
+    done < <(readConfigFile "$1 | keys")
   else
-    readarray theme_paths < <(readConfigFile "$1[]")
-    for theme_path in "${theme_paths[@]}"; do
-        echo -n "$theme_path"
-    done
+    while IFS= read -r theme_path; do
+      echo -n "$theme_path"
+    done < <(readConfigFile "$1[]")
   fi
 }
 
@@ -76,3 +73,4 @@ case $TYPE in
     readScalar "$KEY"
     ;;
 esac
+
