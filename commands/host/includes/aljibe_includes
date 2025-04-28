@@ -2,8 +2,8 @@
 #ddev-generated
 
 # Include os-detector to have the variable DETECTED_SO
-source "$(dirname "$0")/os-detector"
-
+SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+source "${SCRIPT_DIR}/os-detector"
 
 ## Check if a project is running. If it is not, start it.
 star_project() {
