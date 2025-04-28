@@ -5,8 +5,7 @@
 ## Flags: [{"Name":"noinstall","Usage":"setup --noinstall"}]
 ## Example: ddev aljibe-kickstart
 
-SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
-source "${SCRIPT_DIR}/includes/so-compatibility"
+source "$(dirname "$0")/includes/aljibe_includes"
 
 DRUPAL_VERSION=d11
 
@@ -45,10 +44,16 @@ else
 fi
 
 if [ "$CONFIRMATION" != "n" ]; then
-    d_cp_rTf ${DDEV_APPROOT}/.ddev/kickstart/common/.* ${DDEV_APPROOT}
-    d_cp_rTf ${DDEV_APPROOT}/.ddev/kickstart/common/* ${DDEV_APPROOT}
-    d_cp_rTf ${DDEV_APPROOT}/.ddev/kickstart/${DRUPAL_VERSION}/.* ${DDEV_APPROOT}
-    d_cp_rTf ${DDEV_APPROOT}/.ddev/kickstart/${DRUPAL_VERSION}/* ${DDEV_APPROOT}
+    if [ "$DETECTED_SO" = "mac" ]; then
+      cp -Rf ${DDEV_APPROOT}/.ddev/kickstart/common/.* ${DDEV_APPROOT}
+      cp -Rf ${DDEV_APPROOT}/.ddev/kickstart/common/* ${DDEV_APPROOT}
+      cp -Rf ${DDEV_APPROOT}/.ddev/kickstart/${DRUPAL_VERSION}/.* ${DDEV_APPROOT}
+      cp -Rf ${DDEV_APPROOT}/.ddev/kickstart/${DRUPAL_VERSION}/* ${DDEV_APPROOT}
+    else
+      cp -rTf ${DDEV_APPROOT}/.ddev/kickstart/common ${DDEV_APPROOT}
+      cp -rTf ${DDEV_APPROOT}/.ddev/kickstart/${DRUPAL_VERSION} ${DDEV_APPROOT}
+    fi
+
     if [ DRUPAL_VERSION == "d11" ]; then
       ddev config --project-type=drupal11 --docroot=web
     else

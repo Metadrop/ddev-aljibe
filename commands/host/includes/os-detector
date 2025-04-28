@@ -1,0 +1,7 @@
+#!/bin/bash
+UNAMEINFO="$(uname -s)"
+case "${UNAMEINFO}" in
+    Linux*)     DETECTED_SO=linux;;
+    Darwin*)    DETECTED_SO=mac;;
+    *)          DETECTED_SO=linux;;
+esac
