@@ -46,11 +46,11 @@ TYPE=$(readConfigFile "$1 | kind")
 readArray () {
   if [ $RETURN_KEYS -eq 1 ]; then
     while IFS= read -r key; do
-      echo -n "$key" | sed 's/^- //'
+      echo "$key" | sed 's/^- //'
     done < <(readConfigFile "$1 | keys")
   else
     while IFS= read -r theme_path; do
-      echo -n "$theme_path"
+      echo "$theme_path"
     done < <(readConfigFile "$1[]")
   fi
 }
