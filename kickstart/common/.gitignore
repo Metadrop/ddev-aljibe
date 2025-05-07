@@ -44,6 +44,8 @@
 /web/sites/*/files
 /private-files/*
 !/private-files/.gitkeep
+/secrets/*
+!/secrets/.gitkeep
 
 ## Translations
 /web/sites/*/translations/*
@@ -68,6 +70,7 @@ settings.ddev*.php
 
 ## Aljibe
 .ddev/kickstart
+.ddev/config.secrets.yml
 
 ## mkdocs
 docs/site
