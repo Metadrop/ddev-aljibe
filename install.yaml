@@ -6,7 +6,7 @@ project_files:
  - kickstart
  - aljibe.yaml.example
  - site-profiles
- - config.aljibe.yaml
+ - config.secrets.yaml
 
 ddev_version_constraint: '>= v1.24.1'
 

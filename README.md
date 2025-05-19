@@ -284,6 +284,42 @@ installable_sites_aliases:
 > considered as ".local" aliases, but if you have a different alias, you can specify it
 > and .local will not be appended.
 
+## Secrets management
+
+Two recommended approaches for managing secrets in Drupal projects:
+
+### 1. Environment variables via `config.secrets.yaml`
+
+- Define sensitive variables under the `web_environment` key in `config.secrets.yaml`:
+  ```yaml
+  web_environment:
+    - SECRET_KEY: "value"
+    - ANOTHER_SECRET: "another_value"
+  ```
+- **Ensure the file is git-ignored**.
+- Ensure the environment variables are available to Drupal (typically set by your application server or local environment).
+- Load the secret in your `settings.php` or equivalent:
+  ```php
+  $config['some_module']['some_key'] = getenv('SECRET_KEY');
+  ```
+
+### 2. Secret config files in `${PROJECT_ROOT}/secrets`
+
+- Place secret PHP files (e.g., `config.secrets.php`) in the `${PROJECT_ROOT}/secrets` directory. This directory must be git-ignored.
+- In the secret file, define or override configuration:
+  ```php
+  <?php
+  $config['some_module']['some_key'] = 'secret_value';
+  ```
+- Include the secret file in your Drupal settings:
+  ```php
+  if (file_exists($app_root . '/' . $site_path . '/../secrets/config.secrets.php')) {
+      include $app_root . '/' . $site_path . '/../secrets/config.secrets.php';
+  }
+  ```
+
+Both methods can be used as needed. The secret values must never be committed to version control or made public.
+
 ## Get configuration
 You can add any other configuration you need to the `aljibe.yml` file. This config can be obtained with the `ddev aljibe-config` command.
 
