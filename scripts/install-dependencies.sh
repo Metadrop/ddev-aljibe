@@ -8,6 +8,7 @@ ADDONS=(
     "ddev-mkdocs|metadrop/ddev-mkdocs"
     "ddev-backstopjs|metadrop/ddev-backstopjs"
     "ddev-selenium|metadrop/ddev-selenium"
+    "ddev-selenium-video|metadrop/ddev-selenium-video"
     "ddev-pa11y|metadrop/ddev-pa11y"
     "ddev-unlighthouse|metadrop/ddev-unlighthouse"
     "ddev-aljibe-assistant|metadrop/ddev-aljibe-assistant"
