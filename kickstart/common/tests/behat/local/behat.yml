@@ -58,7 +58,17 @@ default:
         - Metadrop\Behat\Context\UsersContext
         - Metadrop\Behat\Context\WaitingContext
         - Metadrop\Behat\Context\MediaContext
-
+        - Metadrop\Behat\Context\VideoRecordingContext:
+            parameters:
+              enabled: false
+              show_test_info_screen: true
+              show_test_info_screen_time: 2000
+              show_green_screen: false
+              show_green_screen_time: 1000
+              show_step_info_bubble: true
+              show_step_info_bubble_time: 2000
+              show_error_info_bubble: true
+              show_error_info_bubble_time: 2000
   extensions:
     Drupal\MinkExtension:
       ajax_timeout: 5
