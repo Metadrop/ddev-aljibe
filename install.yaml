@@ -11,5 +11,6 @@ project_files:
 ddev_version_constraint: '>= v1.24.1'
 
 post_install_actions:
-  - ./scripts/install-dependencies.sh
+  - chmod a+x ./scripts/aljibe-install-dependencies.sh
+  - ./scripts/aljibe-install-dependencies.sh
   - test -f aljibe.yaml || cp aljibe.yaml.example aljibe.yaml
