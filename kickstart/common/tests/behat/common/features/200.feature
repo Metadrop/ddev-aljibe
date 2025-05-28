@@ -1,4 +1,5 @@
-Feature: As a user
+Feature:
+  As a user
   I want to visit the following pages
   So that I can browse the site!
 

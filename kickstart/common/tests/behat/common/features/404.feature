@@ -1,4 +1,5 @@
-Feature: As a system
+Feature:
+  As a system
   I want to make not-found the following pages
   So user cannot access where they should not!
 
