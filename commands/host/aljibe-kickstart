@@ -2,7 +2,7 @@
 #ddev-generated
 ## Description: Copy kickstar files to the project root
 ## Usage: aljibe-kickstart [options]
-## Flags: [{"Name":"noinstall","Usage":"setup --noinstall"}]
+## Flags: [{"Name":"yes","Shorthand":"y","Usage":"Auto-confirm without prompting"}]
 ## Example: ddev aljibe-kickstart
 
 source "$(dirname "$0")/includes/aljibe_includes"
