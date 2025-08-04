@@ -3,6 +3,7 @@
 #ddev-generated
 ## Description: Get aljibe config values. Special case for theme_path, where we get a list of theme paths without keys.
 ## Usage: aljibe-config [config_tag]
+## Flags: [{"Name":"keys","Shorthand":"k","Usage":"Return keys instead of values for arrays/maps"}]
 ## Example: "ddev aljibe-config theme_path"
 ## Example: "ddev aljibe-config otherkey"
 

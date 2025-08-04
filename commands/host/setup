@@ -2,6 +2,7 @@
 #ddev-generated
 ## Description: Configure environment and optionally install sites
 ## Usage: setup [flags]
+## Flags: [{"Name":"all","Shorthand":"a","Usage":"Install all sites"},{"Name":"help","Shorthand":"h","Usage":"Show help message"},{"Name":"no-install","Shorthand":"n","Usage":"Do not install sites"},{"Name":"no-themes","Shorthand":"f","Usage":"Do not process themes"},{"Name":"sites","Shorthand":"s","Usage":"Install specific sites (comma-separated)"},{"Name":"themes","Shorthand":"t","Usage":"Only process specified themes (comma-separated)"}]
 ## Example: ddev setup --no-install
 
 # Include the ddev_checks script
