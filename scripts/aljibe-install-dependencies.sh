@@ -57,9 +57,12 @@ if is_addon_installed "memcached"; then
 fi
 
 # ddev-selenium-video is mandatory if ddev-selenium is installed
-echo "Forcing install of ddev-selenium-video..."
-if is_addon_installed "ddev-selenium"; then
-  echo "ddev-selenium is installed, installing ddev-selenium-video..."
-  ddev add-on get metadrop/ddev-selenium-video
+#  echo "Forcing install of ddev-selenium-video..."
+#  if is_addon_installed "ddev-selenium"; then
+#    echo "ddev-selenium is installed, installing ddev-selenium-video..."
+#    ddev add-on get metadrop/ddev-selenium-video
+#  fi
+if is_addon_installed "ddev-selenium-video"; then
+  echo "Removing ddev-selenium-video as it has a bug that may consume lots of resources."
+  ddev add-on remove metadrop/ddev-selenium-video
 fi
-
