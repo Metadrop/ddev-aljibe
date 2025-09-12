@@ -1,7 +1,6 @@
 #!/bin/bash
 #ddev-generated
 
-
 # Define array of addons to install
 # Format: "addon_name|addon_path"
 ADDONS=(
@@ -51,8 +50,8 @@ for addon in "${ADDONS[@]}"; do
 done
 
 # Check for memcached and install redis if needed
-if is_addon_installed "memcached"; then
-    echo "memcached is not installed. Installing ddev/ddev-redis..."
+if ! is_addon_installed "memcached"; then
+    echo "Installing ddev/ddev-redis..."
     install_addon "ddev-redis" "ddev/ddev-redis"
 fi
 
@@ -62,6 +61,10 @@ fi
 #    echo "ddev-selenium is installed, installing ddev-selenium-video..."
 #    ddev add-on get metadrop/ddev-selenium-video
 #  fi
+
+## We have to do this because ddev-selenium-video has a bug that make selenium
+## keep ffmpeg processes running and consuming all resources. We will restore it
+## when the bug is fixed.
 if is_addon_installed "ddev-selenium-video"; then
   echo "Removing ddev-selenium-video as it has a bug that may consume lots of resources."
   ddev add-on remove metadrop/ddev-selenium-video
