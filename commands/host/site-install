@@ -45,8 +45,9 @@ else
   mkdir -p ${DDEV_DOCROOT}/${SITE_PATH}/files/behat/errors
 
   # Ensure that the settings.ddev.php file exists and is properly configured
-  if [ "$SITE" != "default" ]; then
-    # Remove dots and colons from the site name to make it a valid database name
+  if [ "$SITE" == "default" ] || [ "$SITE" == "self" ]; then
+    DBNAME=""  # Use default db
+  else
     DBNAME=$(echo $SITE | sed 's/[^a-zA-Z0-9]//g')
     if [ ! -f ${DDEV_DOCROOT}/${SITE_PATH}/settings.ddev.php ]; then
       cp ${DDEV_DOCROOT}/sites/default/settings.ddev.php ${DDEV_DOCROOT}/${SITE_PATH}/settings.ddev.php
@@ -81,7 +82,7 @@ else
   run_hooks "pre_site_install"
   if [ ! -z "$DB_FILE" ]; then
     run_hooks "pre_site_install_db"
-    ddev import-db --file $DB_FILE --database db_${DBNAME} || exit 1
+    ddev import-db --file $DB_FILE --database db${DBNAME:+_$DBNAME} || exit 1
     ddev_drush deploy
     run_hooks "post_site_install_db"
   else
