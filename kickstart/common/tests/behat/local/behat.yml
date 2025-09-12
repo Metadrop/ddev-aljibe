@@ -84,6 +84,7 @@ default:
         capabilities:
           browser: "chrome"
           extra_capabilities:
+            acceptInsecureCerts: true
             chromeOptions:
               w3c: false
               args:
