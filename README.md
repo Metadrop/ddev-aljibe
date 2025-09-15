@@ -43,7 +43,7 @@ After this, you are **ready to work on your project.**
 
 #### Unique site install (Multisite)
 
-If you have a multisite instalation, you can install only one site by running:
+If you have a multisite installation, you can install only one site by running:
 
 ```sh
 ddev site-install <site_name>
