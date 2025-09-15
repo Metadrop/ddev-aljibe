@@ -1,7 +1,7 @@
 #!/bin/bash
 #ddev-generated
-## Description: Install given drupal site. A db can be passed as second parámeter
-## Usage: site-install
+## Description: Install given drupal site. A db can be passed as second parameter
+## Usage: site-install [site] [db file]
 ## Example: ddev site-install default
 
 
