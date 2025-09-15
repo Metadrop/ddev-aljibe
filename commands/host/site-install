@@ -20,6 +20,28 @@ SITE_PROFILES_FILE=".ddev/site-profiles"
 SITE=${1:-'self'}
 
 DB_FILE=${2:-''}
+if [ -z "$DB_FILE" ]; then
+  INSTALL_MODE="config"
+  echo "Installing site from configuration"
+else
+  INSTALL_MODE="db"
+  echo "Installing from database file: $DB_FILE"
+fi
+
+if [ "$INSTALL_MODE" == "db" ]; then
+  if [ ! -f "$DB_FILE" ]; then
+    echo "Error: database file '$DB_FILE' not found."
+    exit 1
+  fi
+fi
+
+if [ "$INSTALL_MODE" == "config" ]; then
+  if [ ! -f "config/default/core.extension.yml" ]; then
+    echo "Error: no configuration found in ../config/default. Cannot install site using configuration. Please provide a Drupal configuration export at config/default or install from a database file."
+    exit 1
+  fi
+fi
+
 
 ENV='local'
 if [[ "$SITE" == *.* || "$SITE" == "self" ]]; then
@@ -96,18 +118,26 @@ ddev_drush sql:drop -y || exit 1
 # If a database file is given, import it to the site if not, install the site
 run_hooks "pre_site_install"
 if [ ! -z "$DB_FILE" ]; then
+if [ "$INSTALL_MODE" == "db" ]; then
   run_hooks "pre_site_install_db"
   ddev import-db --file $DB_FILE --database db${DBNAME:+_$DBNAME} || exit 1
   ddev_drush deploy
   run_hooks "post_site_install_db"
-else
+elif [ "$INSTALL_MODE" == "config" ]; then
+  echo -e "\nInstalling site '${SITE}' using drupal profile '${DRUPAL_PROFILE}'"
   run_hooks "pre_site_install_config"
+
   ddev_drush site:install ${DRUPAL_PROFILE:+$DRUPAL_PROFILE }--existing-config -y --sites-subdir=${SITE_PATH#sites/} || exit 1
   ddev_drush cr
   ddev_drush cim -y
   ddev_drush cr
   run_hooks "post_site_install_config"
+else
+  echo "Error: Unknown installation mode '$INSTALL_MODE'."
+  exit 1
 fi
+
+
 run_hooks "post_site_install"
 ddev status
 echo "Now you can login to your site:\n"
