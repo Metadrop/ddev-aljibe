@@ -61,6 +61,8 @@ else
   fi
   ddev create-database db_${DBNAME} || exit 1
 fi
+echo "Using database: db${DBNAME:+_$DBNAME}"
+
 
 # Take care of redis settings if needed
 if [ -f ${DDEV_DOCROOT}/sites/default/settings.ddev.redis.php ]; then
