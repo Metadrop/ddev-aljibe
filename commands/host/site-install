@@ -33,14 +33,14 @@ DRUPAL_PROFILE=""
 if [ -f $SITE_PROFILES_FILE ]; then
   source  $SITE_PROFILES_FILE
 else
-  echo "No SITE_PROFILES_FILE found. If your site needs a custom profile, please create a $SITE_PROFILES_FILE file."
+  echo "No SITE_PROFILES_FILE found. If your site needs a custom profile, please edit $SITE_PROFILES_FILE file."
 fi
 
 cd  $DDEV_APPROOT || exit 1
 
 ## Check if drush alias for this site exists when drush @${SITE_ALIAS} return "could not be found"
 if [ "$(ddev_drush status 2>&1 | grep 'could not be found')" ]; then
-  echo "Drush alias for ${SITE} does not exist. Please create it first so that the site can be installed."
+  echo "Drush alias for '${SITE}' does not exist. Please create it first so that the site can be installed."
   exit 1
 else
   SITE_PATH=$(ddev_drush status --field=site)
