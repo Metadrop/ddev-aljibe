@@ -23,9 +23,9 @@ DB_FILE=${2:-''}
 
 ENV='local'
 if [[ "$SITE" == *.* || "$SITE" == "self" ]]; then
-    SITE_ALIAS=$SITE
+  SITE_ALIAS=$SITE
 else
-    SITE_ALIAS=$SITE.$ENV
+  SITE_ALIAS=$SITE.$ENV
 fi
 
 
