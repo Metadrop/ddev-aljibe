@@ -62,7 +62,7 @@ cd  $DDEV_APPROOT || exit 1
 
 ## Check if drush alias for this site exists when drush @${SITE_ALIAS} return "could not be found"
 if [ "$(ddev_drush status 2>&1 | grep 'could not be found')" ]; then
-  echo "Drush alias for '${SITE}' does not exist. Please create it first so that the site can be installed."
+  echo "Error: Drush alias for '${SITE}' does not exist. Please create it first so that the site can be installed."
   exit 1
 fi
 
