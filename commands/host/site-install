@@ -81,8 +81,15 @@ if [ -f ${DDEV_DOCROOT}/sites/default/settings.ddev.redis.php ]; then
   fi
 fi
 
-[ -f "${DDEV_DOCROOT}/${SITE_PATH}/example.settings.local.php" ] && cp "${DDEV_DOCROOT}/${SITE_PATH}/example.settings.local.php" "${DDEV_DOCROOT}/${SITE_PATH}/settings.local.php"
-[ -f "${DDEV_DOCROOT}/${SITE_PATH}/example.local.drush.yml" ] && cp "${DDEV_DOCROOT}/${SITE_PATH}/example.local.drush.yml" "${DDEV_DOCROOT}/${SITE_PATH}/local.drush.yml"
+if [ -f "${DDEV_DOCROOT}/${SITE_PATH}/example.settings.local.php" ]; then
+  cp "${DDEV_DOCROOT}/${SITE_PATH}/example.settings.local.php" "${DDEV_DOCROOT}/${SITE_PATH}/settings.local.php"
+  echo "File 'example.settings.local.php' in site folder copied to 'settings.local.php'"
+fi
+
+if [ -f "${DDEV_DOCROOT}/${SITE_PATH}/example.local.drush.yml" ]; then
+  cp "${DDEV_DOCROOT}/${SITE_PATH}/example.local.drush.yml" "${DDEV_DOCROOT}/${SITE_PATH}/local.drush.yml"
+  echo "File 'example.local.drush.yml' in site folder copied to 'local.drush.yml'"
+fi
 
 ddev_drush sql:drop -y || exit 1
 
