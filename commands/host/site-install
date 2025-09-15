@@ -42,63 +42,64 @@ cd  $DDEV_APPROOT || exit 1
 if [ "$(ddev_drush status 2>&1 | grep 'could not be found')" ]; then
   echo "Drush alias for '${SITE}' does not exist. Please create it first so that the site can be installed."
   exit 1
-else
-  echo "Using '${SITE}' drush alias."
-  SITE_PATH=$(ddev_drush status --field=site)
-  chmod u+w ${DDEV_DOCROOT}/${SITE_PATH} -R
-  mkdir -p ${DDEV_DOCROOT}/${SITE_PATH}/files/behat/errors
-
-  # Ensure that the settings.ddev.php file exists and is properly configured
-  if [ "$SITE" == "default" ] || [ "$SITE" == "self" ]; then
-    DBNAME=""  # Use default db
-  else
-    DBNAME=$(echo $SITE | sed 's/[^a-zA-Z0-9]//g')
-    if [ ! -f ${DDEV_DOCROOT}/${SITE_PATH}/settings.ddev.php ]; then
-      cp ${DDEV_DOCROOT}/sites/default/settings.ddev.php ${DDEV_DOCROOT}/${SITE_PATH}/settings.ddev.php
-      sed -i "s/\['database'\] = \"db\"/\['database'\] = \"db_${DBNAME}\"/g" ${DDEV_DOCROOT}/${SITE_PATH}/settings.ddev.php
-    fi
-    ddev create-database db_${DBNAME} || exit 1
-  fi
-
-  # Take care of redis settings if needed
-  if [ -f ${DDEV_DOCROOT}/sites/default/settings.ddev.redis.php ]; then
-    cp ${DDEV_DOCROOT}/sites/default/settings.ddev.redis.php ${DDEV_DOCROOT}/${SITE_PATH}/settings.ddev.redis.php
-
-    SETTINGS_FILE_NAME="${DDEV_DOCROOT}/${SITE_PATH}/settings.php"
-    if grep "Include settings required for Redis cache" $SETTINGS_FILE_NAME; then
-      echo "Settings file already includes settings.ddev.redis.php"
-    else
-      echo "Settings file name: ${SETTINGS_FILE_NAME}"
-      grep -qF 'settings.ddev.redis.php' $SETTINGS_FILE_NAME || echo "
-      // Include settings required for Redis cache.
-      if ((file_exists(__DIR__ . '/settings.ddev.redis.php') && getenv('IS_DDEV_PROJECT') == 'true')) {
-        include __DIR__ . '/settings.ddev.redis.php';
-      }" >> $SETTINGS_FILE_NAME
-    fi
-  fi
-
-  [ -f "${DDEV_DOCROOT}/${SITE_PATH}/example.settings.local.php" ] && cp "${DDEV_DOCROOT}/${SITE_PATH}/example.settings.local.php" "${DDEV_DOCROOT}/${SITE_PATH}/settings.local.php"
-  [ -f "${DDEV_DOCROOT}/${SITE_PATH}/example.local.drush.yml" ] && cp "${DDEV_DOCROOT}/${SITE_PATH}/example.local.drush.yml" "${DDEV_DOCROOT}/${SITE_PATH}/local.drush.yml"
-
-  ddev_drush sql:drop -y || exit 1
-
-  # If a database file is given, import it to the site if not, install the site
-  run_hooks "pre_site_install"
-  if [ ! -z "$DB_FILE" ]; then
-    run_hooks "pre_site_install_db"
-    ddev import-db --file $DB_FILE --database db${DBNAME:+_$DBNAME} || exit 1
-    ddev_drush deploy
-    run_hooks "post_site_install_db"
-  else
-    run_hooks "pre_site_install_config"
-    ddev_drush site:install ${DRUPAL_PROFILE:+$DRUPAL_PROFILE }--existing-config -y --sites-subdir=${SITE_PATH#sites/} || exit 1
-    ddev_drush cr
-    ddev_drush cim -y
-    ddev_drush cr
-    run_hooks "post_site_install_config"
-  fi
-  run_hooks "post_site_install"
-  ddev status
-  echo "Now you can login to your site:\n"
-  ddev_drush uli
 fi
+
+
+echo "Using '${SITE}' drush alias."
+SITE_PATH=$(ddev_drush status --field=site)
+chmod u+w ${DDEV_DOCROOT}/${SITE_PATH} -R
+mkdir -p ${DDEV_DOCROOT}/${SITE_PATH}/files/behat/errors
+
+# Ensure that the settings.ddev.php file exists and is properly configured
+if [ "$SITE" == "default" ] || [ "$SITE" == "self" ]; then
+  DBNAME=""  # Use default db
+else
+  DBNAME=$(echo $SITE | sed 's/[^a-zA-Z0-9]//g')
+  if [ ! -f ${DDEV_DOCROOT}/${SITE_PATH}/settings.ddev.php ]; then
+    cp ${DDEV_DOCROOT}/sites/default/settings.ddev.php ${DDEV_DOCROOT}/${SITE_PATH}/settings.ddev.php
+    sed -i "s/\['database'\] = \"db\"/\['database'\] = \"db_${DBNAME}\"/g" ${DDEV_DOCROOT}/${SITE_PATH}/settings.ddev.php
+  fi
+  ddev create-database db_${DBNAME} || exit 1
+fi
+
+# Take care of redis settings if needed
+if [ -f ${DDEV_DOCROOT}/sites/default/settings.ddev.redis.php ]; then
+  cp ${DDEV_DOCROOT}/sites/default/settings.ddev.redis.php ${DDEV_DOCROOT}/${SITE_PATH}/settings.ddev.redis.php
+
+  SETTINGS_FILE_NAME="${DDEV_DOCROOT}/${SITE_PATH}/settings.php"
+  if grep "Include settings required for Redis cache" $SETTINGS_FILE_NAME; then
+    echo "Settings file already includes settings.ddev.redis.php"
+  else
+    echo "Settings file name: ${SETTINGS_FILE_NAME}"
+    grep -qF 'settings.ddev.redis.php' $SETTINGS_FILE_NAME || echo "
+    // Include settings required for Redis cache.
+    if ((file_exists(__DIR__ . '/settings.ddev.redis.php') && getenv('IS_DDEV_PROJECT') == 'true')) {
+      include __DIR__ . '/settings.ddev.redis.php';
+    }" >> $SETTINGS_FILE_NAME
+  fi
+fi
+
+[ -f "${DDEV_DOCROOT}/${SITE_PATH}/example.settings.local.php" ] && cp "${DDEV_DOCROOT}/${SITE_PATH}/example.settings.local.php" "${DDEV_DOCROOT}/${SITE_PATH}/settings.local.php"
+[ -f "${DDEV_DOCROOT}/${SITE_PATH}/example.local.drush.yml" ] && cp "${DDEV_DOCROOT}/${SITE_PATH}/example.local.drush.yml" "${DDEV_DOCROOT}/${SITE_PATH}/local.drush.yml"
+
+ddev_drush sql:drop -y || exit 1
+
+# If a database file is given, import it to the site if not, install the site
+run_hooks "pre_site_install"
+if [ ! -z "$DB_FILE" ]; then
+  run_hooks "pre_site_install_db"
+  ddev import-db --file $DB_FILE --database db${DBNAME:+_$DBNAME} || exit 1
+  ddev_drush deploy
+  run_hooks "post_site_install_db"
+else
+  run_hooks "pre_site_install_config"
+  ddev_drush site:install ${DRUPAL_PROFILE:+$DRUPAL_PROFILE }--existing-config -y --sites-subdir=${SITE_PATH#sites/} || exit 1
+  ddev_drush cr
+  ddev_drush cim -y
+  ddev_drush cr
+  run_hooks "post_site_install_config"
+fi
+run_hooks "post_site_install"
+ddev status
+echo "Now you can login to your site:\n"
+ddev_drush uli
