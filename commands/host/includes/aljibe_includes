@@ -44,12 +44,18 @@ run_commands() {
 #   $1: hook name
 # Example: run_hooks "pre-install"
 run_hooks() {
-  echo -e "\n\033[32mRunning Aljibe's $1 hooks: \033[0m\n"
   CMDS=()
   while IFS= read -r line; do
-    CMDS+=("$line")
+    if [ ! -z "$line" ]; then
+      CMDS+=("$line")
+    fi
+
   done < <(ddev aljibe-config hooks.$1)
-  run_commands "${CMDS[@]}"
+
+  if [ ${#CMDS[@]} -ne 0 ]; then
+    echo -e "\n\033[32mRunning Aljibe's $1 hooks: \033[0m\n"
+    run_commands "${CMDS[@]}"
+  fi
 }
 
 ## Get all sites list from the drush/sites folder.
