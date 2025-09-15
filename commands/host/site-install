@@ -43,6 +43,7 @@ if [ "$(ddev_drush status 2>&1 | grep 'could not be found')" ]; then
   echo "Drush alias for '${SITE}' does not exist. Please create it first so that the site can be installed."
   exit 1
 else
+  echo "Using '${SITE}' drush alias."
   SITE_PATH=$(ddev_drush status --field=site)
   chmod u+w ${DDEV_DOCROOT}/${SITE_PATH} -R
   mkdir -p ${DDEV_DOCROOT}/${SITE_PATH}/files/behat/errors
