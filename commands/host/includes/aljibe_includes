@@ -44,7 +44,7 @@ run_commands() {
 #   $1: hook name
 # Example: run_hooks "pre-install"
 run_hooks() {
-  echo -e "\033[32mRunning $1 commands: \033[0m\n"
+  echo -e "\n\033[32mRunning Aljibe's $1 hooks: \033[0m\n"
   CMDS=()
   while IFS= read -r line; do
     CMDS+=("$line")
@@ -77,4 +77,3 @@ get_all_installable_sites() {
     echo "${INSTALLABLE_SITES_ALIASES_LIST[@]}"
   fi
 }
-
