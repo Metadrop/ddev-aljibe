@@ -4,6 +4,12 @@
 ## Usage: site-install
 ## Example: ddev site-install default
 
+
+# Run a drush command using ddev.
+ddev_drush() {
+  ddev drush @${SITE_ALIAS} "$@"
+}
+
 # Include the ddev_checks script
 source "$(dirname "$0")/includes/aljibe_includes"
 
@@ -22,9 +28,6 @@ else
     SITE_ALIAS=$SITE.$ENV
 fi
 
-ddev_drush() {
-  ddev drush @${SITE_ALIAS} "$@"
-}
 
 DRUPAL_PROFILE=""
 if [ -f $SITE_PROFILES_FILE ]; then
