@@ -114,12 +114,14 @@ if [ -f "${DDEV_DOCROOT}/${SITE_PATH}/example.local.drush.yml" ]; then
   echo "File 'example.local.drush.yml' in site folder copied to 'local.drush.yml' and configured with DDEV primary URL"
 fi
 
+echo -e "\nDropping existing database (if any)"
 ddev_drush sql:drop -y || exit 1
+
 
 # If a database file is given, import it to the site if not, install the site
 run_hooks "pre_site_install"
-if [ ! -z "$DB_FILE" ]; then
 if [ "$INSTALL_MODE" == "db" ]; then
+  echo -e "\nLoading database from file $DB_FILE"
   run_hooks "pre_site_install_db"
   ddev import-db --file $DB_FILE --database db${DBNAME:+_$DBNAME} || exit 1
   ddev_drush deploy
