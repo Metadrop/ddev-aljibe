@@ -110,7 +110,8 @@ fi
 
 if [ -f "${DDEV_DOCROOT}/${SITE_PATH}/example.local.drush.yml" ]; then
   cp "${DDEV_DOCROOT}/${SITE_PATH}/example.local.drush.yml" "${DDEV_DOCROOT}/${SITE_PATH}/local.drush.yml"
-  echo "File 'example.local.drush.yml' in site folder copied to 'local.drush.yml'"
+  sed -i -e "s|http://example.docker.localhost:8000|${DDEV_PRIMARY_URL}|g" "${DDEV_DOCROOT}/${SITE_PATH}/local.drush.yml"
+  echo "File 'example.local.drush.yml' in site folder copied to 'local.drush.yml' and configured with DDEV primary URL"
 fi
 
 ddev_drush sql:drop -y || exit 1
