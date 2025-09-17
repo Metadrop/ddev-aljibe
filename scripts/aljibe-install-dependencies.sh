@@ -10,6 +10,7 @@ ADDONS=(
     "ddev-selenium|metadrop/ddev-selenium"
     "ddev-pa11y|metadrop/ddev-pa11y"
     "ddev-unlighthouse|metadrop/ddev-unlighthouse"
+    "ddev-newman|metadrop/ddev-newman"
     "ddev-aljibe-assistant|metadrop/ddev-aljibe-assistant"
 )
 
