@@ -22,6 +22,9 @@
 *.rar
 *.7z
 
+## Manual backups
+/backups/*
+
 # -------------------------
 # Drupal
 ## Composer managed paths.
