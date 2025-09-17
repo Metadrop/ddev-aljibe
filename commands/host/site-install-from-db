@@ -1,11 +1,14 @@
 #!/bin/bash
 #ddev-generated
-## Description: Install given drupal site
+## Description: Install given drupal site (DEPRECATED: use site-install with params)
 ## Usage: site-install-from-db SITE DBFILE
 ## Example: ddev site-install-from-db default dbfile.sql.gz
 
 # If site is not given, assume 'self'
 SITE=${1:-'self'}
+
+echo "This command is DEPRECATED! Please, use site-install command with params to install from database"
+
 
 # If DBFILE is not passed as second parameter return error
 if [ -z "$2" ]; then
