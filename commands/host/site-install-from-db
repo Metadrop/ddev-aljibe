@@ -1,0 +1,23 @@
+#!/bin/bash
+#ddev-generated
+## Description: Install given drupal site
+## Usage: site-install-from-db SITE DBFILE
+## Example: ddev site-install-from-db default dbfile.sql.gz
+
+# If site is not given, assume 'self'
+SITE=${1:-'self'}
+
+# If DBFILE is not passed as second parameter return error
+if [ -z "$2" ]; then
+  echo "A database file is required as second parameter"
+  exit 1
+fi
+
+# If DBFILE does not exist return error
+if [ ! -f "$2" ]; then
+  echo "Database file $2 does not exist"
+  exit 1
+fi
+
+# Call site install with the database file
+ddev site-install $SITE $2
