@@ -34,6 +34,10 @@
 /web/profiles/contrib/
 /web/libraries/
 
+## Scaffold
+/web/.gitignore
+
+
 ## Sensitive information.
 /web/sites/*/settings.local.php
 
