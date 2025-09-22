@@ -37,13 +37,6 @@ if [ "$INSTALL_MODE" == "db" ]; then
   fi
 fi
 
-if [ "$INSTALL_MODE" == "config" ]; then
-  if [ ! -f "config/default/core.extension.yml" ]; then
-    echo "Error: no configuration found in ../config/default. Cannot install site using configuration. Please provide a Drupal configuration export at config/default or install from a database file."
-    exit 1
-  fi
-fi
-
 
 ENV='local'
 if [[ "$SITE" == *.* || "$SITE" == "self" ]]; then
