@@ -1,0 +1,12 @@
+#!/bin/bash
+## Description: Setup the composer public keys so composer can be diagnosed.
+## Usage: setup-composer-public-keys
+## Aliases: setup-composer-public-keys, setup-cpk
+## Example: "ddev setup-composer-public-keys"
+set -e
+
+ddev exec mkdir -p ~/.composer
+ddev exec curl https://composer.github.io/snapshots.pub -o ~/.composer/keys.dev.pub
+ddev exec curl https://composer.github.io/releases.pub -o ~/.composer/keys.tags.pub
+echo "Public keys downloaded at ~/.composer"
+
