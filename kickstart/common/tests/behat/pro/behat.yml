@@ -119,5 +119,5 @@ default:
         log_out: "Log out"
         node_submit_label: "Save and publish"
     Bex\Behat\StepTimeLoggerExtension:
-      enabled_always: true
+      enabled_always: false
       output: [console, csv]
