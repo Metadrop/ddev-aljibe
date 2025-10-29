@@ -1,6 +1,8 @@
 #!/bin/bash
 #ddev-generated
 
+set -e
+
 # Define array of addons to install
 # Format: "addon_name|addon_path"
 ADDONS=(
@@ -18,7 +20,7 @@ ADDONS=(
 ALJIBE_INSTALLED=0
 if [ -f "aljibe.yaml" ]; then
     ALJIBE_INSTALLED=1
-    echo "Aljibe is already installed, we will only update addons."
+    echo "Aljibe is already installed, update installed add-ons."
 fi
 
 # Function to check if an addon is installed
@@ -37,9 +39,11 @@ install_addon() {
     local addon_name=$(echo "$1" | tr '[:upper:]' '[:lower:]')
     local addon_path=$(echo "$2" | tr '[:upper:]' '[:lower:]')
 
-    # Install if Aljibe is not installed (ALJIBE_INSTALLED=0), or if both Aljibe and the addon are installed
-    if [ "$ALJIBE_INSTALLED" -eq 0 ] || ([ "$ALJIBE_INSTALLED" -eq 1 ] && is_addon_installed "$addon_name"); then
-        ddev add-on get "$addon_path" &> /dev/null
+    # Install if Aljibe and the addon are installed
+    if [ "$ALJIBE_INSTALLED" -eq 1 ] && is_addon_installed "$addon_name"; then
+        echo "Launching $addon_name update"
+        ddev add-on get "$addon_path"
+        echo "$addon_name update finished"
     fi
 }
 
