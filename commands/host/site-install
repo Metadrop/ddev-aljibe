@@ -5,8 +5,6 @@
 ## Example: ddev site-install default
 ## Example:\n- Install site from configuration:\n\n    ddev site-install\n\n- Install site from database file\n\n    ddev site-install default db_dump.sql\n\n- Install site 'secondary' from configuration:\n\n    ddev site-install secondary\n\nNOTE: Although [flags] is displayed at the end of the command in the `Usage` section, meaning DDEV flags, please set options between `ddev` and `site-install`. If added to the end of the command, they will be passed to site install script and will cause errors.
 
-
-
 # Run a drush command using ddev.
 ddev_drush() {
   ddev drush @${SITE_ALIAS} "$@"
@@ -46,6 +44,7 @@ else
 fi
 
 
+
 DRUPAL_PROFILE=""
 if [ -f $SITE_PROFILES_FILE ]; then
   source  $SITE_PROFILES_FILE
@@ -62,8 +61,16 @@ if [ "$(ddev_drush status 2>&1 | grep 'could not be found')" ]; then
 fi
 
 
-echo "Using '${SITE}' drush alias."
+is_remote_alias=$(ddev drush sa --fields=host @${SITE_ALIAS} | /usr/bin/grep "host:" | wc -l)
+if [ $is_remote_alias -eq 1 ]; then
+  echo "Error: the provided drush alias '@${SITE_ALIAS}' seems a remote alias and this command only works with local environments."
+fi
+
+echo "Using '${SITE_ALIAS}' drush alias."
 SITE_PATH=$(ddev_drush status --field=site)
+
+
+
 chmod u+w ${DDEV_DOCROOT}/${SITE_PATH} -R
 mkdir -p ${DDEV_DOCROOT}/${SITE_PATH}/files/behat/errors
 
