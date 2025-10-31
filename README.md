@@ -14,10 +14,10 @@ Aljibe sits on top of DDEV and adds some containers, configuration and commands 
 
 ### Included tools
 
-- Behat: BDD and Acceptance testig
+- Behat: BDD and Acceptance testing
 - [BackstopJS](https://github.com/Metadrop/ddev-backstopjs): Visual regression testing
 - [Unlighthouse](https://github.com/Metadrop/ddev-unlighthouse): Audit all website quality
-- [Pa11y](https://github.com/Metadrop/ddev-pa11y): Accesibility checks
+- [Pa11y](https://github.com/Metadrop/ddev-pa11y): Accessibility checks
 - [MkDocs](https://github.com/Metadrop/ddev-mkdocs): Documentation wiki
 - [Adminer](https://github.com/ddev/ddev-adminer): Database manager
 
@@ -28,7 +28,7 @@ Aljibe sits on top of DDEV and adds some containers, configuration and commands 
 If you haven't already cloned or created an Aljibe project, please follow the [Setup guide](#setup-a-new-project-with-aljibe).
 
 ### Start working
-Once the project has been configured, or if you have cloned an already setup Aljibe project, run this command to have the project ready to work with.
+Once the project has been configured, or if you have cloned an already set up Aljibe project, run this command to have the project ready to work with.
 
 ```sh
 ddev setup [--all] [--no-install] [--no-themes]
@@ -109,7 +109,7 @@ If you need to create a secondary database, you can run:
 ddev create-database <db_name>
 ```
 
-> **Note:** This command will create a database accesible with the same user and password from the main one. If you want to persist this across multiples setups, you can add this command to te pre-setup hooks in .ddev/aljibe.yml file.
+> **Note:** This command will create a database accessible with the same user and password from the main one. If you want to persist this across multiple setups, you can add this command to the pre-setup hooks in .ddev/aljibe.yml file.
 
 #### Running drush on all sites
 
@@ -133,14 +133,15 @@ ddev poweroff
 
 ## Setup a new project with Aljibe
 
-Create a folder for your new project (e.g. `mkdir my-new-project`)
+Create a folder for your new project (e.g. `mkdir my-new-project`).
+
 Configure a basic ddev project:
 
 ```sh
 ddev config --auto
 ```
 
-Install the Aljibe addon. This will install all the dependant addons too:
+Install the Aljibe addon. This will install all the dependent addons too:
 
 ```sh
 ddev add-on get metadrop/ddev-aljibe
@@ -164,7 +165,7 @@ ddev add-on get metadrop/ddev-aljibe-assistant
 
 To transform a legacy project to Ddev Aljibe, the following steps must be followed, always taking into account the particularities of each project:
 
-1. Clone the project without install it and remove all docker related files
+1. Clone the project without installing it and remove all docker related files
 1. Run basic ddev-config:
 
     ```sh
@@ -177,15 +178,15 @@ To transform a legacy project to Ddev Aljibe, the following steps must be follow
     ```
 
 
-1. Run again ddev config, but this time go throught the assistant to set project type to Drupal, docroot folder, etc...
+1. Run again ddev config, but this time go through the assistant to set project type to Drupal, docroot folder, etc...
 
     ```sh
     ddev config
     ```
 
 1. Edit .ddev/config.yml to fine tune the environment.
-1. Edit .ddev/aljibe.yml to set deault site name (the folder inside sites) and all themes to be transpiled
-1. update .gitignore to look like [this](https://github.com/Metadrop/ddev-aljibe/blob/main/kickstart/common/.gitignore).
+1. Edit .ddev/aljibe.yml to set default site name (the folder inside sites) and all themes to be transpiled
+1. Update .gitignore to look like [this](https://github.com/Metadrop/ddev-aljibe/blob/main/kickstart/common/.gitignore).
 
 If you come from a [boilerplate](https://github.com/Metadrop/drupal-boilerplate) project:
 
@@ -196,7 +197,7 @@ If you come from a [boilerplate](https://github.com/Metadrop/drupal-boilerplate)
 - Adapt grumphp changing EXEC_GRUMPHP_COMMAND on grumphp.yml to “ddev exec”
 - Launch ddev setup:
   - If monosite: `ddev setup`
-  - If multisite:`ddev setup —all` or `ddev setup --sites=site1`
+  - If multisite: `ddev setup --all` or `ddev setup --sites=site1`
 
 ## Advanced Configuration
 
@@ -211,7 +212,7 @@ with this configuration:
 ```yaml
 default_site: my_site
 ```
-`dev setup` will install the site "my_site", the same way as `dev setup my_site`.
+`ddev setup` will install the site "my_site", the same way as `ddev setup my_site`.
 
 > **NOTE**: The site names must match the drush aliases. Names without dots are
 > considered as ".local" aliases, but if you have a different alias, you can specify it
@@ -221,7 +222,7 @@ default_site: my_site
 ### `theme_paths`
 
 This section allows you to define paths to custom themes. Each theme should be
-listed with a unique key. Those themes works with the `ddev frontend` command.
+listed with a unique key. Those themes work with the `ddev frontend` command.
 
 ```yaml
 theme_paths:
@@ -252,7 +253,7 @@ hooks:
     - echo "Aljibe post setup hook"
     - ddev drush uli --uid=2
   pre_site_install: []
-  post_site_install: []
+  post_site_install:
     - ddev @${SITE_ALIAS} drush cr
   pre_site_install_config: []
   post_site_install_config: []
@@ -286,7 +287,7 @@ installable_sites_aliases:
   - site2
   - site3.mylocal
 ```
-> **NOTE**: The site names must mustch the drush aliases. Names without dots are
+> **NOTE**: The site names must match the drush aliases. Names without dots are
 > considered as ".local" aliases, but if you have a different alias, you can specify it
 > and .local will not be appended.
 
@@ -311,7 +312,7 @@ Example commands to obtain specific configurations:
 
 ### https not working
 
-Follow ddev [install recomendations](https://ddev.readthedocs.io/en/stable/users/install/ddev-installation/#linux).
+Follow ddev [install recommendations](https://ddev.readthedocs.io/en/stable/users/install/ddev-installation/#linux).
 It is needed to install mkcert and libnss3-tools, and then run:
 
 ```sh
@@ -327,7 +328,7 @@ Until <https://github.com/apache/netbeans/issues/7562> is solved you need to cre
 xdebug.idekey = netbeans-xdebug
 ```
 
-NOTE: The `netbeans-xdebug` is the default Session ID value in the the Debugging tab in the PHP Netbeans' configuration dialog. If you have changed it do it in the `xdebug.ini` file as well.
+NOTE: The `netbeans-xdebug` is the default Session ID value in the Debugging tab in the PHP Netbeans' configuration dialog. If you have changed it do it in the `xdebug.ini` file as well.
 
 ### Xdebug profiler does not save the files
 
