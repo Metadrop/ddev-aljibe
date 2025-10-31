@@ -34,6 +34,21 @@ default:
         - Metadrop\Behat\Context\CacheContext
         - Metadrop\Behat\Context\ContentAuthoredContext
         - Metadrop\Behat\Context\CronContext
+        - Metadrop\Behat\Context\CookieComplianceContext:
+            cookie_agree_selector: 'button.agree-button-example'
+            cookie_reject_selector: 'button.reject-button-example'
+            cookie_banner_selector: '.cookie-compliance-banner-example'
+            cookies:
+              mandatory: []
+              analytics: []
+            # Optional configuration:
+            cookies_ignored:
+              - cookieA
+              - cookieB
+            cookies_third_party_domains_ignored:
+              - example.com
+            cookies_third_party_domains_included:
+              - extra-analytics-service-example.com
         - Metadrop\Behat\Context\DebugContext:
             parameters:
               "report_on_error": true
@@ -119,5 +134,5 @@ default:
         log_out: "Log out"
         node_submit_label: "Save and publish"
     Bex\Behat\StepTimeLoggerExtension:
-      enabled_always: true
+      enabled_always: false
       output: [console, csv]
