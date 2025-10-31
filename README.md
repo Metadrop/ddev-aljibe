@@ -146,13 +146,19 @@ Install the Aljibe addon. This will install all the dependant addons too:
 ddev add-on get metadrop/ddev-aljibe
 ```
 
-Launch Aljibe Assistant. This will guide you throught the basic Drupal site instalation process:
+Launch Aljibe Assistant. This will guide you through the basic Drupal site installation process:
 
 ```sh
 ddev aljibe-assistant
 ```
 
 You are ready! you will have a new Drupal project based on Aljibe ready for development!
+
+If `ddev aljibe-assistant` command is not available, please install it manually running:
+
+```sh
+ddev add-on get metadrop/ddev-aljibe-assistant
+```
 
 ## Add Aljibe to existing projects
 
@@ -207,7 +213,7 @@ default_site: my_site
 ```
 `dev setup` will install the site "my_site", the same way as `dev setup my_site`.
 
-> **NOTE**: The site names must mustch the drush aliases. Names without dots are
+> **NOTE**: The site names must match the drush aliases. Names without dots are
 > considered as ".local" aliases, but if you have a different alias, you can specify it
 > and .local will not be appended.
 
