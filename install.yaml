@@ -14,3 +14,5 @@ post_install_actions:
   - chmod a+x ./scripts/aljibe-install-dependencies.sh
   - ./scripts/aljibe-install-dependencies.sh
   - test -f aljibe.yaml || cp aljibe.yaml.example aljibe.yaml
+  - ./scripts/install-assistant-if-first-time.sh
+  - touch .aljibe_installed

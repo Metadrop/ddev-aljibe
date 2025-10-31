@@ -16,7 +16,7 @@ if [ ! -f .aljibe_installed ]; then
   }
 
   # Check DDEV has dynamic dependencies functionality.
-  if ! version_ge "$DDEV_VERSION_WITH_DYNAMIC_DEPENDENCIES" "$REQUIRED_VERSION"; then
+  if ! version_ge "$DDEV_VERSION" "$DDEV_VERSION_WITH_DYNAMIC_DEPENDENCIES"; then
     ddev add-on get metadrop/ddev-aljibe-assistant
   else
     echo "Metadrop/ddev-aljibe-assistant" > .runtime-deps-aljibe
