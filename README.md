@@ -6,7 +6,7 @@
 # DDEV Aljibe
 
 ## About Aljibe
-Aljibe is an add-on for DDEV for Drupal projects that adds several tools quickly and easily, leaving a new project ready for development in a few minutes.
+Aljibe is a DDEV add-on for Drupal projects that adds several tools quickly and easily, leaving a new project ready for development in a few minutes.
 
 Aljibe extends DDEV by adding containers, configuration, and commands to make the development of Drupal projects faster and easier.
 
@@ -31,7 +31,7 @@ Aljibe extends DDEV by adding containers, configuration, and commands to make th
 - [Drupal Updater](https://github.com/Metadrop/drupal-updater) to update Drupal core and contributed modules automatically
 - [Utility to create artefacts](https://github.com/Metadrop/drupal-artifact-builder) for deployments
 
-See [Aljibe: quality and testing for Drupal developments with DDEV](https://metadrop.net/en/articles/aljibe-quality-and-testing-drupal-developments-ddev) for a detailed introduction to Aljibe.
+See [Aljibe: quality and testing for Drupal development with DDEV](https://metadrop.net/en/articles/aljibe-quality-and-testing-drupal-developments-ddev) for a detailed introduction to Aljibe.
 
 
 > **Note:** This tool is based on DDEV, so any DDEV add-on can work with Aljibe. Discover available add-ons with `ddev add-on list` for official DDEV add-ons or `ddev add-on list --all` for all available add-ons.
@@ -77,10 +77,10 @@ Folders:
 
 - `config`: contains exported Drupal site configuration.
 - `drush`: contains Drush commands, configuration and site aliases.
-- `patches`: contains patches applied to Composer dependencies. It is [recommended to download patches and commit them locally](https://www.drupal.org/docs/develop/using-composer/manage-dependencies#patches), and this folder is intended for storing those downloaded patches.
+- `patches`: contains patches applied to Composer dependencies. It is [recommended to download patches and commit them locally](https://www.drupal.org/docs/develop/using-composer/manage-dependencies#patches). This folder is intended for storing those downloaded patches.
 - `private-files`: contains private files for Drupal sites. Private files should not be stored in the web root for security reasons, so this folder is outside the web root.
-- `recipes`: contains [recipes](https://www.drupal.org/docs/extending-drupal/drupal-recipes) for this project. Although recipes can be distributed as standard PHP packages, you can store here recipes specific to your project that are not intended to be shared.
-- `scripts`: any custom scripts for your project can be stored here.
+- `recipes`: contains [recipes](https://www.drupal.org/docs/extending-drupal/drupal-recipes) for this project. Although recipes can be distributed as standard PHP packages, you can store project-specific recipes here that are not intended to be shared.
+- `scripts`: custom scripts for your project can be stored here.
 
 
 
@@ -88,24 +88,24 @@ Folders:
 
 Aljibe provides several static code analysis tools and linters to help maintain high code quality.
 
-Because there are many tools available, Aljibe uses two wrappers to manage them: GrumPHP and PHPQA.
+Because many tools are available, Aljibe uses two wrappers to manage them: GrumPHP and PHPQA.
 
-GrumPHP is run automatically on each Git commit while PHPQA is intended to be run manually or by your CI/CD system. Because both uses the same underlying tools, they are configured similarly to ensure consistent results. Be sure to modify both configurations if you want to change the behaviour of any tool.
+GrumPHP runs automatically on each Git commit, while PHPQA is intended to be run manually or by your CI/CD system. Because both use the same underlying tools, they are configured similarly to ensure consistent results. Be sure to modify both configurations if you want to change the behaviour of any tool.
 
 #### GrumPHP
 
-GrumPHP runs code quality checks automatically on each Git commit. Aljibe configures GrumPHP with several tools and checks out of the box, including Git message check, Git branch name, file sizes, PHPStan, PHP_CodeSniffer with Drupal standards, PHPMD, and various linters.
+GrumPHP runs code quality checks automatically on each Git commit. Aljibe configures GrumPHP with several tools and checks by default, including Git message check, Git branch name, file sizes, PHPStan, PHP_CodeSniffer with Drupal standards, PHPMD, and various linters.
 
-To customise it please refer to your project's `.grumphp.yml` file. This file is provided by Aljibe during installation, but you can modify it to suit your project's needs.
+To customise it, refer to your project's `.grumphp.yml` file. This file is provided by Aljibe during installation, but you can modify it to suit your project's needs.
 
 
 #### PHPQA
 
-PHPQA is a wrapper that allows you to run multiple PHP static analysis tools with a single command. Aljibe configures PHPQA to run out of the box the following tools: PHP_CodeSniffer with Drupal standards, PHPMD and PHP Parallel Lint.
+PHPQA is a wrapper that allows you to run multiple PHP static analysis tools with a single command. Aljibe configures PHPQA to run the following tools by default: PHP_CodeSniffer with Drupal standards, PHPMD and PHP Parallel Lint.
 
 PHPQA is intended to be run manually or by your CI/CD system.
 
-To customise it please refer to your project's `.phpqa.xml` file. This file is provided by Aljibe during installation, but you can modify it to suit your project's needs.
+To customise it, refer to your project's `.phpqa.xml` file. This file is provided by Aljibe during installation, but you can modify it to suit your project's needs.
 
 
 ### Behat testing (BDD/acceptance testing)
@@ -114,14 +114,14 @@ Behat is a Behaviour-Driven Development (BDD) framework for PHP. Aljibe includes
 
 Behat is integrated with Drupal thanks to [Drupal Extension](https://www.drupal.org/project/drupalextension).
 
-Aljibe includes two environments for Behat tests: `local` and `pro` (production). You can add more environments by creating additional folders inside `tests/behat/`.
+Aljibe includes two Behat test environments: `local` and `pro` (production). You can add more environments by creating additional folders inside `tests/behat/`.
 
-   - `local`: for local and CI/CD tests. This environment is the one provided by DDEV.
+   - `local`: for local and CI/CD tests. This environment uses the DDEV local instance.
    - `pro`: for production environment testing (usually smoke tests). This environment is intended to run tests against the live production site. Behat tests in this environment should be non-destructive and safe to run against a live site.  They should be short and not intensive, focusing on critical functionality to ensure the site is operational.
 
 The `tests/common` folder contains shared features that are run on all environments.
 
-All provided Behat features (Behat tests) should pass after Aljibe is installed. Look for files with the `.example` extension inside `tests/behat/` folders. These features usually require some Drupal modules or configuration and are not included by default to avoid having tests failing out of the box. If you want them, remove the `.example` extension and adapt them to your project.
+All provided Behat features (test scenarios) should pass after Aljibe is installed. Look for files with the `.example` extension inside `tests/behat/` folders. These features usually require some Drupal modules or configuration and are not included by default to avoid having tests failing out of the box. If you want them, remove the `.example` extension and adapt them to your project.
 
 #### Running Behat
 
@@ -148,7 +148,7 @@ ddev behat local --tags=@mytag
 See [Behat Command Line Tool](https://docs.behat.org/en/latest/user_guide/command_line_tool.html) for more information.
 
 
-Keep into account that `behat` command already adds the path to the configuration
+Note that the `behat` command already includes the path to the configuration file
 
 
 #### Behat contexts
@@ -160,7 +160,7 @@ Behat contexts are PHP classes that define the steps used in Behat features. Alj
 
 [BackstopJS](https://garris.github.io/BackstopJS/) is a tool for visual regression testing. Aljibe includes BackstopJS integration to help you catch visual changes in your Drupal site.
 
-By default, Aljibe provides two BackstopJS environments: `local` and `pro` (production). You can add more environments by creating additional folders inside `tests/backstopjs/`.
+Aljibe provides two BackstopJS environments by default: `local` and `pro` (production). You can add more environments by creating additional folders inside `tests/backstopjs/`.
 
    - `local`: for local and CI/CD tests. This environment is the one provided by DDEV.
    - `pro`: for production environment testing (usually smoke tests). This environment is intended to run tests against the live production site. BackstopJS tests in this environment should fast and not intensive, focusing on critical pages to ensure the site is visually correct.
@@ -228,11 +228,11 @@ This feature is provided by a separate [DDEV add-on](https://addons.ddev.com/add
 
 ### Website quality audits with Unlighthouse
 
-Unlighthouse is a tool for auditing website quality, performance, SEO, and accessibility. It used Lighthouse under the hood to perform these audits.
+Unlighthouse is a tool for auditing website quality, performance, SEO, and accessibility. It uses Lighthouse under the hood to perform these audits.
 
 Aljibe includes Unlighthouse integration to help you maintain high-quality websites.
 
-Unlightouse is able to autodiscover site's URLs and follow a sitemap.
+Unlighthouse can autodiscover site URLs and follow a sitemap.
 
 To run it against your local site, use the following command:
 
@@ -293,9 +293,9 @@ Aljibe aims to ease site management tasks with several provided commands.
 
 #### Site installation
 
-First, make easy to install a site to start developing from a known base. The command `site-install` installs a site using either a configuration export or a database dump.
+First, Aljibe makes it easy to install a site from a known base to start development. The command `site-install` installs a site using either a configuration export or a database dump.
 
-During development workflow is common to configure the local development site with a known setup for testing and development. Many times this is done using a database dump from a staging or production server.
+During development, it is common to configure the local site with a known setup for testing and development. Many times this is done using a database dump from a staging or production server.
 
 Another option is to use a configuration export to set up the site, and use default content to populate the site with content to be able to test functionalities. This is the recommended way when working with Drupal projects that have a complete configuration management workflow, because it allows predictable setup times, avoid any privacy issues with real data (no need for sanitisation) and is usually faster than importing a database dump.
 
@@ -308,7 +308,7 @@ To install the default site from the configuration export, run:
 ddev site-install
 ```
 
-For this to work, a Drupal configuration export must be available. The command  uses drush commands (`sql-drop`, `site:install` and `config-import`) to perform the installation from existing configuration.
+For this to work, a Drupal configuration export must be available. The command uses Drush commands (`sql-drop`, `site:install` and `config-import`) to perform the installation from existing configuration.
 
 To install a different site other than the default, use its site name:
 
@@ -331,14 +331,14 @@ Run the following command to install a site from a database dump:
 ddev site-install site1 path/to/dump.sql   # Installs @site1.local using the provided database dump
 ```
 
-In this case, th site name is mandatory, as well as the path to the database dump file.
+In this case, the site name is mandatory, as well as the path to the database dump file.
 
 
 ##### Fast on-boarding
 
 The `setup` commands allow for fast on-boarding of new developers by automating the site installation process. A new developer only needs to clone the project repository and run `ddev setup` to have a working local site ready for development.
 
-The `setup` command takes care of installing Composer dependencies, install the site (or sites in a multisite setup) using `site-install`.
+The `setup` command installs Composer dependencies and installs the site (or sites in a multisite setup) using `site-install`.
 
 This command currently supports only installation from configuration exports.
 
@@ -346,21 +346,21 @@ This command currently supports only installation from configuration exports.
 
 #### Hooking into the setup and site installation process
 
-Both commands, `setup` and `site-install`, provide hooks to allow you to run custom commands at different stages of the process. This is useful to perform additional setup task if your project requires special steps.
+Both commands, `setup` and `site-install`, provide hooks to allow you to run custom commands at different stages of the process. This is useful for performing additional setup tasks if your project requires special steps.
 
 Check [hooks](#hooks) configuration property of `.ddev/aljibe.yml` file for more information about available hooks and how to use them.
 
 
 ### Multisite support
 
-Aljibe supports multisite setups thanks to Drush aliases. Some commands allow to select the site using a Drush aliases, while other command require you to provide the right configuration.
+Aljibe supports multisite setups using Drush aliases. Some commands allow you to select the site using Drush aliases, while others require you to provide the appropriate configuration.
 
-For example, use different Behat profiles for different sites. Or provide absolute URL to BackstopJS or Pa11y commands. Or use the site name in the `site-install` command.
+For example, use different Behat profiles for different sites, or provide absolute URLs to BackstopJS or Pa11y commands, or use the site name in the `site-install` command.
 
 
 ### Utility commands
 
-Some commands are provided ease certain operations:
+Some commands are provided to ease certain operations:
 
   - `ddev all-sites-drush`: run a Drush command on all sites in the multisite installation.
   - `ddev create-database`: create secondary databases. This is useful if your site requires another database, or when you are adding a new site to your project and you need to create its database.
@@ -381,7 +381,7 @@ ddev exec vendor/bin/drupal-updater
 
 ### Artefact Builder
 
-When deploying a Drupal site often is recommended to create artefacts that can be deployed to the production server. These artefacts include only the necessary files for the site to run, excluding development dependencies and unnecessary files.
+When deploying a Drupal site, it is often recommended to create artefacts that can be deployed to the production server. These artefacts include only the necessary files for the site to run, excluding development dependencies and unnecessary files.
 
 Aljibe includes [Drupal Artefact Builder](https://github.com/Metadrop/drupal-artifact-builder), a tool to create Drupal artefacts for deployments from the current state of the codebase.
 
