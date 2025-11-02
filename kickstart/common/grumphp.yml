@@ -1,51 +1,60 @@
 grumphp:
   git_hook_variables:
+    # Configures GrumPHP to execute PHP commands through DDEV.
     EXEC_GRUMPHP_COMMAND: ddev exec php
   extensions:
+    # Add PHPCompatibility extension to check for PHP version compatibility.
     - Metadrop\PhpCompatibilityTask\ExtensionLoader
-  hooks_dir: ~
-  hooks_preset: local
   tasks:
+    # Commit message checks.
     git_commit_message:
       enforce_no_subject_trailing_period: true
       max_subject_width: 130
       case_insensitive: false
       matchers:
-        Must contain gitlab reference (if no reference use 0): '/(^Issue #[0-9]+:|^Merge branch.)/'
+        'Must start with an issue tracker issue reference (example: "Issue #123", if no reference use 0)': '/(^Issue #[0-9]+:|^Merge branch.)/'
         Space and uppercase after reference: '/(^Issue #[0-9]+: [A-Z]|^Merge branch.)/'
+    # Detect debugging code left in the codebase.
     git_blacklist:
       keywords:
         - "var_dump"
         - "print_r"
         - "console.log"
-      whitelist_patterns: [ ]      
+      whitelist_patterns: [ ]
       regexp_type: G
       match_word: false
-    # Adjust here the format that must have
-    # the git branch names of your project.
+    # Allowed branches for commits.
     git_branch_name:
+      # Only commits to feature/, bugfix/, hotfix/ and develop branches are
+      # allowed. This forces to use branches with a proper naming convention and
+      # avoids direct commits to main or release branches.
+      # If this is not matching your workflow, you can modify the configuration
+      # as needed.
       whitelist:
         - "feature\/[0-9A-Za-z\\s_-]*"
         - "bugfix\/[0-9A-Za-z\\s_-]*"
         - "hotfix\/[0-9A-Za-z\\s_-]*"
         - develop
-      blacklist:        
+      blacklist:
         - main
         - release
       additional_modifiers: ''
       allow_detached_head: true
+
+    # Enable various linters and Composer checks.
     phplint: ~
     yamllint: ~
     composer: ~
     jsonlint: ~
+
+    # Limit committed files size. BackstopJS reference images are ignored for
+    # this check.
     file_size:
       max_size: 4M
       ignore_patterns:
         - '#tests/backstopjs/backstop_data/bitmaps_reference/(.*).png#'
-    phplint: ~
-    yamllint: ~
-    composer: ~
-    jsonlint: ~
+
+    # Enable PHP Mess Detector with custom ruleset.
     phpmd:
       exclude:
         - tests/
@@ -60,6 +69,8 @@ grumphp:
         - feature
         - info
         - test
+
+    # Enable PHP CodeSniffer with Drupal standards.
     phpcs:
       encoding: utf-8
       triggered_by:
@@ -74,6 +85,8 @@ grumphp:
         - txt
         - test
       standard: Drupal,DrupalPractice,PHPCompatibility
+
+    # Enable PHP Compatibility checks. Modify testVersion as needed.
     php_compatibility:
       testVersion: "8.1"
       triggered_by:
@@ -81,6 +94,8 @@ grumphp:
         - inc
         - module
         - install
+
+    # Enalbe running PHPStan static analysis.
     phpstan:
       autoload_file: ~
       configuration: ~
