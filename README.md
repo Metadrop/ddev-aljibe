@@ -1,248 +1,513 @@
 [![tests](https://github.com/Metadrop/ddev-aljibe/actions/workflows/tests.yml/badge.svg)](https://github.com/Metadrop/ddev-aljibe/actions/workflows/tests.yml) ![project is maintained](https://img.shields.io/maintenance/yes/2025.svg)
 ![GitHub Release](https://img.shields.io/github/v/release/Metadrop/ddev-aljibe)
 
-# DDEV Aljibe
-## About Aljibe
-Aljibe is an add-on for DDEV for Drupal projects that adds several tools in a simple and fast way, leaving a new project ready for development in a few minutes.
+![Aljibe logo](https://metadrop.net/sites/default/files/2025-09/aljibe-image.png)
 
-Aljibe sits on top of DDEV and adds some containers, configuration and commands to make the development of Drupal projects faster and easier.
+# DDEV Aljibe
+
+## About Aljibe
+Aljibe is an add-on for DDEV for Drupal projects that adds several tools quickly and easily, leaving a new project ready for development in a few minutes.
+
+Aljibe extends DDEV by adding containers, configuration, and commands to make the development of Drupal projects faster and easier.
+
+## What does Aljibe provide?
+
+- A folder tree tailored to Drupal good practices
+- Static code analysis run manually and on each Git commit ([PHPStan](https://phpstan.org/), [PHP_CodeSniffer](https://github.com/PHPCSStandards/PHP_CodeSniffer/wiki), [PHPMD](https://phpmd.org/) and multiple linters)
+- PHPUnit already configured
+- [Behat](https://docs.behat.org/en/latest/) testing (BDD and Acceptance testing) ready to use
+- Visual regression testing with [BackstopJS](https://github.com/Metadrop/ddev-backstopjs)
+- Accessibility testing with [Pa11y](https://github.com/Metadrop/ddev-pa11y)
+- API and HTTP testing with Newman and Postman collections
+- Website quality audits with [Unlighthouse](https://github.com/Metadrop/ddev-unlighthouse)
+- Smoke test for production environments using the provided testing tools
+- Database management with Adminer
+- Documentation wiki with [MkDocs](https://github.com/Metadrop/ddev-mkdocs)
+- Frontend asset processing commands for custom themes
+- Fast on-boarding and site management commands
+- Multisite support
+- Useful Drush configurations like Drush Policy to avoid accidental destructive commands on production
+- Utility commands to create secondary databases or sync Solr configuration
+- [Drupal Updater](https://github.com/Metadrop/drupal-updater) to update Drupal core and contributed modules automatically
+- [Utility to create artefacts](https://github.com/Metadrop/drupal-artifact-builder) for deployments
+
+See [Aljibe: quality and testing for Drupal developments with DDEV](https://metadrop.net/en/articles/aljibe-quality-and-testing-drupal-developments-ddev) for a detailed introduction to Aljibe.
+
+
+> **Note:** This tool is based on DDEV, so any DDEV add-on can work with Aljibe. Discover available add-ons with `ddev add-on list` for official DDEV add-ons or `ddev add-on list --all` for all available add-ons.
 
 ### Requirements
 
 - [DDEV](https://ddev.readthedocs.io/en/stable/) v1.24.0 or higher
 - [Docker](https://www.docker.com/) 24 or higher
 
-### Included tools
 
-- Behat: BDD and Acceptance testing
-- [BackstopJS](https://github.com/Metadrop/ddev-backstopjs): Visual regression testing
-- [Unlighthouse](https://github.com/Metadrop/ddev-unlighthouse): Audit all website quality
-- [Pa11y](https://github.com/Metadrop/ddev-pa11y): Accessibility checks
-- [MkDocs](https://github.com/Metadrop/ddev-mkdocs): Documentation wiki
-- [Adminer](https://github.com/ddev/ddev-adminer): Database manager
+## Quick start
 
-> **Note:** This tool is based on DDEV, so any DDEV add-on can work with this: `ddev add-on list --all`
+New to Aljibe? Follow these steps to get started
 
-## How to use it
+1. **Create your project folder**
 
-If you haven't already cloned or created an Aljibe project, please follow the [Setup guide](#setup-a-new-project-with-aljibe).
+    `mkdir my-new-project && cd my-new-project`
 
-### Start working
-Once the project has been configured, or if you have cloned an already set up Aljibe project, run this command to have the project ready to work with.
+2. **Initialise DDEV in this folder**
 
-```sh
-ddev setup [--all] [--no-install] [--no-themes]
+    `ddev config --auto`
+
+3. **Install Aljibe**
+
+    `ddev add-on get metadrop/ddev-aljibe`
+
+4. **Run the assistant**
+
+    `ddev aljibe-assistant`
+
+The assistant will guide you through the installation and configuration of the tools provided by Aljibe, as well as the Drupal site installation. Once complete, your project will be ready for development with all Aljibe tools provided working out of the box.
+
+For detailed instructions, see [Installation](#installation) below.
+
+
+## Aljibe details
+
+### A folder tree tailored for Drupal
+
+Aljibe deploys folder structure and configuration files that follow Drupal best practices.
+
+Folders:
+
+- `config`: contains exported Drupal site configuration.
+- `drush`: contains Drush commands, configuration and site aliases.
+- `patches`: contains patches applied to Composer dependencies. It is [recommended to download patches and commit them locally](https://www.drupal.org/docs/develop/using-composer/manage-dependencies#patches), and this folder is intended for storing those downloaded patches.
+- `private-files`: contains private files for Drupal sites. Private files should not be stored in the web root for security reasons, so this folder is outside the web root.
+- `recipes`: contains [recipes])https://www.drupal.org/docs/extending-drupal/drupal-recipes) for this project. Although recipes can be distributed as standard PHP packages, you can store here recipes specific to your project that are not intended to be shared.
+- `scripts`: any custom scripts for your project can be stored here.
+
+
+
+### Static code analysis and linters
+
+Aljibe provides several static code analysis tools and linters to help maintain high code quality.
+
+Because there are many tools available, Aljibe uses two wrappers to manage them: GrumPHP and PHPQA.
+
+GrumPHP is run automatically on each Git commit while PHPQA is intended to be run manually or by your CI/CD system. Because both uses the same underlying tools, they are configured similarly to ensure consistent results. Be sure to modify both configurations if you want to change the behaviour of any tool.
+
+#### GrumPHP
+
+GrumPHP runs code quality checks automatically on each Git commit. Aljibe configures GrumPHP with several tools and checks out of the box, including Git message check, Git branch name, file sizes, PHPStan, PHP_CodeSniffer with Drupal standards, PHPMD, and various linters.
+
+To customise it please refer to your project's `.grumphp.yml` file. This file is provided by Aljibe during installation, but you can modify it to suit your project's needs.
+
+
+#### PHPQA
+
+PHPQA is a wrapper that allows you to run multiple PHP static analysis tools with a single command. Aljibe configures PHPQA to run out of the box the following tools: PHP_CodeSniffer with Drupal standards, PHPMD and PHP Parallel Lint.
+
+PHPQA is intended to be run manually or by your CI/CD system.
+
+To customise it please refer to your project's `.phpqa.xml` file. This file is provided by Aljibe during installation, but you can modify it to suit your project's needs.
+
+
+### Behat testing (BDD/Acceptance Testing)
+
+Behat is a Behaviour-Driven Development (BDD) framework for PHP. Aljibe includes Behat testing capabilities out of the box, allowing you to write and run acceptance tests for your Drupal site.
+
+Behat is integrated with Drupal thanks to [Drupal Extension](https://www.drupal.org/project/drupalextension).
+
+Aljibe includes two environments for Behat tests: `local` and `pro` (production). You can add more environments by creating additional folders inside `tests/behat/`.
+
+   - `local`: for local and CI/CD tests. This environment is the one provided by DDEV.
+   - `pro`: for production environment testing (usually smoke tests). This environment is intended to run tests against the live production site. Behat tests in this environment should be non-destructive and safe to run against a live site.  They should be short and not intensive, focusing on critical functionality to ensure the site is operational.
+
+The `tests/common` folder contains shared features that are run on all environments.
+
+All provided Behat features (Behat tests) should pass after Aljibe is installed. Look for files with the `.example` extension inside `tests/behat/` folders. These features usually require some Drupal modules or configuration and are not included by default to avoid having tests failing out of the box. If you want them, remove the `.example` extension and adapt them to your project.
+
+#### Running Behat
+
+Use the provided DDEV command to run tests from the default environment (`local `) with default options:
+
+```bash
+ddev behat
 ```
 
-Use:
-- `--all` to install all sites on Multisite
-- `--no-install` to prepare only the environment
-- `--no-themes` if you don't need to transpile the CSS/JS of the themes.
+You can specify a different environment by providing the folder name in the `tests/behat/` directory. For example, to run the smoke tests in the `pro` environment:
 
-After this, you are **ready to work on your project.**
-
-#### Unique site install (Multisite)
-
-If you have a multisite installation, you can install only one site by running:
-
-```sh
-ddev site-install <site_name>
-```
-### Running tests
-
-#### Behat tests
-
-To launch local, or env tests, you can run:
-
-```sh
-ddev behat [local|pro|other_behat_folder] [suite]
+```bash
+ddev behat pro
 ```
 
-#### Backstopjs tests
+If you want to provide additional options to Behat you need to add them after the environment name, which is mandatory. For example, to run tests with a specific tag:
 
-To launch backstopjs commands you can run:
 
-```sh
-ddev backstopjs [local|pro|other_backstop_folder] [backstop_command]
+```bash
+ddev behat local --tags=@mytag
 ```
 
-For example `ddev backstopjs local test` to run the tests on the local environment.
-Or `ddev backstopjs pro reference` to create a reference of the production environment.
+
+See [Behat Command Line Tool](https://docs.behat.org/en/latest/user_guide/command_line_tool.html) for more information.
 
 
-#### Run pa11y tests
+Keep into account that `behat` command already adds the path to the configuration
 
-To run pa11y against a site, you can run:
 
-```sh
+#### Behat contexts
+
+Behat contexts are PHP classes that define the steps used in Behat features. Aljibe provides several additional contexts out of the box to facilitate testing common Drupal functionalities. Please check [nuvoleweb/drupal-behat](https://github.com/nuvoleweb/drupal-behat) and [metadrop/behat-contexts](https://github.com/Metadrop/behat-contexts) for more information about the provided contexts and how to use them.
+
+
+###  Visual regression testing with BackstopJS
+
+[BackstopJS](https://garris.github.io/BackstopJS/) is a tool for visual regression testing. Aljibe includes BackstopJS integration to help you catch visual changes in your Drupal site.
+
+By default, Aljibe provides two BackstopJS environments: `local` and `pro` (production). You can add more environments by creating additional folders inside `tests/backstopjs/`.
+
+   - `local`: for local and CI/CD tests. This environment is the one provided by DDEV.
+   - `pro`: for production environment testing (usually smoke tests). This environment is intended to run tests against the live production site. BackstopJS tests in this environment should fast and not intensive, focusing on critical pages to ensure the site is visually correct.
+
+Each environment has its own `backstop.json` configuration file where the scenarios and settings are defined. For example, the URLs to test are defined here.
+
+#### Using BackstopJS
+
+BackstopJS requires reference screenshots to compare the current state of the site against. These reference screenshots should be created when the site is in a known good state.
+
+To create the reference screenshots use the `reference` command.
+
+```bash
+ddev backstopjs [environment] reference
+```
+
+Later, to test the site awgainst the reference screenshots, use the `test` command.
+
+```bash
+ddev backstopjs [environment] test
+```
+
+
+Check BackstopJS documentation for more information about available commands and options.
+
+This feature is provided by a separate [DDEV add-on](https://addons.ddev.com/addons/Metadrop/ddev-backstopjs) that is automatically installed when you install run Aljibe assistant and select this feature.
+
+### Accessibility testing with Pa11y
+
+[Pa11y](https://pa11y.org/) is an automated accessibility testing tool. Aljibe includes Pa11y integration to help you ensure your Drupal site meets accessibility standards.
+
+To get a report of accessibility issues on your site, run the following command:
+
+```bash
 ddev pa11y [site_url]
 ```
-For example `ddev pa11y http://web`
 
-### Working with frontend themes
-#### Process custom themes CSS
+Pa11y configuration file can be found at `tests/pa11y/config.json`.
 
-By default there is one theme defined in .ddev/aljibe.yml with the name "custom_theme".
-You can [add multiple themes](#advanced-configuration). To transpile them, run:
+This feature is provided by a separate [DDEV add-on](https://addons.ddev.com/addons/Metadrop/ddev-pa11y) that is automatically installed when you install run Aljibe assistant and select this feature.
 
-```sh
+### API and HTTP testing with Newman and Postman collections
+
+Testing API and HTTP responses can be done using Newman, the command-line companion for Postman. Aljibe optionally includes Newman integration to facilitate API testing.
+
+
+You can test HTTP response codes on URLs or endpoints, check HTTP headers and validate JSON responses against schemas using Postman collections.
+
+To run a Postman collection with Newman, use the following command:
+
+```bash
+ddev newman run <collection file> -e <environment file>
+```
+
+Example provided by Aljibe after installation:
+
+```bash
+ddev newman run postman/collections/example_cache_headers.postman_collection.json -e postman/envs/example_ddev.postman_environment.json
+```
+
+
+This feature is provided by a separate [DDEV add-on](https://addons.ddev.com/addons/Metadrop/ddev-newman) that is automatically installed when you install run Aljibe assistant and select this feature.
+
+
+
+### Website quality audits with Unlighthouse
+
+Unlighthouse is a tool for auditing website quality, performance, SEO, and accessibility. It used Lighthouse under the hood to perform these audits.
+
+Aljibe includes Unlighthouse integration to help you maintain high-quality websites.
+
+Unlightouse is able to autodiscover site's URLs and follow a sitemap.
+
+To run it against your local site, use the following command:
+
+```bash
+ddev unlighthouse
+```
+
+This command uses the Unlighthouse configuration file located at `tests/unlighthouse/local/unlighthouse.ts`.
+
+You can add more environments by creating additional folders inside `tests/unlighthouse/`.
+
+
+This feature is provided by a separate [DDEV add-on](https://addons.ddev.com/addons/Metadrop/ddev-unlighthouse) that is automatically installed when you install run Aljibe assistant and select this feature.
+
+### Smoke tests
+
+Smoke tests are a set of basic tests that verify the critical functionality of a website.
+
+Aljibe allows you to run smoke tests against production environments using the provided testing tools: Behat, BackstopJS, Pa11y, Newman and Unlighthouse.
+
+### Database management with Adminer
+
+Aljibe provides a ready-to-use Adminer installation for database management.
+
+This feature is provided by a separate [DDEV add-on](https://addons.ddev.com/addons/ddev/ddev-adminer) that is automatically installed when you install run Aljibe assistant and select this feature.
+
+### Documentation wiki with MkDocs
+
+[MkDocs](https://www.mkdocs.org/) is a static site generator that's geared towards project documentation. Aljibe provides an MkDocs installation with [MkDocs Material](https://squidfunk.github.io/mkdocs-material/), a popular theme for MkDocs that provides additional functionality and a modern look.
+
+You can find the main configuration file at `docs/mkdocs.yml` and the documentation content inside the `docs/docs/` folder.
+
+Aljibe already provides a boilerplate documentation structure that you can modify to suit your project's needs.
+
+Check MkDocs and MkDocs Material documentation for more information on how to create and manage your documentation.
+
+This feature is provided by a separate [DDEV add-on](https://addons.ddev.com/addons/Metadrop/ddev-mkdocs) that is automatically installed when you install run Aljibe assistant and select this feature.
+
+
+### Frontend asset processing for custom themes
+
+Many Drupal themes require a compilation process relying on Node.js, like [Radix](https://www.drupal.org/project/radix) or [Artisan](https://www.drupal.org/project/artisan) themes. Aljibe provides commands to facilitate the processing of theme assets.
+
+To generate production assets for a theme, run:
+
+```bash
 ddev frontend production [theme_name]
 ```
 
-where theme_name is the key defined in .ddev/aljibe.yml.
+Where `theme_name` is the key defined in `.ddev/aljibe.yml`. If omitted, the command processes all defined themes.
 
-You can run a watch command to process the CSS on the fly:
+After installation, there is one example theme defined in `.ddev/aljibe.yml` with the name "custom_theme". You can [add multiple themes](#advanced-configuration).
 
-```sh
-ddev frontend watch [theme_name]
+### Fast on-boarding and site management commands
+
+Aljibe aims to ease site management tasks with several provided commands.
+
+
+#### Site installation
+
+First, make easy to install a site to start developing from a known base. The command `site-install` installs a site using either a configuration export or a database dump.
+
+During development workflow is common to configure the local development site with a known setup for testing and development. Many times this is done using a database dump from a staging or production server.
+
+Another option is to use a configuration export to set up the site, and use default content to populate the site with content to be able to test functionalities. This is the recommended way when working with Drupal projects that have a complete configuration management workflow, because ti allows predictible setup times, avoid any privacy issues with real date (no need for sanitisation) and is usually faster than importing a database dump.
+
+
+##### Installing from configuration
+
+To install the default site from the configuration export, run:
+
+```bash
+dev site-install
 ```
 
-The **production** and **watch** parameters are scripts defined in the **package.json** of the default Aljibe theme.
-Any scripts or commands defined there can be executed with the `ddev frontend [my_script]` command.
+For this to work, a Drupal configuration export must be available. The command  uses drush commands (`sql-drop`, `site:install` and `config-import`) to perform the installation from existing configuration.
 
-### Other commands
-#### Create a secondary database
+To install a different site other than the default, use its site name:
 
-If you need to create a secondary database, you can run:
-
-```sh
-ddev create-database <db_name>
+```bash
+dev site-install <site_name>
 ```
 
-> **Note:** This command will create a database accessible with the same user and password from the main one. If you want to persist this across multiple setups, you can add this command to the pre-setup hooks in .ddev/aljibe.yml file.
+Where `site_name` is the site alias defined in your Drush aliases, or just the name without dots (in this case, `.local` will be appended automatically) for local sites:
 
-#### Running drush on all sites
-
-```sh
-ddev all-sites-drush <drush_command>
+```bash
+dev site-install site1   # Installs @site1.local
+dev site-install site2.mylocal  # Installs @site2.mylocal
 ```
 
-#### Sync solr config
+##### Installing from database dump
 
-If you use ddev-solr addon and need to sync the solr config from the server, you can run:
+Run the following command to install a site from a database dump:
 
-```sh
-ddev solr-sync
+```bash
+dev site-install site1 path/to/dump.sql   # Installs @site1.local using the provided database dump
 ```
 
-#### Power off ddev
+In this case, th site name is mandatory, as well as the path to the database dump file.
 
-```sh
-ddev poweroff
+
+##### Fast on-boarding
+
+The `setup`commands allowas for fast ob-boarding of new developers by automating the site installation process. A new developer only needs to clone the project repository and run `ddev setup` to have a working local site ready for development.
+
+The `setup` command takes care of installing Composer dependencies, install the site (or sites in a multisite setup) using `site-install`.
+
+This command currently supports only installation from configuration exports.
+
+
+
+#### Hooking into the setup and site installation process
+
+Both commands, `setup` and `site-install`, provide hooks to allow you to run custom commands at different stages of the process. This is useful to perform additional setup task if your project requires special steps.
+
+Check [hooks](#hooks) configuration property of `.ddev/aljibe.yml` file for more information about available hooks and how to use them.
+
+
+### Multisite support
+
+Aljibe supports multisite setups thanks to Drush aliases. Some commands allow to select the site using a Drush aliases, while other command require you to provide the right configuration.
+
+For example, use different Behat profiles for different sites. Or provide absolute URL to BackstopJS or Pa11y commands. Or use the site name in the `site-install` command.
+
+
+### Utility commands
+
+Some commands are provided ease certain operations:
+
+  - `ddev all-sites-drush`: run a Drush command on all sites in the multisite installation.
+  - `ddev create-database`: create secondary databases. This is useful if your site requires another database, or when you are adding a new site to your project and you need to create its database.
+
+### Drupal Updater
+
+[Drupal Updater](https://github.com/Metadrop/drupal-updater) is a tool to update Drupal core and contributed modules automatically. Aljibe includes Drupal Updater integration to help you keep your Drupal installation up to date.
+
+This PHP packages is able to update each module or theme in separate commits, update Drupal configuration and even update the Drupal core itself. It relies on Composer to perform the updates.
+
+Read more about Drupal Updater in this article: [Drupal Updater: Streamlining Drupal Maintenance Updates from CLI](https://metadrop.net/en/articles/drupal-updater-streamlining-drupal-maintenance-updates-cli).
+
+Use the following command to run it:
+
+```bash
+ddev exec vendor/bin/drupal-updater
 ```
 
-## Setup a new project with Aljibe
+### Artefact Builder
 
-Create a folder for your new project (e.g. `mkdir my-new-project`).
+When deploying a Drupal site often is recommended to create artefacts that can be deployed to the production server. These artefacts include only the necessary files for the site to run, excluding development dependencies and unnecessary files.
 
-Configure a basic ddev project:
+Aljibe includes [Drupal Artefact Builder](https://github.com/Metadrop/drupal-artifact-builder), a tool to create Drupal artefacts for deployments from the current state of the codebase.
 
-```sh
-ddev config --auto
+
+Use the following command to run it:
+
+```bash
+ddev exec vendor/bin/drupal-artifact-builder
 ```
 
-Install the Aljibe addon. This will install all the dependent addons too:
+### Add Aljibe to existing projects
 
-```sh
-ddev add-on get metadrop/ddev-aljibe
-```
+To transform an existing project to use DDEV Aljibe, follow these steps. Always take into account the particularities of your specific project:
 
-Launch Aljibe Assistant. This will guide you through the basic Drupal site installation process:
+#### Basic migration steps
 
-```sh
-ddev aljibe-assistant
-```
+1. **Prepare the project:**
+   - Clone the project without installing dependencies
+   - Remove all Docker-related files from the project root
 
-You are ready! you will have a new Drupal project based on Aljibe ready for development!
+2. **Configure basic DDEV:**
+   ```sh
+   ddev config --auto
+   ```
 
-If `ddev aljibe-assistant` command is not available, please install it manually running:
+3. **Install Aljibe:**
+   ```sh
+   ddev get metadrop/ddev-aljibe
+   ```
 
-```sh
-ddev add-on get metadrop/ddev-aljibe-assistant
-```
+4. **Fine-tune DDEV configuration** using the interactive assistant:
+   ```sh
+   ddev config
+   ```
+   Set the project type to Drupal, specify the docroot folder, etc.
 
-## Add Aljibe to existing projects
+5. **Configure Aljibe:**
+   - Edit `.ddev/config.yml` to fine-tune the environment
+   - Edit `.ddev/aljibe.yml` to set the default site name (the folder inside `sites/`) and all themes to be compiled
+   - Update `.gitignore` to match [this example](https://github.com/Metadrop/ddev-aljibe/blob/main/kickstart/common/.gitignore)
 
-To transform a legacy project to Ddev Aljibe, the following steps must be followed, always taking into account the particularities of each project:
+#### Additional Steps for Boilerplate projects
 
-1. Clone the project without installing it and remove all docker related files
-1. Run basic ddev-config:
+If you're migrating from a [Metadrop boilerplate](https://github.com/Metadrop/drupal-boilerplate) project:
 
-    ```sh
-    ddev config --auto
-    ```
+1. **Clean up settings.local.php:**
+   - Remove database configuration (handled by `settings.ddev.php`)
+   - Remove trusted host patterns that may conflict with DDEV settings
 
-1. Install Aljibe:
-    ```sh
-    ddev add-on get metadrop/ddev-aljibe
-    ```
+2. **Update drush aliases:**
+   - Adapt the drush alias to the new local URL
 
+3. **Update test configuration:**
+   - Review `tests/` folder structure (in Aljibe, all tests including `behat.yml` are inside the `tests/` folder)
+   - Replace `http://apache` or `http://nginx` with `http://web` in all test configurations
 
-1. Run again ddev config, but this time go through the assistant to set project type to Drupal, docroot folder, etc...
+4. **Configure Node.js version:**
+   - Set `nodejs_version` in `.ddev/config.yml` to match your previous project
+   - The old version can be found in the `.env` file under the **"NODE_TAG"** variable
 
-    ```sh
-    ddev config
-    ```
+5. **Adapt GrumPHP:**
+   - Change `EXEC_GRUMPHP_COMMAND` in `grumphp.yml` to `"ddev exec"`
 
-1. Edit .ddev/config.yml to fine tune the environment.
-1. Edit .ddev/aljibe.yml to set default site name (the folder inside sites) and all themes to be transpiled
-1. Update .gitignore to look like [this](https://github.com/Metadrop/ddev-aljibe/blob/main/kickstart/common/.gitignore).
+6. **Launch setup:**
+   - Single site: `ddev setup`
+   - Multisite (all sites): `ddev setup --all`
+   - Multisite (specific site): `ddev setup --sites=site1`
 
-If you come from a [boilerplate](https://github.com/Metadrop/drupal-boilerplate) project:
+## Advanced configuration
 
-- Remove from settings.local.php database, trusted host patterns and others that can conflict with settings.ddev.php.
-- Adapt the drush alias to the new url.
-- Review tests folder structure as in aljibe, all tests (behat.yml included) are inside tests folder and replace <http://apache> or <http://nginx> by <http://web>.
-- Config also the nodejs_version in .ddev/config.yml with the same as the old project. Old version on .env file, variable **“NODE_TAG”**
-- Adapt grumphp changing EXEC_GRUMPHP_COMMAND on grumphp.yml to “ddev exec”
-- Launch ddev setup:
-  - If monosite: `ddev setup`
-  - If multisite: `ddev setup --all` or `ddev setup --sites=site1`
+The `aljibe.yml` file allows you to customise various aspects of the Aljibe setup. This file is located at `.ddev/aljibe.yml` and is created automatically when you install Aljibe.
 
-## Advanced Configuration
+### Configuration options
 
-The `aljibe.yml` file allows you to customize various aspects of the Aljibe setup. Below are the available options and how to use them:
+#### `default_site`
 
-### `default_site`
+Sets the default site name to be installed by the setup command when no specific site name is provided.
 
-This option sets the default site name to be installed on setup command.
-It is used when no specific site name is provided when running. For example,
-with this configuration:
-
+**Example:**
 ```yaml
 default_site: my_site
 ```
-`ddev setup` will install the site "my_site", the same way as `ddev setup my_site`.
 
-> **NOTE**: The site names must match the drush aliases. Names without dots are
-> considered as ".local" aliases, but if you have a different alias, you can specify it
-> and .local will not be appended.
+With this configuration:
+- `ddev setup` will install the site "my_site"
+- This is equivalent to running `ddev setup my_site`
+
+> **Note:** Site names must match drush aliases. Names without dots are automatically considered as ".local" aliases. If you have a different alias suffix, you can specify it explicitly and ".local" will not be appended.
 
 
-### `theme_paths`
+#### `theme_paths`
 
-This section allows you to define paths to custom themes. Each theme should be
-listed with a unique key. Those themes work with the `ddev frontend` command.
+Defines paths to custom themes that work with the `ddev frontend` command. Each theme should be listed with a unique key that you'll use when running frontend commands.
 
+**Example:**
 ```yaml
 theme_paths:
   custom_theme: /var/www/html/web/themes/custom/custom_theme
+  admin_theme: /var/www/html/web/themes/custom/admin_theme
 ```
 
-### `hooks`
+**Usage:**
+```sh
+ddev frontend production custom_theme  # Build production assets for custom_theme
+ddev frontend watch admin_theme        # Watch mode for admin_theme
+```
 
-Hooks are commands that can be executed at different stages of the setup process. They are defined as lists of commands under various hook points.
+#### `hooks`
 
-- `pre_setup`: Commands to run before the setup process.
-- `post_setup`: Commands to run after the setup process.
-- `pre_site_install`: Commands to run before any type site installation.
-- `post_site_install`: Commands to run after any type site installation.
-- `pre_site_install_config`: Commands to run before the site installation from config.
-- `post_site_install_config`: Commands to run after the site installation from config.
-- `pre_site_install_db`: Commands to run before the site installation from database.
-- `post_site_install_db`: Commands to run after the site installation from database.
+Hooks are commands that execute at different stages of the setup process. They are defined as lists of commands under various hook points, allowing you to customise the workflow to your project's needs.
 
-Example:
+**Available hooks:**
+
+**Setup hooks:**
+- `pre_setup`: Commands to run before the setup process
+- `post_setup`: Commands to run after the setup process
+
+**Site installation hooks:**
+- `pre_site_install`: Commands to run before any type of site installation
+- `post_site_install`: Commands to run after any type of site installation
+- `pre_site_install_config`: Commands to run before site installation from configuration
+- `post_site_install_config`: Commands to run after site installation from configuration
+- `pre_site_install_db`: Commands to run before site installation from database dump
+- `post_site_install_db`: Commands to run after site installation from database dump
+
+**Example configuration:**
 
 ```yaml
 hooks:
@@ -261,86 +526,107 @@ hooks:
   post_site_install_db: []
 ```
 
-Available variables for site_install hooks are:
+**Available variables in hooks:**
 
-- DRUPAL_PROFILE: The profile used to install the site.
-- SITE_PATH: The path to the site to be installed relative to web/sites
-- SITE_ALIAS: The drush alias of the site to be installed, without the @.
+Site installation hooks (`pre_site_install`, `post_site_install`, etc.):
+- `DRUPAL_PROFILE`: The profile used to install the site
+- `SITE_PATH`: The path to the site relative to `web/sites`
+- `SITE_ALIAS`: The drush alias of the site (without the `@` prefix)
 
-Available variables for setup hooks are:
+Setup hooks (`pre_setup`, `post_setup`):
+- `NO_THEMES`: Set if `--no-themes` flag was used
+- `NO_INSTALL`: Set if `--no-install` flag was used
+- `SITES`: The sites to be installed
+- `CONFIG_DEFAULT_SITE`: The default site configured
 
-- NO_THEMES: If the setup command was called with the --no-themes flag
-- NO_INSTALL: If the setup command was called with the --no-install flag
-- SITES: The sites to be installed
-- CONFIG_DEFAULT_SITE: The default site to be installed
-
-In addition, all the variables [provided by ddev](https://ddev.readthedocs.io/en/stable/users/extend/custom-commands/#command-line-completion) are available on all hooks.
+All [DDEV environment variables](https://ddev.readthedocs.io/en/stable/users/extend/custom-commands/#command-line-completion) are also available in all hooks.
 
 #### `installable_sites_aliases`
 
-You can add the names of the different sites you want install when running
-`ddev setup --all`. Additional sites can still be installed later using the `ddev site-install MYSITE` command.
+Defines the list of sites to install when running `ddev setup --all`. Additional sites can still be installed later using the `ddev site-install <site_name>` command.
 
+**Example:**
 ```yaml
 installable_sites_aliases:
   - site1
   - site2
   - site3.mylocal
 ```
-> **NOTE**: The site names must match the drush aliases. Names without dots are
-> considered as ".local" aliases, but if you have a different alias, you can specify it
-> and .local will not be appended.
 
-## Get configuration
-You can add any other configuration you need to the `aljibe.yml` file. This config can be obtained with the `ddev aljibe-config` command.
+> **Note:** Site names must match drush aliases. Names without dots are automatically considered as ".local" aliases. If you have a different alias suffix, you can specify it explicitly and ".local" will not be appended.
 
-Example commands to obtain specific configurations:
+### Reading configuration programmatically
 
-- To obtain all theme paths to be processed:
+You can add any custom configuration you need to the `aljibe.yml` file. This configuration can be retrieved programmatically with the `ddev aljibe-config` command, which is useful for scripting and automation.
 
-  ```sh
-  ddev aljibe-config theme_path
-  ```
+**Example commands:**
 
-- To get the default site to be processed:
+Get all theme paths:
+```sh
+ddev aljibe-config theme_paths
+```
 
-  ```sh
-  ddev aljibe-config default_site
-  ```
+Get the default site:
+```sh
+ddev aljibe-config default_site
+```
+
+Get any custom configuration key:
+```sh
+ddev aljibe-config my_custom_key
+```
 
 ## Troubleshooting
 
-### https not working
+Common issues and their solutions.
 
-Follow ddev [install recommendations](https://ddev.readthedocs.io/en/stable/users/install/ddev-installation/#linux).
-It is needed to install mkcert and libnss3-tools, and then run:
+### HTTPS not working
 
-```sh
-mkcert -install
-```
+HTTPS requires proper SSL certificate configuration on your system.
 
-### Can't debug with NetBeans
+**Solution:**
 
-Until <https://github.com/apache/netbeans/issues/7562> is solved you need to create a file named `xdebug.ini` at `.ddev/php` with the following content:
+1. Follow DDEV [installation recommendations](https://ddev.readthedocs.io/en/stable/users/install/ddev-installation/#linux)
+2. Install required packages: `mkcert` and `libnss3-tools`
+3. Run the certificate installation:
+   ```sh
+   mkcert -install
+   ```
 
-```
+### Debugging with NetBeans
+
+Due to [NetBeans issue #7562](https://github.com/apache/netbeans/issues/7562), you need to manually configure Xdebug for NetBeans.
+
+**Solution:**
+
+Create a file named `xdebug.ini` in `.ddev/php/` with the following content:
+
+```ini
 [XDebug]
 xdebug.idekey = netbeans-xdebug
 ```
 
-NOTE: The `netbeans-xdebug` is the default Session ID value in the Debugging tab in the PHP Netbeans' configuration dialog. If you have changed it do it in the `xdebug.ini` file as well.
+**Note:** `netbeans-xdebug` is the default Session ID value in the Debugging tab of NetBeans' PHP configuration dialogue. If you've changed it, update the `xdebug.ini` file accordingly.
 
-### Xdebug profiler does not save the files
+### Xdebug Profiler not saving files
 
-Follow the instructions from [ddev xprofiler documentation](https://ddev.readthedocs.io/en/stable/users/debugging-profiling/xdebug-profiling/#basic-usage)
+If Xdebug profiling files aren't being generated, you need to configure the profiler output directory.
 
-```
+**Solution:**
+
+Follow the [DDEV Xdebug profiling documentation](https://ddev.readthedocs.io/en/stable/users/debugging-profiling/xdebug-profiling/#basic-usage) and create a file named `xdebug.ini` in `.ddev/php/` with:
+
+```ini
 [XDebug]
 xdebug.mode=profile
 xdebug.start_with_request=yes
-# Set a ddev shared folder for the xprofile reports.
+# Set a DDEV shared folder for the xprofile reports
 xdebug.output_dir=/var/www/html/tmp/xprofile
 xdebug.profiler_output_name=trace.%c%p%r%u.out
 ```
 
-Review the php info (/admin/reports/status/php) page to review that the xdebug variables are setup properly after run ddev xdebug on, restart the project if necessary.
+**Verification:**
+
+1. Run `ddev xdebug on`
+2. Restart the project if necessary
+3. Visit `/admin/reports/status/php` (Drupal) to verify Xdebug variables are configured correctly
