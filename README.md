@@ -79,7 +79,7 @@ Folders:
 - `drush`: contains Drush commands, configuration and site aliases.
 - `patches`: contains patches applied to Composer dependencies. It is [recommended to download patches and commit them locally](https://www.drupal.org/docs/develop/using-composer/manage-dependencies#patches), and this folder is intended for storing those downloaded patches.
 - `private-files`: contains private files for Drupal sites. Private files should not be stored in the web root for security reasons, so this folder is outside the web root.
-- `recipes`: contains [recipes])https://www.drupal.org/docs/extending-drupal/drupal-recipes) for this project. Although recipes can be distributed as standard PHP packages, you can store here recipes specific to your project that are not intended to be shared.
+- `recipes`: contains [recipes](https://www.drupal.org/docs/extending-drupal/drupal-recipes) for this project. Although recipes can be distributed as standard PHP packages, you can store here recipes specific to your project that are not intended to be shared.
 - `scripts`: any custom scripts for your project can be stored here.
 
 
@@ -108,7 +108,7 @@ PHPQA is intended to be run manually or by your CI/CD system.
 To customise it please refer to your project's `.phpqa.xml` file. This file is provided by Aljibe during installation, but you can modify it to suit your project's needs.
 
 
-### Behat testing (BDD/Acceptance Testing)
+### Behat testing (BDD/acceptance testing)
 
 Behat is a Behaviour-Driven Development (BDD) framework for PHP. Aljibe includes Behat testing capabilities out of the box, allowing you to write and run acceptance tests for your Drupal site.
 
@@ -177,7 +177,7 @@ To create the reference screenshots use the `reference` command.
 ddev backstopjs [environment] reference
 ```
 
-Later, to test the site awgainst the reference screenshots, use the `test` command.
+Later, to test the site against the reference screenshots, use the `test` command.
 
 ```bash
 ddev backstopjs [environment] test
@@ -297,7 +297,7 @@ First, make easy to install a site to start developing from a known base. The co
 
 During development workflow is common to configure the local development site with a known setup for testing and development. Many times this is done using a database dump from a staging or production server.
 
-Another option is to use a configuration export to set up the site, and use default content to populate the site with content to be able to test functionalities. This is the recommended way when working with Drupal projects that have a complete configuration management workflow, because ti allows predictible setup times, avoid any privacy issues with real date (no need for sanitisation) and is usually faster than importing a database dump.
+Another option is to use a configuration export to set up the site, and use default content to populate the site with content to be able to test functionalities. This is the recommended way when working with Drupal projects that have a complete configuration management workflow, because it allows predictable setup times, avoid any privacy issues with real data (no need for sanitisation) and is usually faster than importing a database dump.
 
 
 ##### Installing from configuration
@@ -305,7 +305,7 @@ Another option is to use a configuration export to set up the site, and use defa
 To install the default site from the configuration export, run:
 
 ```bash
-dev site-install
+ddev site-install
 ```
 
 For this to work, a Drupal configuration export must be available. The command  uses drush commands (`sql-drop`, `site:install` and `config-import`) to perform the installation from existing configuration.
@@ -313,14 +313,14 @@ For this to work, a Drupal configuration export must be available. The command  
 To install a different site other than the default, use its site name:
 
 ```bash
-dev site-install <site_name>
+ddev site-install <site_name>
 ```
 
 Where `site_name` is the site alias defined in your Drush aliases, or just the name without dots (in this case, `.local` will be appended automatically) for local sites:
 
 ```bash
-dev site-install site1   # Installs @site1.local
-dev site-install site2.mylocal  # Installs @site2.mylocal
+ddev site-install site1   # Installs @site1.local
+ddev site-install site2.mylocal  # Installs @site2.mylocal
 ```
 
 ##### Installing from database dump
@@ -328,7 +328,7 @@ dev site-install site2.mylocal  # Installs @site2.mylocal
 Run the following command to install a site from a database dump:
 
 ```bash
-dev site-install site1 path/to/dump.sql   # Installs @site1.local using the provided database dump
+ddev site-install site1 path/to/dump.sql   # Installs @site1.local using the provided database dump
 ```
 
 In this case, th site name is mandatory, as well as the path to the database dump file.
@@ -336,7 +336,7 @@ In this case, th site name is mandatory, as well as the path to the database dum
 
 ##### Fast on-boarding
 
-The `setup`commands allowas for fast ob-boarding of new developers by automating the site installation process. A new developer only needs to clone the project repository and run `ddev setup` to have a working local site ready for development.
+The `setup` commands allow for fast on-boarding of new developers by automating the site installation process. A new developer only needs to clone the project repository and run `ddev setup` to have a working local site ready for development.
 
 The `setup` command takes care of installing Composer dependencies, install the site (or sites in a multisite setup) using `site-install`.
 
@@ -369,7 +369,7 @@ Some commands are provided ease certain operations:
 
 [Drupal Updater](https://github.com/Metadrop/drupal-updater) is a tool to update Drupal core and contributed modules automatically. Aljibe includes Drupal Updater integration to help you keep your Drupal installation up to date.
 
-This PHP packages is able to update each module or theme in separate commits, update Drupal configuration and even update the Drupal core itself. It relies on Composer to perform the updates.
+This PHP package is able to update each module or theme in separate commits, update Drupal configuration and even update the Drupal core itself. It relies on Composer to perform the updates.
 
 Read more about Drupal Updater in this article: [Drupal Updater: Streamlining Drupal Maintenance Updates from CLI](https://metadrop.net/en/articles/drupal-updater-streamlining-drupal-maintenance-updates-cli).
 
@@ -423,7 +423,7 @@ To transform an existing project to use DDEV Aljibe, follow these steps. Always 
    - Edit `.ddev/aljibe.yml` to set the default site name (the folder inside `sites/`) and all themes to be compiled
    - Update `.gitignore` to match [this example](https://github.com/Metadrop/ddev-aljibe/blob/main/kickstart/common/.gitignore)
 
-#### Additional Steps for Boilerplate projects
+#### Additional steps for boilerplate projects
 
 If you're migrating from a [Metadrop boilerplate](https://github.com/Metadrop/drupal-boilerplate) project:
 
