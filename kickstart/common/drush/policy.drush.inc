@@ -1,9 +1,12 @@
 <?php
 
 /*
- * Customize this file as desired. See https://github.com/drush-ops/drush/blob/8.x/examples/policy.drush.inc for documentation.
+ * Customize this file as desired. See
+ * https://github.com/drush-ops/drush/blob/8.x/examples/policy.drush.inc for
+ * documentation.
  *
- * This file is only used for Drush 8.x, Drush 9.x and above don't have pm-updatecode anymore so this file is not processed.
+ * This file is only used for Drush 8.x, Drush 9.x and above should use a Drush command file
+ * instead. See Commands/PolicyCommands.php file in this folder for an example.
  */
 
 /**
