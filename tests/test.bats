@@ -206,12 +206,31 @@ check_drupal_admin_access() {
 
   local login_url
   login_url=$(ddev drush uli 2>&1)
-  if curl -sLb cookies "$login_url" | grep -q "You have used a one-time login link. You can set your new password now."; then
+
+  # Debug output
+  echo ""
+  echo "DEBUG: login_url = '$login_url'"
+  echo "DEBUG: Attempting curl..."
+
+  local response
+  response=$(curl -sLb /tmp/cookies_$$ "$login_url" 2>&1)
+  local curl_exit=$?
+
+  echo "DEBUG: curl exit code = $curl_exit"
+  echo "DEBUG: response length = ${#response}"
+  echo "DEBUG: First 200 chars of response = '${response:0:200}'"
+
+  if echo "$response" | grep -q "You have used a one-time login link"; then
     echo " Ok."
   else
     echo " Failed."
+    echo "DEBUG: Full response:"
+    echo "$response"
     failed=1
   fi
+
+  # Cleanup
+  rm -f /tmp/cookies_$$
 
   return "$failed"
 }
