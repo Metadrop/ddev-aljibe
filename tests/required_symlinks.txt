@@ -1,0 +1,5 @@
+# Required symlinks after Aljibe installation
+# Format: symlink_path # comment explaining why it is required (DO NOT use single quotes "'")
+
+docroot                         # Symlink to Drupal web root for compatibility with tools and setups that expect docroot
+public_html                     # Symlink to Drupal web root for hosting environments

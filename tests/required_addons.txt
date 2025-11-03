@@ -1,0 +1,12 @@
+# Required addons that should be installed after Aljibe Assistant run
+# Format: addon short name # comment explaining why it is required (DO NOT use single quotes "'")
+
+adminer           # Adminer database management tool
+aljibe            # Main add-on
+aljibe-assistant  # Aljibe Assistant for guided setup and configuration
+backstopjs        # BackstopJS visual regression testing tool
+mkdocs            # MkDocs documentation
+newman            # Newman Postman collection runner
+pa11y             # Pa11y accessibility testing tool
+selenium          # Selenium for Behat testing
+unlighthouse      # Unlightouse accessibility and performance testing tool
