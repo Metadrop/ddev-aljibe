@@ -204,6 +204,9 @@ check_drupal_admin_access() {
   ddev restart -y
   assert_success
 
+  # Run Assistant in automatic mode with standard profile.
+  ddev aljibe-assistant --auto -p standard
+  assert_success
   # Checks on files and folders required after installation.
   run check_required_folders
   assert_success
@@ -216,10 +219,6 @@ check_drupal_admin_access() {
 
   # Make sure Assistant is installed.
   run check_assistant_is_installed
-  assert_success
-
-  # Run Assistant in automatic mode
-  ddev aljibe-assistant --auto
   assert_success
 
   # Check the required addons have installed correctly.
