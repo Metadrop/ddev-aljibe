@@ -207,25 +207,15 @@ check_drupal_admin_access() {
   local login_url
   login_url=$(ddev drush uli 2>&1)
 
-  # Debug output
-  echo ""
-  echo "DEBUG: login_url = '$login_url'"
-  echo "DEBUG: Attempting curl..."
-
   local response
   response=$(curl -sLb /tmp/cookies_$$ "$login_url" 2>&1)
-  local curl_exit=$?
 
-  echo "DEBUG: curl exit code = $curl_exit"
-  echo "DEBUG: response length = ${#response}"
-  echo "DEBUG: First 200 chars of response = '${response:0:200}'"
-
-  if echo "$response" | grep -q "You have used a one-time login link"; then
+  # For some reason, the message saying that you have used a one-time login link
+  # is not always present, so we check for the password change prompt instead.
+  if echo "$response" | grep -q "To change the current user password, enter the new password in both fields."; then
     echo " Ok."
   else
     echo " Failed."
-    echo "DEBUG: Full response:"
-    echo "$response"
     failed=1
   fi
 
