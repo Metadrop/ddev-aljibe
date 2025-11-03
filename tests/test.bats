@@ -75,6 +75,19 @@ check_required_symlinks() {
   check_required_items "symlinks" "${DIR}/tests/required_symlinks.txt" "-L"
 }
 
+# Check Aljibe Assistant is installed alongside Aljibe.
+check_assistant_is_installed() {
+  echo -n "Checking if Aljibe Assistant is installed..."
+  if ddev add-on list --installed  | grep -q "aljibe-assistant"; then
+    echo " Ok."
+    return 0
+  else
+    echo " Failed."
+    return 1
+  fi
+}
+
+
 check_services() {
   echo "Checking services:"
   INSTALLED_SERVICES=$(ddev get --installed)
@@ -127,10 +140,15 @@ check_drupal_admin_access() {
   echo "$output" >&3
   [ "$status" -eq 0 ]
 
+  run check_assistant_is_installed
+  echo "$output" >&3
+  [ "$status" -eq 0 ]
   check_services >&3
   check_project_browse >&3
   ## Todo Make this test work
   # check_drupal_admin_access >&3
+
+
 }
 
 @test "install from release" {
