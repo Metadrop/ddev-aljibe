@@ -1,23 +1,41 @@
 #!/bin/bash
 
+
+# Standard DDEV add-on setup code taken from official DDEV add-ons.
 setup() {
   set -eu -o pipefail
-  export DIR="$( cd "$( dirname "$BATS_TEST_FILENAME" )" >/dev/null 2>&1 && pwd )/.."
-  export TESTDIR=~/tmp/test-addon-aljibe
-  mkdir -p "$TESTDIR"
-  export PROJNAME=test-addon-aljibe
-  export DDEV_NON_INTERACTIVE=true
-  ddev delete -Oy "$PROJNAME" >/dev/null 2>&1 || true
-  cd "$TESTDIR"
-  ddev config --project-name="$PROJNAME"
-  ddev start -y >/dev/null
+  export GITHUB_REPO=Metadrop/ddev-aljibe
+  TEST_BREW_PREFIX="$(brew --prefix 2>/dev/null || true)"
+  export BATS_LIB_PATH="${BATS_LIB_PATH}:${TEST_BREW_PREFIX}/lib:/usr/lib/bats"
+  bats_load_library bats-assert
+  bats_load_library bats-file
+  bats_load_library bats-support
+
+  # shellcheck disable=SC2155
+  export DIR="$(cd "$(dirname "${BATS_TEST_FILENAME}")/.." >/dev/null 2>&1 && pwd)"
+  # shellcheck disable=SC2155
+  export PROJNAME="test-$(basename "${GITHUB_REPO}")"
+
+  mkdir -p ~/tmp
+  # shellcheck disable=SC2155
+  export TESTDIR=$(mktemp -d ~/tmp/${PROJNAME}.XXXXXX)
+  export DDEV_NONINTERACTIVE=true
+  export DDEV_NO_INSTRUMENTATION=true
+  ddev delete -Oy "${PROJNAME}" >/dev/null 2>&1 || true
+
+  cd "${TESTDIR}"
+  run ddev config --project-name="${PROJNAME}" --project-tld=ddev.site
+  assert_success
+  run ddev start -y
+  assert_success
 }
 
+# Standard DDEV add-on tear down code taken from official DDEV add-ons.
 teardown() {
   set -eu -o pipefail
-  cd "$TESTDIR" || { printf "unable to cd to %s\n" "$TESTDIR"; exit 1; }
-  ddev delete -Oy "$PROJNAME" >/dev/null 2>&1
-  [ -n "$TESTDIR" ] && rm -rf "$TESTDIR"
+  cd ${TESTDIR} || ( printf "unable to cd to ${TESTDIR}\n" && exit 1 )
+  ddev delete -Oy ${PROJNAME} >/dev/null 2>&1
+  [ "${TESTDIR}" != "" ] && rm -rf ${TESTDIR}
 }
 
 # Internal helper function to check existence of items from external list.
@@ -129,20 +147,16 @@ check_drupal_admin_access() {
 
   # Checks on files and folders required after installation.
   run check_required_folders
-  echo "$output" >&3
-  [ "$status" -eq 0 ]
+  assert_success
 
   run check_required_files
-  echo "$output" >&3
-  [ "$status" -eq 0 ]
+  assert_success
 
   run check_required_symlinks
-  echo "$output" >&3
-  [ "$status" -eq 0 ]
+  assert_success
 
   run check_assistant_is_installed
-  echo "$output" >&3
-  [ "$status" -eq 0 ]
+  assert_success
 
 
 #  run check_services
