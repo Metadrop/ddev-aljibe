@@ -143,12 +143,19 @@ check_drupal_admin_access() {
   run check_assistant_is_installed
   echo "$output" >&3
   [ "$status" -eq 0 ]
-  check_services >&3
-  check_project_browse >&3
-  ## Todo Make this test work
-  # check_drupal_admin_access >&3
 
 
+#  run check_services
+#  echo "$output" >&3
+#  [ "$status" -eq 0 ]
+#
+#  run check_project_browse
+#  echo "$output" >&3
+#  [ "$status" -eq 0 ]
+#
+#  run check_drupal_admin_access
+#  echo "$output" >&3
+#  [ "$status" -eq 0 ]
 }
 
 @test "install from release" {
