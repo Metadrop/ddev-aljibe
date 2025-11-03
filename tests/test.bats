@@ -38,20 +38,21 @@ teardown() {
   [ "${TESTDIR}" != "" ] && rm -rf ${TESTDIR}
 }
 
-# Internal helper function to check existence of items from external list.
+# Generic helper function to check items from external list using a custom checker function.
 #
-# WARNING: Do not call this function directly. Use check_required_folders or
-# check_required_files instead. The wrong parameters may lead to unexpected
-# results.
+# WARNING: This is an internal helper. Do not call directly. Use wrapper functions instead.
 #
 # Parameters:
-#   $1: item_type - "folder" or "file"
+#   $1: item_type - descriptive name (e.g., "folder", "file", "add-on")
 #   $2: list_file - path to the file containing items to check
-#   $3: test_flag - "-d" for folders, "-f" for files
-check_required_items() {
+#   $3: checker_function - name of function to call to check each item
+#   $4+ - additional arguments passed to checker function
+check_items_from_list() {
   local item_type="$1"
   local list_file="$2"
-  local test_flag="$3"
+  local checker_function="$3"
+  shift 3
+  local checker_args=("$@")
   local failed=0
 
   echo "Checking required ${item_type}s:"
@@ -65,7 +66,8 @@ check_required_items() {
     item=$(echo "$item" | xargs)
     comment=$(echo "$comment" | xargs)
 
-    if test "$test_flag" "${TESTDIR}/${item}"; then
+    # Call the checker function with item and any additional arguments
+    if "$checker_function" "$item" "${checker_args[@]}"; then
       echo "Checking if ${item_type} '${item}' exists... Ok. (${comment})"
     else
       echo "Checking if ${item_type} '${item}' exists... Missing. (${comment})"
@@ -76,12 +78,55 @@ check_required_items() {
   return $failed
 }
 
+# Checker function for filesystem items (files, folders, symlinks)
+#
+# Parameters:
+#   $1: item - the item name
+#   $2: test_flag - "-d" for folders, "-f" for files, "-L" for symlinks
+check_filesystem_item() {
+  local item="$1"
+  local test_flag="$2"
+  test "$test_flag" "${TESTDIR}/${item}"
+}
+
+# Checker function for installed add-ons
+#
+# Parameters:
+#   $1: item - the add-on name
+#   $2: installed_services - output from ddev add-on list
+check_addon_item() {
+  local item="$1"
+  local installed_services="$2"
+  echo "$installed_services" | grep -q "$item "
+}
+
+# Internal helper function to check existence of items from external list.
+#
+# WARNING: Do not call this function directly. Use check_required_folders or
+# check_required_files instead.
+#
+# Parameters:
+#   $1: item_type - "folder" or "file"
+#   $2: list_file - path to the file containing items to check
+#   $3: test_flag - "-d" for folders, "-f" for files
+check_required_items() {
+  local item_type="$1"
+  local list_file="$2"
+  local test_flag="$3"
+  check_items_from_list "$item_type" "$list_file" check_filesystem_item "$test_flag"
+}
+
+# Check a list of add-ons that should be installed.
+check_addons() {
+  local INSTALLED_SERVICES
+  INSTALLED_SERVICES=$(ddev add-on list --installed)
+  check_items_from_list "add-on" "${DIR}/tests/required_addons.txt" check_addon_item "$INSTALLED_SERVICES"
+}
 
 # Check a list of required folders.
 check_required_folders() {
   check_required_items "folder" "${DIR}/tests/required_folders.txt" "-d"
 }
-
 
 # Check a list of required files.
 check_required_files() {
@@ -141,9 +186,12 @@ check_drupal_admin_access() {
   set -eu -o pipefail
   cd "$TESTDIR"
   echo "# ddev get ${DIR} with project ${PROJNAME} in ${TESTDIR} ($(pwd))" >&3
-  ddev get "${DIR}"
-  ddev restart >/dev/null
-  ddev aljibe-assistant --auto
+
+  # Install the add-on and restart ddev to apply changes.
+  ddev add-on get "${DIR}"
+  assert_success
+  ddev restart -y
+  assert_success
 
   # Checks on files and folders required after installation.
   run check_required_folders
@@ -155,9 +203,17 @@ check_drupal_admin_access() {
   run check_required_symlinks
   assert_success
 
+  # Make sure Assistant is installed.
   run check_assistant_is_installed
   assert_success
 
+  # Run Assistant in automatic mode
+  ddev aljibe-assistant --auto
+  assert_success
+
+  # Check the required addons have installed correctly.
+  run check_addons
+  assert_success
 
 #  run check_services
 #  echo "$output" >&3
