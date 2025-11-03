@@ -164,14 +164,16 @@ check_services() {
 
 # Check Aljibe Assistant is installed alongside Aljibe.
 check_assistant_is_installed() {
+  local failed=0
+
   echo -n "Checking if Aljibe Assistant is installed..."
   if ddev add-on list --installed  | grep -q "aljibe-assistant"; then
     echo " Ok."
-    return 0
   else
     echo " Failed."
-    return 1
+    failed=1
   fi
+  return "$failed"
 }
 
 
