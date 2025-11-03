@@ -176,14 +176,21 @@ check_assistant_is_installed() {
   return "$failed"
 }
 
+# Checks the homepage returns a 200 status code.
+check_project_homepage_is_browsable() {
+  local failed=0
 
-check_project_browse() {
   echo -n "Checking if the project is browsable..."
-  if curl -s "https://${PROJNAME}.ddev.site" | grep -q "Welcome"; then
+  local status_code
+  status_code=$(curl -w "%{http_code}"  -o NULL -s  "https://${PROJNAME}.ddev.site")
+
+  if [ "$status_code" == "200" ]; then
     echo " Ok."
   else
     echo " Failed."
+    failed=1
   fi
+  return "$failed"
 }
 
 check_drupal_admin_access() {
@@ -229,6 +236,10 @@ check_drupal_admin_access() {
 
   # Check if the expected services are running.
   run check_services
+  assert_success
+
+  # Check the project's homepage is accessible.
+  run check_project_homepage_is_browsable
   assert_success
 #  run check_services
 #  echo "$output" >&3
