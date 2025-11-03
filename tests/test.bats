@@ -20,6 +20,61 @@ teardown() {
   [ -n "$TESTDIR" ] && rm -rf "$TESTDIR"
 }
 
+# Internal helper function to check existence of items from external list.
+#
+# WARNING: Do not call this function directly. Use check_required_folders or
+# check_required_files instead. The wrong parameters may lead to unexpected
+# results.
+#
+# Parameters:
+#   $1: item_type - "folder" or "file"
+#   $2: list_file - path to the file containing items to check
+#   $3: test_flag - "-d" for folders, "-f" for files
+check_required_items() {
+  local item_type="$1"
+  local list_file="$2"
+  local test_flag="$3"
+  local failed=0
+
+  echo "Checking required ${item_type}s:"
+
+  # Read required items from external file
+  while IFS='#' read -r item comment || [ -n "$item" ]; do
+    # Skip empty lines and comments
+    [[ -z "$item" || "$item" =~ ^[[:space:]]*# ]] && continue
+
+    # Trim whitespace
+    item=$(echo "$item" | xargs)
+    comment=$(echo "$comment" | xargs)
+
+    if test "$test_flag" "${TESTDIR}/${item}"; then
+      echo "Checking if ${item_type} '${item}' exists... Ok. (${comment})"
+    else
+      echo "Checking if ${item_type} '${item}' exists... Missing. (${comment})"
+      failed=1
+    fi
+  done < "$list_file"
+
+  return $failed
+}
+
+
+# Check a list of required folders.
+check_required_folders() {
+  check_required_items "folder" "${DIR}/tests/required_folders.txt" "-d"
+}
+
+
+# Check a list of required files.
+check_required_files() {
+  check_required_items "file" "${DIR}/tests/required_files.txt" "-f"
+}
+
+# Check a list of required symlinks.
+check_required_symlinks() {
+  check_required_items "symlinks" "${DIR}/tests/required_symlinks.txt" "-L"
+}
+
 check_services() {
   echo "Checking services:"
   INSTALLED_SERVICES=$(ddev get --installed)
@@ -58,6 +113,19 @@ check_drupal_admin_access() {
   ddev get "${DIR}"
   ddev restart >/dev/null
   ddev aljibe-assistant --auto
+
+  # Checks on files and folders required after installation.
+  run check_required_folders
+  echo "$output" >&3
+  [ "$status" -eq 0 ]
+
+  run check_required_files
+  echo "$output" >&3
+  [ "$status" -eq 0 ]
+
+  run check_required_symlinks
+  echo "$output" >&3
+  [ "$status" -eq 0 ]
 
   check_services >&3
   check_project_browse >&3
