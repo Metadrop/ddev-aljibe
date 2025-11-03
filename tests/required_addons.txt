@@ -1,5 +1,5 @@
-# Required files after Aljibe installation
-# Format: file_path # comment explaining why it is required (DO NOT use single quotes "'")
+# Required addons that should be installed after Aljibe Assistant run
+# Format: addon short name # comment explaining why it is required (DO NOT use single quotes "'")
 
 adminer           # Adminer database management tool
 aljibe            # Main add-on

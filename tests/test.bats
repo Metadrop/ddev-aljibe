@@ -97,7 +97,24 @@ check_filesystem_item() {
 check_addon_item() {
   local item="$1"
   local installed_services="$2"
-  echo "$installed_services" | grep -q "$item "
+  # Add a trailing space in grep to avoid partial matches
+  # Also, start with │ to avoid matching in other places that are not the first
+  # column.
+  echo "$installed_services" | grep -q "│ $item "
+}
+
+# Checker function for running services
+#
+# Parameters:
+#   $1: item - the service name
+#   $2: running_services - output from ddev describe
+check_service_item() {
+  local item="$1"
+  local running_services="$2"
+  # Add a trailing space in grep to avoid partial matches
+  # Also, start with │ to avoid matching in other places that are not the first
+  # column.
+  echo "$running_services" | grep -q "│ $item "
 }
 
 # Internal helper function to check existence of items from external list.
@@ -118,9 +135,9 @@ check_required_items() {
 
 # Check a list of add-ons that should be installed.
 check_addons() {
-  local INSTALLED_SERVICES
-  INSTALLED_SERVICES=$(ddev add-on list --installed)
-  check_items_from_list "add-on" "${DIR}/tests/required_addons.txt" check_addon_item "$INSTALLED_SERVICES"
+  local INSTALLED_ADDONS
+  INSTALLED_ADDONS=$(ddev add-on list --installed)
+  check_items_from_list "add-on" "${DIR}/tests/required_addons.txt" check_addon_item "$INSTALLED_ADDONS"
 }
 
 # Check a list of required folders.
@@ -138,6 +155,13 @@ check_required_symlinks() {
   check_required_items "symlinks" "${DIR}/tests/required_symlinks.txt" "-L"
 }
 
+# Check a list of services that should be running.
+check_services() {
+  local RUNNING_SERVICES
+  RUNNING_SERVICES=$(ddev describe)
+  check_items_from_list "service" "${DIR}/tests/required_services.txt" check_service_item "$RUNNING_SERVICES"
+}
+
 # Check Aljibe Assistant is installed alongside Aljibe.
 check_assistant_is_installed() {
   echo -n "Checking if Aljibe Assistant is installed..."
@@ -150,19 +174,6 @@ check_assistant_is_installed() {
   fi
 }
 
-
-check_services() {
-  echo "Checking services:"
-  INSTALLED_SERVICES=$(ddev get --installed)
-  for SERVICE in aljibe aljibe-assistant adminer backstopjs lighthouse mkdocs pa11y redis selenium unlighthouse; 
-  do
-    if echo "$INSTALLED_SERVICES" | grep -q "$SERVICE"; then
-      echo "Checking if $SERVICE is installed... Ok."
-    else
-      echo "Checking if $SERVICE is installed... Not installed."
-    fi
-  done
-}
 
 check_project_browse() {
   echo -n "Checking if the project is browsable..."
@@ -215,6 +226,9 @@ check_drupal_admin_access() {
   run check_addons
   assert_success
 
+  # Check if the expected services are running.
+  run check_services
+  assert_success
 #  run check_services
 #  echo "$output" >&3
 #  [ "$status" -eq 0 ]
