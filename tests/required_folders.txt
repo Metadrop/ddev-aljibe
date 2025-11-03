@@ -1,0 +1,21 @@
+# Required folders after Aljibe installation
+# Format: folder_path # comment explaining why it is required (DO NOT use single quotes "'")
+
+backups                         # Storage for manual backups
+config                          # Drupal configuration files
+config/default                  # Default Drupal configuration sync directory
+config/envs                     # Environment-specific configuration overrides
+config/envs/local               # Local environment configuration overrides
+drush                           # Drush commands and configuration
+drush/Commands                  # Custom Drush commands
+drush/sites                     # Drush site aliases
+patches                         # Composer patches for dependencies
+private-files                   # Drupal private files placed out of docroot
+recipes                         # Drupal recipes specific for this project
+scripts                         # Projects scripts and automation tools
+tests                           # Automated tests
+web                             # Drupal web root (docroot)
+web/core                        # Drupal core files
+web/modules/custom              # Custom Drupal modules
+web/themes/custom               # Custom Drupal themes
+web/sites/default               # Default Drupal site files

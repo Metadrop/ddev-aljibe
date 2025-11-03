@@ -1,0 +1,9 @@
+# Required files after Aljibe installation
+# Format: file_path # comment explaining why it is required (DO NOT use single quotes "'")
+
+grumphp.yml      # GrumPHP configuration for code quality checks on git commits
+phpstan.neon     # PHPStan static analysis configuration
+phpunit.xml      # PHPUnit testing framework configuration
+composer.json    # Composer dependency management and project metadata
+composer.lock    # Composer lock file for consistent dependency versions
+drush/drush.yml  # Drush configuration file for command-line Drupal management
