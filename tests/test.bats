@@ -190,16 +190,30 @@ check_project_homepage_is_browsable() {
     echo " Failed."
     failed=1
   fi
+
   return "$failed"
 }
 
+# Checks if the Drupal admin user is accessible via one-time login link.
+#
+# It checks page content because the status code is not valid for this check: if
+# the ULI URL is not valid the user is redirected to the login page with a 200
+# status code.
 check_drupal_admin_access() {
+  local failed=0
+
   echo -n "Checking if the Drupal admin is accessible..."
-  if curl -sLb cookies "$(ddev drush uli)" | grep -q "The email address is not made public"; then
+
+  local login_url
+  login_url=$(ddev drush uli 2>&1)
+  if curl -sLb cookies "$login_url" | grep -q "You have used a one-time login link. You can set your new password now."; then
     echo " Ok."
   else
     echo " Failed."
+    failed=1
   fi
+
+  return "$failed"
 }
 
 @test "install from directory" {
@@ -216,6 +230,7 @@ check_drupal_admin_access() {
   # Run Assistant in automatic mode with standard profile.
   ddev aljibe-assistant --auto -p standard
   assert_success
+
   # Checks on files and folders required after installation.
   run check_required_folders
   assert_success
@@ -241,29 +256,7 @@ check_drupal_admin_access() {
   # Check the project's homepage is accessible.
   run check_project_homepage_is_browsable
   assert_success
-#  run check_services
-#  echo "$output" >&3
-#  [ "$status" -eq 0 ]
-#
-#  run check_project_browse
-#  echo "$output" >&3
-#  [ "$status" -eq 0 ]
-#
-#  run check_drupal_admin_access
-#  echo "$output" >&3
-#  [ "$status" -eq 0 ]
-}
 
-@test "install from release" {
-  set -eu -o pipefail
-  cd "$TESTDIR" || { printf "unable to cd to %s\n" "$TESTDIR"; exit 1; }
-  echo "# ddev get metadrop/ddev-aljibe with project ${PROJNAME} in ${TESTDIR} ($(pwd))" >&3
-  ddev get metadrop/ddev-aljibe
-  ddev restart >/dev/null
-  ddev aljibe-assistant --auto
-
-  check_services >&3
-  check_project_browse >&3
-  ## Todo Make this test work
-  # check_drupal_admin_access >&3
+  run check_drupal_admin_access
+  assert_success
 }
