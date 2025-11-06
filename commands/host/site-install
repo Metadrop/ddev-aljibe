@@ -75,22 +75,21 @@ chmod u+w ${DDEV_DOCROOT}/${SITE_PATH} -R
 mkdir -p ${DDEV_DOCROOT}/${SITE_PATH}/files/behat/errors
 
 # Ensure that the settings.ddev.php file exists and is properly configured
-if [ "$SITE" == "default" ] || [ "$SITE" == "self" ]; then
-  DBNAME=""  # Use default db
-else
-  DBNAME=$(echo $SITE | sed 's/[^a-zA-Z0-9]//g')
+DBNAME=$(get_database_name "${SITE_ALIAS}")
+echo "Using database: ${DBNAME}"
+
+if [ "$SITE_PATH" != "sites/default" ]; then
   if [ ! -f ${DDEV_DOCROOT}/${SITE_PATH}/settings.ddev.php ]; then
     cp ${DDEV_DOCROOT}/sites/default/settings.ddev.php ${DDEV_DOCROOT}/${SITE_PATH}/settings.ddev.php
-    sed -i "s/\['database'\] = \"db\"/\['database'\] = \"db_${DBNAME}\"/g" ${DDEV_DOCROOT}/${SITE_PATH}/settings.ddev.php
+    sed -i "s/\['database'\] = \"db\"/\['database'\] = \"${DBNAME}\"/g" ${DDEV_DOCROOT}/${SITE_PATH}/settings.ddev.php
   fi
-  ddev create-database db_${DBNAME} || exit 1
+  ddev create-database ${DBNAME} || exit 1
 fi
-echo "Using database: db${DBNAME:+_$DBNAME}"
 
 
 # Take care of redis settings if needed
 if [ -f ${DDEV_DOCROOT}/sites/default/settings.ddev.redis.php ]; then
-  cp ${DDEV_DOCROOT}/sites/default/settings.ddev.redis.php ${DDEV_DOCROOT}/${SITE_PATH}/settings.ddev.redis.php
+  cp -f ${DDEV_DOCROOT}/sites/default/settings.ddev.redis.php ${DDEV_DOCROOT}/${SITE_PATH}/settings.ddev.redis.php
 
   SETTINGS_FILE_NAME="${DDEV_DOCROOT}/${SITE_PATH}/settings.php"
   if grep "Include settings required for Redis cache" $SETTINGS_FILE_NAME; then
@@ -125,7 +124,7 @@ run_hooks "pre_site_install"
 if [ "$INSTALL_MODE" == "db" ]; then
   echo -e "\nLoading database from file $DB_FILE"
   run_hooks "pre_site_install_db"
-  ddev import-db --file $DB_FILE --database db${DBNAME:+_$DBNAME} || exit 1
+  ddev import-db --file $DB_FILE --database ${DBNAME} || exit 1
   ddev_drush deploy
   run_hooks "post_site_install_db"
 elif [ "$INSTALL_MODE" == "config" ]; then

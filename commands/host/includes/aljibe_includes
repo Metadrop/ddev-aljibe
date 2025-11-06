@@ -83,3 +83,20 @@ get_all_installable_sites() {
     echo "${INSTALLABLE_SITES_ALIASES_LIST[@]}"
   fi
 }
+
+## Get the database name for a given site
+##   $1: site alias
+## Returns: database name (db or db_SITENAME)
+## Example: get_database_name "self.local"
+get_database_name() {
+  local SITE_ALIAS=$1
+  local SITE_PATH=$(ddev drush @${SITE_ALIAS} status --field=site)
+
+  if [ "$SITE_PATH" == "sites/default" ]; then
+    echo "db"
+  else
+    # Extract site name from path
+    local SITE_NAME=$(echo "$SITE_PATH" | sed 's|sites/||' | sed 's/[^a-zA-Z0-9]//g')
+    echo "db_${SITE_NAME}"
+  fi
+}
