@@ -1,9 +1,9 @@
 #!/bin/bash
 #ddev-generated
-## Description: Install given drupal site. A db can be passed as second parameter
-## Usage: site-install [site] [db file]
+## Description: Install given drupal site. A db file and files archive can be passed as additional parameters
+## Usage: site-install [site] [db file] [files archive]
 ## Example: ddev site-install default
-## Example:\n- Install site from configuration:\n\n    ddev site-install\n\n- Install site from database file\n\n    ddev site-install default db_dump.sql\n\n- Install site 'secondary' from configuration:\n\n    ddev site-install secondary\n\nNOTE: Although [flags] is displayed at the end of the command in the `Usage` section, meaning DDEV flags, please set options between `ddev` and `site-install`. If added to the end of the command, they will be passed to site install script and will cause errors.
+## Example:\n- Install site from configuration:\n\n    ddev site-install\n\n- Install site from database file\n\n    ddev site-install default db_dump.sql\n\n- Install site from database and files archive (tar.gz or zip)\n\n    ddev site-install default db_dump.sql files.tar.gz\n\n- Install site from configuration with files archive\n\n    ddev site-install default '' files.zip\n\n- Install site 'secondary' from configuration:\n\n    ddev site-install secondary\n\nNOTE: Although [flags] is displayed at the end of the command in the `Usage` section, meaning DDEV flags, please set options between `ddev` and `site-install`. If added to the end of the command, they will be passed to site install script and will cause errors.
 
 # Run a drush command using ddev.
 ddev_drush() {
@@ -20,6 +20,8 @@ SITE_PROFILES_FILE=".ddev/site-profiles"
 SITE=${1:-'self'}
 
 DB_FILE=${2:-''}
+FILES_ARCHIVE=${3:-''}
+
 if [ -z "$DB_FILE" ]; then
   INSTALL_MODE="config"
   echo "Installing site from configuration"
@@ -33,6 +35,14 @@ if [ "$INSTALL_MODE" == "db" ]; then
     echo "Error: database file '$DB_FILE' not found."
     exit 1
   fi
+fi
+
+if [ -n "$FILES_ARCHIVE" ]; then
+  if [ ! -f "$FILES_ARCHIVE" ]; then
+    echo "Error: files archive '$FILES_ARCHIVE' not found."
+    exit 1
+  fi
+  echo "Files archive provided: $FILES_ARCHIVE"
 fi
 
 
@@ -118,6 +128,70 @@ fi
 echo -e "\nDropping existing database (if any)"
 ddev_drush sql:drop -y || exit 1
 
+# Process files archive if provided (before site installation)
+if [ -n "$FILES_ARCHIVE" ]; then
+  echo -e "\nProcessing files archive..."
+
+  # Get the target files directory from drush
+  FILES_DIR=${DDEV_DOCROOT}/${SITE_PATH}/files
+  if [ -z "$FILES_DIR" ]; then
+    echo "Error: Could not determine files directory location"
+    exit 1
+  fi
+
+  echo "Target files directory: ${FILES_DIR}"
+
+  # Create temporary extraction directory
+  TEMP_EXTRACT_DIR=$(mktemp -d)
+  trap "rm -rf $TEMP_EXTRACT_DIR" EXIT
+
+  # Detect file format and extract
+  if [[ "$FILES_ARCHIVE" =~ \.tar\.gz$ ]] || [[ "$FILES_ARCHIVE" =~ \.tgz$ ]]; then
+    echo "Detected tar.gz archive format"
+    tar -xzf "$FILES_ARCHIVE" -C "$TEMP_EXTRACT_DIR" || {
+      echo "Error: Failed to extract tar.gz archive"
+      exit 1
+    }
+  elif [[ "$FILES_ARCHIVE" =~ \.zip$ ]]; then
+    echo "Detected zip archive format"
+    unzip -q "$FILES_ARCHIVE" -d "$TEMP_EXTRACT_DIR" || {
+      echo "Error: Failed to extract zip archive"
+      exit 1
+    }
+  else
+    echo "Error: Unsupported archive format. Only .tar.gz, .tgz, and .zip are supported"
+    exit 1
+  fi
+
+  # Determine source directory structure
+  # Check if archive contains a single 'files' directory or multiple items
+  ITEM_COUNT=$(ls -A "$TEMP_EXTRACT_DIR" | wc -l)
+
+  if [ "$ITEM_COUNT" -eq 1 ] && [ -d "$TEMP_EXTRACT_DIR/files" ]; then
+    # Archive contains only a 'files' directory
+    SOURCE_DIR="$TEMP_EXTRACT_DIR/files"
+    echo "Archive contains a 'files' directory"
+  else
+    # Archive contains multiple items or no 'files' directory
+    SOURCE_DIR="$TEMP_EXTRACT_DIR"
+    echo "Archive contains multiple items, will copy all contents"
+  fi
+
+  # Ensure target directory exists
+  mkdir -p "${FILES_DIR}"
+
+  # Copy files, overwriting existing ones
+  echo "Copying files to ${FILES_DIR}..."
+  cp -rf "$SOURCE_DIR"/* "${FILES_DIR}/" || {
+    echo "Error: Failed to copy files"
+    exit 1
+  }
+
+  # Set proper permissions
+  chmod -R u+w "${FILES_DIR}"
+
+  echo "Files archive extracted and merged successfully"
+fi
 
 # If a database file is given, import it to the site if not, install the site
 run_hooks "pre_site_install"
@@ -140,7 +214,6 @@ else
   echo "Error: Unknown installation mode '$INSTALL_MODE'."
   exit 1
 fi
-
 
 run_hooks "post_site_install"
 ddev status
