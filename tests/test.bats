@@ -242,6 +242,46 @@ check_create_database_command() {
 
 }
 
+check_aljibe_config_command() {
+
+  echo -n "Checking if aljibe-config default_site returns one line..."
+  run ddev aljibe-config default_site
+  assert_success
+  # Check output is not empty and has exactly one line
+  [ -n "$output" ]
+  local line_count=$(echo "$output" | wc -l)
+  [ "$line_count" -eq 1 ]
+  echo " Ok."
+
+  echo -n "Checking if aljibe-config hooks -k returns 8 lines with expected hooks..."
+  run ddev aljibe-config hooks -k
+  assert_success
+  # Check we have 8 lines
+  local line_count=$(echo "$output" | wc -l)
+  [ "$line_count" -eq 8 ]
+  # Check for each expected hook name
+  assert_output --partial "pre_setup"
+  assert_output --partial "post_setup"
+  assert_output --partial "pre_site_install"
+  assert_output --partial "post_site_install"
+  assert_output --partial "pre_site_install_config"
+  assert_output --partial "post_site_install_config"
+  assert_output --partial "pre_site_install_db"
+  assert_output --partial "post_site_install_db"
+  echo " Ok."
+
+  echo -n "Checking if aljibe-config hooks returns 8 lines with drush uli command..."
+  run ddev aljibe-config hooks
+  assert_success
+  # Check we have 8 lines
+  local line_count=$(echo "$output" | wc -l)
+  [ "$line_count" -eq 8 ]
+  # Check for the drush uli command
+  assert_output --partial "drush @\${SITE_ALIAS} uli"
+  echo " Ok."
+
+}
+
 @test "install from directory" {
   set -eu -o pipefail
   cd "$TESTDIR"
@@ -277,5 +317,8 @@ check_create_database_command() {
 
   # Check create-database command
   check_create_database_command
+
+  # Check aljibe-config command
+  check_aljibe_config_command
 
 }
