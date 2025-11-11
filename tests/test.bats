@@ -244,12 +244,15 @@ check_create_database_command() {
 
 check_aljibe_config_command() {
 
+  local line_count
+
   echo -n "Checking if aljibe-config default_site returns one line..."
   run ddev aljibe-config default_site
   assert_success
+
   # Check output is not empty and has exactly one line
   [ -n "$output" ]
-  local line_count=$(echo "$output" | wc -l)
+  line_count=$(echo "$output" | wc -l)
   [ "$line_count" -eq 1 ]
   echo " Ok."
 
@@ -257,7 +260,7 @@ check_aljibe_config_command() {
   run ddev aljibe-config hooks -k
   assert_success
   # Check we have 8 lines
-  local line_count=$(echo "$output" | wc -l)
+  line_count=$(echo "$output" | wc -l)
   [ "$line_count" -eq 8 ]
   # Check for each expected hook name
   assert_output --partial "pre_setup"
@@ -270,11 +273,11 @@ check_aljibe_config_command() {
   assert_output --partial "post_site_install_db"
   echo " Ok."
 
-  echo -n "Checking if aljibe-config hooks returns 8 lines with drush uli command..."
+  echo -n "Checking if aljibe-config hooks returns 8 lines and some content..."
   run ddev aljibe-config hooks
   assert_success
   # Check we have 8 lines
-  local line_count=$(echo "$output" | wc -l)
+  line_count=$(echo "$output" | wc -l)
   [ "$line_count" -eq 8 ]
   # Check for the drush uli command
   assert_output --partial "drush @\${SITE_ALIAS} uli"
@@ -315,10 +318,7 @@ check_aljibe_config_command() {
   check_project_homepage_is_browsable
   check_drupal_admin_access
 
-  # Check create-database command
+  # Check commands
   check_create_database_command
-
-  # Check aljibe-config command
   check_aljibe_config_command
-
 }
