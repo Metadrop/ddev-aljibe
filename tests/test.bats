@@ -248,7 +248,7 @@ check_drupal_admin_access() {
   # Make sure Assistant is installed.
   check_assistant_is_installed
 
-  # Check the required addons have installed correctly.
+  # Check the required addons have been installed correctly.
   check_addons
 
   # Check if the expected services are running.
