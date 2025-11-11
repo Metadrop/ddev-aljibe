@@ -137,61 +137,63 @@ check_required_items() {
 check_addons() {
   local INSTALLED_ADDONS
   INSTALLED_ADDONS=$(ddev add-on list --installed)
-  check_items_from_list "add-on" "${DIR}/tests/required_addons.txt" check_addon_item "$INSTALLED_ADDONS"
+  run check_items_from_list "add-on" "${DIR}/tests/required_addons.txt" check_addon_item "$INSTALLED_ADDONS"
+  assert_success
 }
 
 # Check a list of required folders.
 check_required_folders() {
-  check_required_items "folder" "${DIR}/tests/required_folders.txt" "-d"
+  run check_required_items "folder" "${DIR}/tests/required_folders.txt" "-d"
+  assert_success
 }
 
 # Check a list of required files.
 check_required_files() {
-  check_required_items "file" "${DIR}/tests/required_files.txt" "-f"
+  run check_required_items "file" "${DIR}/tests/required_files.txt" "-f"
+  assert_success
 }
 
 # Check a list of required symlinks.
 check_required_symlinks() {
-  check_required_items "symlinks" "${DIR}/tests/required_symlinks.txt" "-L"
+  run check_required_items "symlinks" "${DIR}/tests/required_symlinks.txt" "-L"
+  assert_success
 }
 
 # Check a list of services that should be running.
 check_services() {
   local RUNNING_SERVICES
   RUNNING_SERVICES=$(ddev describe)
-  check_items_from_list "service" "${DIR}/tests/required_services.txt" check_service_item "$RUNNING_SERVICES"
+  run check_items_from_list "service" "${DIR}/tests/required_services.txt" check_service_item "$RUNNING_SERVICES"
+  assert_success
 }
 
 # Check Aljibe Assistant is installed alongside Aljibe.
 check_assistant_is_installed() {
-  local failed=0
-
   echo -n "Checking if Aljibe Assistant is installed..."
-  if ddev add-on list --installed  | grep -q "aljibe-assistant"; then
+  run ddev add-on list --installed
+  assert_success
+
+  if echo "$output" | grep -q "aljibe-assistant"; then
     echo " Ok."
   else
     echo " Failed."
-    failed=1
+    fail "Aljibe Assistant is not installed"
   fi
-  return "$failed"
 }
 
 # Checks the homepage returns a 200 status code.
 check_project_homepage_is_browsable() {
-  local failed=0
-
   echo -n "Checking if the project is browsable..."
-  local status_code
-  status_code=$(curl -w "%{http_code}"  -o NULL -s  "https://${PROJNAME}.ddev.site")
+  run curl -w "%{http_code}" -o /dev/null -s "https://${PROJNAME}.ddev.site"
+  assert_success
 
+  local status_code="$output"
   if [ "$status_code" == "200" ]; then
     echo " Ok."
   else
     echo " Failed."
-    failed=1
+    fail "Project homepage returned status code $status_code instead of 200"
   fi
-
-  return "$failed"
 }
 
 # Checks if the Drupal admin user is accessible via one-time login link.
@@ -200,15 +202,15 @@ check_project_homepage_is_browsable() {
 # the ULI URL is not valid the user is redirected to the login page with a 200
 # status code.
 check_drupal_admin_access() {
-  local failed=0
-
   echo -n "Checking if the Drupal admin is accessible..."
 
-  local login_url
-  login_url=$(ddev drush uli 2>&1)
+  run ddev drush uli
+  assert_success
+  local login_url="$output"
 
-  local response
-  response=$(curl -sLb /tmp/cookies_$$ "$login_url" 2>&1)
+  run curl -sLb /tmp/cookies_$$ "$login_url"
+  assert_success
+  local response="$output"
 
   # For some reason, the message saying that you have used a one-time login link
   # is not always present, so we check for the password change prompt instead.
@@ -216,13 +218,11 @@ check_drupal_admin_access() {
     echo " Ok."
   else
     echo " Failed."
-    failed=1
+    fail "Drupal admin login check failed - expected password change prompt not found"
   fi
 
   # Cleanup
   rm -f /tmp/cookies_$$
-
-  return "$failed"
 }
 
 @test "install from directory" {
@@ -241,31 +241,20 @@ check_drupal_admin_access() {
   assert_success
 
   # Checks on files and folders required after installation.
-  run check_required_folders
-  assert_success
-
-  run check_required_files
-  assert_success
-
-  run check_required_symlinks
-  assert_success
+  check_required_folders
+  check_required_files
+  check_required_symlinks
 
   # Make sure Assistant is installed.
-  run check_assistant_is_installed
-  assert_success
+  check_assistant_is_installed
 
   # Check the required addons have installed correctly.
-  run check_addons
-  assert_success
+  check_addons
 
   # Check if the expected services are running.
-  run check_services
-  assert_success
+  check_services
 
   # Check the project's homepage is accessible.
-  run check_project_homepage_is_browsable
-  assert_success
-
-  run check_drupal_admin_access
-  assert_success
+  check_project_homepage_is_browsable
+  check_drupal_admin_access
 }
