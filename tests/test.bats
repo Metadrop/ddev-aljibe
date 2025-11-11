@@ -225,6 +225,23 @@ check_drupal_admin_access() {
   rm -f /tmp/cookies_$$
 }
 
+
+check_create_database_command() {
+
+  local DB_NAME="secondary"
+
+  echo -n "Checking if create-database command works..."
+  run ddev create-database $DB_NAME
+  assert_success
+  echo " Ok."
+
+  echo -n "Checking if new created database is accessible..."
+  run bats_pipe echo "SHOW TABLES;" \| ddev mysql --database="$DB_NAME"
+  assert_success
+  echo " Ok."
+
+}
+
 @test "install from directory" {
   set -eu -o pipefail
   cd "$TESTDIR"
@@ -257,4 +274,8 @@ check_drupal_admin_access() {
   # Check the project's homepage is accessible.
   check_project_homepage_is_browsable
   check_drupal_admin_access
+
+  # Check create-database command
+  check_create_database_command
+
 }
