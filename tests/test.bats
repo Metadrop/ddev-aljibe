@@ -257,4 +257,15 @@ check_drupal_admin_access() {
   # Check the project's homepage is accessible.
   check_project_homepage_is_browsable
   check_drupal_admin_access
+
+  # Check create-database command
+  echo -n "Checking if create-database command works..."
+  run ddev create-database secondary
+  assert_success
+  echo " Ok."
+
+  echo -n "Checking if secondary database is accessible..."
+  run bash -c 'echo "SHOW TABLES;" | ddev mysql --database="secondary"'
+  assert_success
+  echo " Ok."
 }
