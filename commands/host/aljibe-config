@@ -4,24 +4,7 @@
 ## Description: Get aljibe config values. Special case for theme_path, where we get a list of theme paths without keys.
 ## Usage: aljibe-config [config_tag]
 ## Flags: [{"Name":"keys","Shorthand":"k","Usage":"Return keys instead of values for arrays/maps"}]
-## Example: "ddev aljibe-config theme_path"
-## Example: "ddev aljibe-config otherkey"
-
-KEY=$1
-
-CONFIG_FILE=".ddev/aljibe.yaml"
-RETURN_KEYS=0
-
-if [ ! -f $CONFIG_FILE ]; then
-    echo "Aljibe config file not found"
-    exit 1
-fi
-
-if [ -z "$KEY" ]; then
-    echo "Please provide a config key"
-    exit 1
-fi
-
+## Example: ddev aljibe-config theme_path\nddev aljibe-config otherkey
 
 handle_options() {
   while [ $# -gt 0 ]; do
@@ -30,28 +13,30 @@ handle_options() {
         RETURN_KEYS=1
         shift
         ;;
+      *)
+        if [ ! -z "$KEY" ]; then
+          echo "Unknown option or too many parameters: $1"
+          exit 1
+        fi
+        KEY=$1
+        shift
+        ;;
     esac
-    shift
   done
 }
-
-# Main script execution
-handle_options "$@"
 
 readConfigFile () {
   ddev exec "yq -I=0 '.${1} // \"\"' /mnt/ddev_config/aljibe.yaml" || echo
 }
 
-TYPE=$(readConfigFile "$1 | kind")
-
 readArray () {
   if [ $RETURN_KEYS -eq 1 ]; then
     while IFS= read -r key; do
-      echo "$key" | sed 's/^- //'
+      echo "${key//- /}"
     done < <(readConfigFile "$1 | keys")
   else
-    while IFS= read -r theme_path; do
-      echo "$theme_path"
+    while IFS= read -r key; do
+      echo "$key"
     done < <(readConfigFile "$1[]")
   fi
 }
@@ -60,6 +45,34 @@ readScalar () {
   readConfigFile "$1"
 }
 
+declare KEY
+
+CONFIG_FILE=".ddev/aljibe.yaml"
+RETURN_KEYS=0
+
+handle_options "$@"
+
+
+
+
+if [ ! -f $CONFIG_FILE ]; then
+  echo "Aljibe config file not found"
+  exit 1
+fi
+
+if [ -z "$KEY" ]; then
+  echo "Please provide a config key"
+  exit 1
+fi
+
+is_web_running=$(ddev status| grep web| grep OK -c)
+if [ "$is_web_running" -eq 0 ]; then
+  echo "It seems web container is not running. Please start the project first because this command uses binaries from the web container."
+  exit 1
+fi
+
+# Get type of value given the key and read accordingly.
+TYPE=$(readConfigFile "$KEY | kind")
 case $TYPE in
   "scalar")
     readScalar "$KEY"
@@ -74,4 +87,3 @@ case $TYPE in
     readScalar "$KEY"
     ;;
 esac
-
