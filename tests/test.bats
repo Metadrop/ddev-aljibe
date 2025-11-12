@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bats
 
 
 # Standard DDEV add-on setup code taken from official DDEV add-ons.
