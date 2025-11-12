@@ -1,0 +1,12 @@
+# Required DDEV service that should be running  after Aljibe Assistant run
+# Format: file_path # comment explaining why it is required (DO NOT use single quotes "'")
+
+adminer             # Adminer database management tool service
+backstopjs          # BackstopJS visual regression testing service
+chromium            # Chromium browser for Behat testing services
+db                  # Database service
+mkdocs              # MkDocs documentation service
+newman              # Newman Postman collection runner service
+pa11y               # Pa11y accessibility testing service
+unlighthouse        # Unlighthouse quality and performance testing service
+web                 # Web service
