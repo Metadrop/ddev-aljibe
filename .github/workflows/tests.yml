@@ -15,6 +15,7 @@ on:
 
   # Manual trigger with optional debug using SSH.
   # See https://github.com/mxschmitt/action-tmate
+  # This action is already included in ddev/github-action-add-on-test@v2.
   workflow_dispatch:
     inputs:
       debug_enabled:
@@ -47,14 +48,6 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # Add support for tmate debugging if requested.
-      - name: Setup Tmate Debugging
-        if: ${{ github.event.inputs.debug_enabled == 'true' }}
-        uses: mxschmitt/action-tmate@v3
-        with:
-          # This key is usually needed to keep the connection open
-          limit-access-to-actor: true
-
       # Sets Bash in a strict fashion.
       - name: Action Setup Bash
         uses: release-engineers/action-setup-bash@v1
