@@ -1,6 +1,6 @@
 #!/bin/bash
 #ddev-generated
-## Description: Copy kickstar files to the project root
+## Description: Copy kickstart files to the project root
 ## Usage: aljibe-kickstart [options]
 ## Flags: [{"Name":"yes","Shorthand":"y","Usage":"Auto-confirm without prompting"}]
 ## Example: ddev aljibe-kickstart
