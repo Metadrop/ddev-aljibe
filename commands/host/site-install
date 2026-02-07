@@ -119,11 +119,23 @@ if [ -f "${DDEV_DOCROOT}/${SITE_PATH}/example.settings.local.php" ]; then
   echo "File 'example.settings.local.php' in site folder copied to 'settings.local.php'"
 fi
 
-if [ -f "${DDEV_DOCROOT}/${SITE_PATH}/example.local.drush.yml" ]; then
-  cp "${DDEV_DOCROOT}/${SITE_PATH}/example.local.drush.yml" "${DDEV_DOCROOT}/${SITE_PATH}/local.drush.yml"
-  sed -i -e "s|http://example.docker.localhost:8000|${DDEV_PRIMARY_URL}|g" "${DDEV_DOCROOT}/${SITE_PATH}/local.drush.yml"
-  echo "File 'example.local.drush.yml' in site folder copied to 'local.drush.yml' and configured with DDEV primary URL"
+# Generate local.drush.yml with the correct URI for this site.
+# For default site, use the DDEV project name. For additional sites,
+# find the matching hostname from DDEV_HOSTNAME.
+SITE_DIR=$(basename "${SITE_PATH}")
+if [ "$SITE_DIR" == "default" ]; then
+  SITE_DRUSH_URI="${DDEV_PROJECT}.ddev.site"
+else
+  SITE_DRUSH_URI=$(echo "${DDEV_HOSTNAME}" | tr ',' '\n' | grep "^${SITE_DIR}" | head -1)
+  if [ -z "$SITE_DRUSH_URI" ]; then
+    SITE_DRUSH_URI="${SITE_DIR}.ddev.site"
+  fi
 fi
+cat > "${DDEV_DOCROOT}/${SITE_PATH}/local.drush.yml" <<EOF
+options:
+  uri: ${SITE_DRUSH_URI}
+EOF
+echo "Generated 'local.drush.yml' with URI: ${SITE_DRUSH_URI}"
 
 echo -e "\nDropping existing database (if any)"
 ddev_drush sql:drop -y || exit 1
