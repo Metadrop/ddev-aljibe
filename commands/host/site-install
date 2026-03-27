@@ -91,7 +91,7 @@ echo "Using database: ${DBNAME}"
 if [ "$SITE_PATH" != "sites/default" ]; then
   if [ ! -f ${DDEV_DOCROOT}/${SITE_PATH}/settings.ddev.php ]; then
     cp ${DDEV_DOCROOT}/sites/default/settings.ddev.php ${DDEV_DOCROOT}/${SITE_PATH}/settings.ddev.php
-    sed -i "s/\['database'\] = \"db\"/\['database'\] = \"${DBNAME}\"/g" ${DDEV_DOCROOT}/${SITE_PATH}/settings.ddev.php
+    sed -i '' "s/\['database'\] = \"db\"/\['database'\] = \"${DBNAME}\"/g" ${DDEV_DOCROOT}/${SITE_PATH}/settings.ddev.php
   fi
   ddev create-database ${DBNAME} || exit 1
 fi
