@@ -44,7 +44,7 @@ class FeatureContext extends DrupalContext implements SnippetAcceptingContext {
    *   ],
    * ];
    */
-  static protected $permissions = [];
+  protected static $permissions = [];
 
   /**
    * Sets User permissions.
