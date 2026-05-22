@@ -33,7 +33,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: "Check out code"
-        uses: actions/checkout@v3
+        uses: actions/checkout@v6
       - name: "ShellChecker"
         uses: a5k-actions/shellchecker@v0
         with:
