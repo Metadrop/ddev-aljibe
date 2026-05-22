@@ -28,6 +28,11 @@ setup() {
   assert_success
   run ddev start -y
   assert_success
+
+  # Configure Composer with GitHub OAuth token to prevent SSH clone failures in CI.
+  if [ -n "${GITHUB_TOKEN:-}" ]; then
+    ddev exec composer config --global github-oauth.github.com "$GITHUB_TOKEN"
+  fi
 }
 
 # Standard DDEV add-on tear down code taken from official DDEV add-ons.
