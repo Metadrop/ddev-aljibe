@@ -1,4 +1,4 @@
-[![tests](https://github.com/Metadrop/ddev-aljibe/actions/workflows/tests.yml/badge.svg)](https://github.com/Metadrop/ddev-aljibe/actions/workflows/tests.yml) ![project is maintained](https://img.shields.io/maintenance/yes/2025.svg)
+[![tests](https://github.com/Metadrop/ddev-aljibe/actions/workflows/tests.yml/badge.svg)](https://github.com/Metadrop/ddev-aljibe/actions/workflows/tests.yml) ![project is maintained](https://img.shields.io/maintenance/yes/2026.svg)
 ![GitHub Release](https://img.shields.io/github/v/release/Metadrop/ddev-aljibe)
 
 ![Aljibe logo](https://metadrop.net/sites/default/files/2025-09/aljibe-image.png)
