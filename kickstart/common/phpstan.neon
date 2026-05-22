@@ -22,4 +22,6 @@ parameters:
         - message: '#.*has parameter .* with no value type specified.*#'
         # new static() is a best practice in Drupal, so we cannot fix that. See https://www.drupal.org/docs/develop/development-tools/phpstan/handling-unsafe-usage-of-new-static#s-ignoring-the-issue
         - message: '#^Unsafe usage of new static#'
-
+    excludePaths:
+        # Skip settings.
+        - ../*/*settings*.php
