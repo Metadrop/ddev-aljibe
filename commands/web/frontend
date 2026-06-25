@@ -7,8 +7,9 @@ set -e
 
 # This command is executed on the theme directory.
 
-readarray THEME_PATH_KEYS < <(yq -I=0 '.theme_paths | keys' /mnt/ddev_config/aljibe.yaml)
-readarray THEME_PATHS < <(yq -I=0 '.theme_paths[]' /mnt/ddev_config/aljibe.yaml)
+# -t strips the trailing newline from each element so paths can be quoted safely.
+readarray -t THEME_PATH_KEYS < <(yq -I=0 '.theme_paths | keys' /mnt/ddev_config/aljibe.yaml)
+readarray -t THEME_PATHS < <(yq -I=0 '.theme_paths[]' /mnt/ddev_config/aljibe.yaml)
 
 TASK=${1:-""}
 
@@ -23,17 +24,19 @@ then
   echo "All themes will be processed."
   for THEME_PATH in "${THEME_PATHS[@]}"; do
       echo "Running frontend $TASK in ${THEME_PATH}"
-      npm install --prefix ${THEME_PATH}
-      npm run $TASK --prefix ${THEME_PATH}
-      echo "Done frontend $TASK in ${THEME_PATH} \n\n"
+      # Run inside the theme dir (subshell keeps the loop's cwd). Using
+      # `npm install --prefix <relative-path>` pollutes package-lock.json with
+      # cwd-relative package keys, so cd in instead.
+      ( cd "${THEME_PATH}" && npm install && npm run "$TASK" )
+      echo "Done frontend $TASK in ${THEME_PATH}"
   done
 else
   if [[ " ${THEME_PATH_KEYS[*]} " =~ "${2}" ]]; then
     THEME_PATH=$(yq -I=0 ".theme_paths.$2" /mnt/ddev_config/aljibe.yaml)
     echo "Running frontend $TASK in ${THEME_PATH}"
-    npm install --prefix ${THEME_PATH}
-    npm run $TASK --prefix ${THEME_PATH}
-    echo "Done frontend $TASK in ${THEME_PATH} \n\n"
+    # Run inside the theme dir; see note above on avoiding --prefix.
+    ( cd "${THEME_PATH}" && npm install && npm run "$TASK" )
+    echo "Done frontend $TASK in ${THEME_PATH}"
   else
     echo "Theme ${2} not found in aljibe.yaml"
     exit 1
