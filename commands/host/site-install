@@ -64,6 +64,9 @@ fi
 
 cd  $DDEV_APPROOT || exit 1
 
+echo -e "\nDropping existing database (if any)"
+ddev_drush sql:drop -y || exit 1
+
 ## Check if drush alias for this site exists when drush @${SITE_ALIAS} return "could not be found"
 if [ "$(ddev_drush status 2>&1 | grep 'could not be found')" ]; then
   echo "Error: Drush alias for '${SITE}' does not exist. Please create it first so that the site can be installed."
@@ -99,7 +102,9 @@ fi
 
 # Take care of redis settings if needed
 if [ -f ${DDEV_DOCROOT}/sites/default/settings.ddev.redis.php ]; then
-  cp -f ${DDEV_DOCROOT}/sites/default/settings.ddev.redis.php ${DDEV_DOCROOT}/${SITE_PATH}/settings.ddev.redis.php
+  if [ "${DDEV_DOCROOT}/sites/default/settings.ddev.redis.php" != "${DDEV_DOCROOT}/${SITE_PATH}/settings.ddev.redis.php" ]; then
+    cp -f ${DDEV_DOCROOT}/sites/default/settings.ddev.redis.php ${DDEV_DOCROOT}/${SITE_PATH}/settings.ddev.redis.php
+  fi
 
   SETTINGS_FILE_NAME="${DDEV_DOCROOT}/${SITE_PATH}/settings.php"
   if grep "Include settings required for Redis cache" $SETTINGS_FILE_NAME; then
@@ -124,9 +129,6 @@ if [ -f "${DDEV_DOCROOT}/${SITE_PATH}/example.local.drush.yml" ]; then
   sed -i -e "s|http://example.docker.localhost:8000|${DDEV_PRIMARY_URL}|g" "${DDEV_DOCROOT}/${SITE_PATH}/local.drush.yml"
   echo "File 'example.local.drush.yml' in site folder copied to 'local.drush.yml' and configured with DDEV primary URL"
 fi
-
-echo -e "\nDropping existing database (if any)"
-ddev_drush sql:drop -y || exit 1
 
 # Process files archive if provided (before site installation)
 if [ -n "$FILES_ARCHIVE" ]; then
