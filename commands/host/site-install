@@ -5,6 +5,8 @@
 ## Example: ddev site-install default
 ## Example:\n- Install site from configuration:\n\n    ddev site-install\n\n- Install site from database file\n\n    ddev site-install default db_dump.sql\n\n- Install site from database and files archive (tar.gz or zip)\n\n    ddev site-install default db_dump.sql files.tar.gz\n\n- Install site from configuration with files archive\n\n    ddev site-install default '' files.zip\n\n- Install site 'secondary' from configuration:\n\n    ddev site-install secondary\n\nNOTE: Although [flags] is displayed at the end of the command in the `Usage` section, meaning DDEV flags, please set options between `ddev` and `site-install`. If added to the end of the command, they will be passed to site install script and will cause errors.
 
+set -e
+
 # Run a drush command using ddev.
 ddev_drush() {
   ddev drush @${SITE_ALIAS} "$@"

@@ -4,6 +4,8 @@
 ## Usage: site-install-from-db SITE DBFILE
 ## Example: ddev site-install-from-db default dbfile.sql.gz
 
+set -e
+
 # If site is not given, assume 'self'
 SITE=${1:-'self'}
 
