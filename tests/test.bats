@@ -105,7 +105,7 @@ check_addon_item() {
   # Add a trailing space in grep to avoid partial matches
   # Also, start with │ to avoid matching in other places that are not the first
   # column.
-  echo "$installed_services" | grep -q "│ $item "
+  grep -q "│ $item " <<< "$installed_services"
 }
 
 # Checker function for running services
@@ -119,7 +119,7 @@ check_service_item() {
   # Add a trailing space in grep to avoid partial matches
   # Also, start with │ to avoid matching in other places that are not the first
   # column.
-  echo "$running_services" | grep -q "│ $item "
+  grep -q "│ $item " <<< "$running_services"
 }
 
 # Internal helper function to check existence of items from external list.
@@ -178,7 +178,7 @@ check_assistant_is_installed() {
   run ddev add-on list --installed
   assert_success
 
-  if echo "$output" | grep -q "aljibe-assistant"; then
+  if grep -q "aljibe-assistant" <<< "$output"; then
     echo " Ok."
   else
     echo " Failed."
@@ -219,7 +219,7 @@ check_drupal_admin_access() {
 
   # For some reason, the message saying that you have used a one-time login link
   # is not always present, so we check for the password change prompt instead.
-  if echo "$response" | grep -q "To change the current user password, enter the new password in both fields."; then
+  if grep -q "To change the current user password, enter the new password in both fields." <<< "$response"; then
     echo " Ok."
   else
     echo " Failed."

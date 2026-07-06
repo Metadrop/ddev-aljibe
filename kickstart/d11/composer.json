@@ -47,28 +47,24 @@
         "allow-plugins": {
             "composer/installers": true,
             "cweagans/composer-patches": true,
-            "drupal/core-composer-scaffold": true,
             "dealerdirect/phpcodesniffer-composer-installer": true,
-            "phpstan/extension-installer": true,
-            "phpro/grumphp": true,
-            "metadrop/backstopjs-addons": true,
-            "liborm85/composer-vendor-cleaner": true,
-            "metadrop/composer-comments": true,
-            "php-http/discovery": true,
-            "tbachert/spi": true,
+            "drupal/core-composer-scaffold": true,
             "ewcomposer/unpack": true,
-            "mxr576/ddqg-composer-audit": true
+            "liborm85/composer-vendor-cleaner": true,
+            "metadrop/backstopjs-addons": true,
+            "metadrop/composer-comments": true,
+            "mxr576/ddqg-composer-audit": true,
+            "php-http/discovery": true,
+            "phpro/grumphp": true,
+            "phpstan/extension-installer": true,
+            "symfony/runtime": true,
+            "tbachert/spi": true
         }
     },
     "scripts": {
         "drupal-scaffold": "DrupalComposer\\DrupalScaffold\\Plugin::scaffold"
     },
     "extra": {
-        "patches": {
-            "drupal/core": {
-                "Stream wrappers not registered when installing module's default config - https://www.drupal.org/project/drupal/issues/3416735": "https://git.drupalcode.org/project/drupal/-/merge_requests/10421.diff"
-            }
-        },
         "drupal-scaffold": {
             "locations": {
                 "web-root": "./web"
