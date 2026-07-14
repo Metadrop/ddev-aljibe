@@ -2,7 +2,7 @@
 #ddev-generated
 ## Description: Configure environment and optionally install sites
 ## Usage: setup [flags]
-## Flags: [{"Name":"all","Shorthand":"a","Usage":"Install all sites"},{"Name":"no-install","Shorthand":"n","Usage":"Do not install sites"},{"Name":"no-themes","Shorthand":"f","Usage":"Do not process themes"},{"Name":"sites","Shorthand":"s","Usage":"Install specific sites (comma-separated)"},{"Name":"themes","Shorthand":"t","Usage":"Only process specified themes (comma-separated)"}]
+## Flags: [{"Name":"all","Shorthand":"a","Usage":"Install all sites"},{"Name":"no-install","Shorthand":"n","Usage":"Do not install sites"},{"Name":"no-themes","Shorthand":"f","Usage":"Do not process themes"},{"Name":"sites","Shorthand":"s","Usage":"Install specific sites (comma-separated)"},{"Name":"themes","Shorthand":"t","Usage":"Only process specified themes (comma-separated)"},{"Name":"parallel","Shorthand":"p","Usage":"Install sites in parallel, optionally in batches of N (e.g. --parallel=3)"}]
 ## Example: ddev setup --no-install
 
 set -e
@@ -14,6 +14,8 @@ source "$(dirname "$0")/includes/aljibe_includes"
 NO_INSTALL=0
 NO_THEMES=0
 INSTALL_ALL=0
+PARALLEL=0
+PARALLEL_BATCH_SIZE=0
 
 ## Project must be running to run this command
 star_project
@@ -40,12 +42,15 @@ echo "Usage: ddev setup [options]"
   echo "  -n, --no-install  Do not install sites"
   echo "  -s, --sites       Install specific sites"
   echo "  -t, --themes      Only process specified themes"
+  echo "  -p, --parallel    Install sites in parallel (optionally in batches of N)"
   echo
   echo "Examples:"
   echo "  ddev setup -a          Install all sites"
   echo "  ddev setup -n -f          Do not install sites and do not process themes"
   echo "  ddev setup -s=site1,site2 Install specific sites (site1 and site2)"
   echo "  ddev setup -t=theme1      Only process specified theme (theme1)"
+  echo "  ddev setup -a -p          Install all sites in parallel, all at once"
+  echo "  ddev setup -a -p=3        Install all sites in parallel, in batches of 3"
   exit 0
 }
 
@@ -93,6 +98,23 @@ handle_options() {
           shift 2
         fi
         ;;
+      -p* | --parallel*)
+        PARALLEL=1
+        if [[ $1 == *=* ]]; then
+          PARALLEL_BATCH_SIZE="$(extract_argument "$1")"
+          shift
+        elif [[ -n "$2" && "$2" =~ ^[0-9]+$ ]]; then
+          PARALLEL_BATCH_SIZE="$2"
+          shift 2
+        else
+          PARALLEL_BATCH_SIZE=0
+          shift
+        fi
+        if ! [[ "$PARALLEL_BATCH_SIZE" =~ ^[0-9]+$ ]]; then
+          echo "Invalid value for --parallel: '${PARALLEL_BATCH_SIZE}'. It must be a number." >&2
+          exit 1
+        fi
+        ;;
       *)
         echo "Invalid option: $1" >&2
         exit 0
@@ -138,11 +160,15 @@ if [ "$NO_INSTALL" -eq 0 ]; then
     if [ "$INSTALL_ALL" -eq 1 ]; then
         SITES=($(get_all_installable_sites))
     fi
-    for SITE in "${SITES[@]}"; do
-        echo
-        echo -e "\033[32mInstalling site: ${SITE}  \033[0m\n"
-        ddev site-install "$SITE"
-    done
+    if [ "$PARALLEL" -eq 1 ]; then
+        install_sites_parallel "$PARALLEL_BATCH_SIZE" "${SITES[@]}"
+    else
+        for SITE in "${SITES[@]}"; do
+            echo
+            echo -e "\033[32mInstalling site: ${SITE}  \033[0m\n"
+            ddev site-install "$SITE"
+        done
+    fi
 fi
 
 # Launch post setup hooks

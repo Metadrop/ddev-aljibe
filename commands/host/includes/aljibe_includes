@@ -84,6 +84,96 @@ get_all_installable_sites() {
   fi
 }
 
+## Install a list of sites in parallel, in batches.
+##   $1: batch size (0 or empty means install every given site at once)
+##   $@: site aliases to install
+## While a batch is running, prints "Installing <site> ..." for each site.
+## Each site's full log is only printed once that site's install finishes.
+## On INT/TERM (e.g. Ctrl+C), kills every site-install still running instead
+## of leaving them as orphaned background processes.
+## Example: install_sites_parallel 3 site1 site2 site3 site4
+install_sites_parallel() {
+  local batch_size=$1
+  shift
+  local sites=("$@")
+  local total=${#sites[@]}
+
+  if [ "$total" -eq 0 ]; then
+    return 0
+  fi
+
+  if [ "$batch_size" -le 0 ] || [ "$batch_size" -gt "$total" ]; then
+    batch_size=$total
+  fi
+
+  local log_dir
+  log_dir=$(mktemp -d)
+
+  local current_pids=()
+
+  _install_sites_parallel_abort() {
+    echo -e "\n\033[31mInterrupted, stopping all running site installs...\033[0m" >&2
+    local pid
+    for pid in "${current_pids[@]}"; do
+      kill -TERM "-${pid}" 2>/dev/null
+    done
+    wait 2>/dev/null
+    rm -rf "$log_dir"
+    exit 130
+  }
+  trap _install_sites_parallel_abort INT TERM
+
+  # Enable job control so each background site-install gets its own process
+  # group, which lets us kill it (and any children it spawns) as a whole.
+  set -m
+
+  local failed_sites=()
+  local index=0
+  while [ "$index" -lt "$total" ]; do
+    local batch_end=$((index + batch_size))
+    if [ "$batch_end" -gt "$total" ]; then
+      batch_end=$total
+    fi
+
+    local batch_sites=()
+    current_pids=()
+    local i
+    for ((i=index; i<batch_end; i++)); do
+      local site="${sites[$i]}"
+      batch_sites+=("$site")
+      echo -e "\033[32mInstalling ${site} ...\033[0m"
+      ( ddev site-install "$site" > "${log_dir}/${site}.log" 2>&1; echo $? > "${log_dir}/${site}.exit" ) &
+      current_pids+=($!)
+    done
+
+    wait
+
+    for site in "${batch_sites[@]}"; do
+      echo
+      echo -e "\033[32m==== Log for site: ${site} ====\033[0m\n"
+      cat "${log_dir}/${site}.log"
+      if [ "$(cat "${log_dir}/${site}.exit")" -ne 0 ]; then
+        echo -e "\033[31mSite ${site} installation failed.\033[0m"
+        failed_sites+=("$site")
+      else
+        echo -e "\033[32mSite ${site} installed successfully.\033[0m"
+      fi
+    done
+
+    index=$batch_end
+  done
+
+  set +m
+  trap - INT TERM
+  unset -f _install_sites_parallel_abort
+  rm -rf "$log_dir"
+
+  if [ ${#failed_sites[@]} -ne 0 ]; then
+    echo -e "\033[31mThe following sites failed to install: ${failed_sites[*]}\033[0m" >&2
+    return 1
+  fi
+}
+
 ## Get the database name for a given site
 ##   $1: site alias
 ## Returns: database name (db or db_SITENAME)
