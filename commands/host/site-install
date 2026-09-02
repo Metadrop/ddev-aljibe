@@ -67,7 +67,7 @@ fi
 cd  $DDEV_APPROOT || exit 1
 
 echo -e "\nDropping existing database (if any)"
-ddev_drush sql:drop -y || exit 1
+ddev_drush sql:drop -y || true
 
 ## Check if drush alias for this site exists when drush @${SITE_ALIAS} return "could not be found"
 if [ "$(ddev_drush status 2>&1 | grep 'could not be found')" ]; then
