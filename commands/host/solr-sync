@@ -16,8 +16,8 @@ if ! ddev get --installed | grep -q "ddev/ddev-solr"; then
 fi
 
 if ddev drush pm:list --status=enabled --filter=search_api_solr_admin --format=list | grep -q 'search_api_solr_admin'; then
-  ddev drush --numShards=1 search-api-solr:upload-configset $1
-  ddev drush search-api-solr:reload $1
+  ddev drush --numShards=1 search-api-solr:upload-configset "$1"
+  ddev drush search-api-solr:reload "$1"
 else
   echo "search_api_solr_admin module is not enabled. Please enable it to sync Solr config."
 fi

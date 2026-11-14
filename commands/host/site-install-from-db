@@ -25,4 +25,4 @@ if [ ! -f "$2" ]; then
 fi
 
 # Call site install with the database file
-ddev site-install $SITE $2
+ddev site-install "$SITE" "$2"
