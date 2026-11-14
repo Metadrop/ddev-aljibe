@@ -13,6 +13,7 @@ ddev_drush() {
 }
 
 # Include the ddev_checks script
+# shellcheck source=includes/aljibe_includes
 source "$(dirname "$0")/includes/aljibe_includes"
 
 ## Project must be running to run this command

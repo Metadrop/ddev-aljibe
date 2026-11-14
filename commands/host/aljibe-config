@@ -14,7 +14,7 @@ handle_options() {
         shift
         ;;
       *)
-        if [ ! -z "$KEY" ]; then
+        if [ -n "$KEY" ]; then
           echo "Unknown option or too many parameters: $1"
           exit 1
         fi

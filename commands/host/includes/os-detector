@@ -1,4 +1,6 @@
 #!/bin/bash
+# DETECTED_SO is meant for scripts and project hooks that source this file.
+# shellcheck disable=SC2034
 UNAMEINFO="$(uname -s)"
 case "${UNAMEINFO}" in
     Linux*)     DETECTED_SO=linux;;

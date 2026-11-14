@@ -3,6 +3,7 @@
 ## Description: Launches a drush command on all of the sites
 ## Usage: all-sites-drush [drush command]
 
+# shellcheck source=includes/aljibe_includes
 source "$(dirname "$0")/includes/aljibe_includes"
 
 ENV='local'

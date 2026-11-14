@@ -3,6 +3,7 @@
 
 # Include os-detector to have the variable DETECTED_SO
 SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+# shellcheck source=os-detector
 source "${SCRIPT_DIR}/os-detector"
 
 ## Check if a project is running. If it is not, start it.
@@ -46,7 +47,7 @@ run_commands() {
 run_hooks() {
   CMDS=()
   while IFS= read -r line; do
-    if [ ! -z "$line" ]; then
+    if [ -n "$line" ]; then
       CMDS+=("$line")
     fi
 
@@ -111,6 +112,7 @@ install_sites_parallel() {
 
   local current_pids=()
 
+  # shellcheck disable=SC2317 # Invoked indirectly, by the trap below.
   _install_sites_parallel_abort() {
     echo -e "\n\033[31mInterrupted, stopping all running site installs...\033[0m" >&2
     local pid

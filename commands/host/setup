@@ -8,6 +8,7 @@
 set -e
 
 # Include the ddev_checks script
+# shellcheck source=includes/aljibe_includes
 source "$(dirname "$0")/includes/aljibe_includes"
 
 # Initialize our own variables
@@ -159,7 +160,7 @@ fi
 # Try to install sites if not --no-install is given
 if [ "$NO_INSTALL" -eq 0 ]; then
     if [ "$INSTALL_ALL" -eq 1 ]; then
-        SITES=($(get_all_installable_sites))
+        read -r -a SITES <<< "$(get_all_installable_sites)"
     fi
     if [ "$PARALLEL" -eq 1 ]; then
         install_sites_parallel "$PARALLEL_BATCH_SIZE" "${SITES[@]}"

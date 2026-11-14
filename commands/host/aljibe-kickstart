@@ -5,6 +5,7 @@
 ## Flags: [{"Name":"yes","Shorthand":"y","Usage":"Auto-confirm without prompting"}]
 ## Example: ddev aljibe-kickstart
 
+# shellcheck source=includes/aljibe_includes
 source "$(dirname "$0")/includes/aljibe_includes"
 
 DRUPAL_VERSION=d11
