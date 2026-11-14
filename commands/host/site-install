@@ -66,6 +66,14 @@ fi
 
 cd  $DDEV_APPROOT || exit 1
 
+## Refuse remote aliases before touching any database: sql:drop on a remote
+## alias would drop the remote database. `drush sa` does not bootstrap Drupal,
+## so it is safe to run before the drop below.
+if ddev drush sa --fields=host "@${SITE_ALIAS}" | grep -q "host:"; then
+  echo "Error: the provided drush alias '@${SITE_ALIAS}' seems a remote alias and this command only works with local environments."
+  exit 1
+fi
+
 echo -e "\nDropping existing database (if any)"
 ddev_drush sql:drop -y || true
 
@@ -73,12 +81,6 @@ ddev_drush sql:drop -y || true
 if [ "$(ddev_drush status 2>&1 | grep 'could not be found')" ]; then
   echo "Error: Drush alias for '${SITE}' does not exist. Please create it first so that the site can be installed."
   exit 1
-fi
-
-
-is_remote_alias=$(ddev drush sa --fields=host @${SITE_ALIAS} | /usr/bin/grep "host:" | wc -l)
-if [ $is_remote_alias -eq 1 ]; then
-  echo "Error: the provided drush alias '@${SITE_ALIAS}' seems a remote alias and this command only works with local environments."
 fi
 
 echo "Using '${SITE_ALIAS}' drush alias."
