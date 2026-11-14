@@ -6,6 +6,20 @@
 ## Usage: create-database [db-name]
 ## Example: ddev create-database another_db
 
-mysql -uroot -proot -hdb -e "CREATE DATABASE IF NOT EXISTS $1; GRANT ALL ON $1.* TO 'db'@'%';" || exit 1
+DB_NAME="${1:-}"
 
-echo "Database $1 created and user 'db' granted access to it."
+if [ -z "$DB_NAME" ]; then
+  echo "Please provide a database name. Usage: ddev create-database <db-name>" >&2
+  exit 1
+fi
+
+# The name goes straight into SQL: only allow safe identifier characters.
+if [[ ! "$DB_NAME" =~ ^[A-Za-z0-9_-]{1,64}$ ]]; then
+  echo "Invalid database name '${DB_NAME}': only letters, numbers, '_' and '-' are allowed (max 64 characters)." >&2
+  exit 1
+fi
+
+# Backticks so names with '-' are valid MySQL identifiers.
+mysql -uroot -proot -hdb -e "CREATE DATABASE IF NOT EXISTS \`${DB_NAME}\`; GRANT ALL ON \`${DB_NAME}\`.* TO 'db'@'%';" || exit 1
+
+echo "Database ${DB_NAME} created and user 'db' granted access to it."
