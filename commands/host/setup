@@ -133,7 +133,20 @@ run_hooks "pre_setup"
 
 # Prepare Drupal and dev environment
 ddev composer install || exit 1
-ddev exec vendor/bin/grumphp git:init
+
+# Set up GrumPHP git hooks, only in a git repository. Outside one, GrumPHP's
+# Composer plugin may already have run git:init during composer install,
+# creating a stray .git/hooks folder: remove it (and .git, if then empty).
+PROJECT_ROOT="${DDEV_APPROOT:-.}"
+if git -C "${PROJECT_ROOT}" rev-parse --is-inside-work-tree >/dev/null 2>&1; then
+  ddev exec vendor/bin/grumphp git:init
+else
+  echo "Not a git repository, skipping GrumPHP git hooks setup."
+  if [ -d "${PROJECT_ROOT}/.git/hooks" ]; then
+    rm -rf "${PROJECT_ROOT}/.git/hooks"
+    rmdir "${PROJECT_ROOT}/.git" 2>/dev/null || true
+  fi
+fi
 
 # Building frontend theme
 if [ "$NO_THEMES" -eq 0 ]; then

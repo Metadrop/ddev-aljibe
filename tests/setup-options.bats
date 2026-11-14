@@ -1,6 +1,6 @@
 #!/usr/bin/env bats
 
-# Unit tests for option parsing in commands/host/setup.
+# Unit tests for commands/host/setup: option parsing and GrumPHP hooks setup.
 #
 # These tests do not need DDEV or Docker: the real setup script is executed
 # with a fake `ddev` binary first in PATH that just records every call it
@@ -12,6 +12,7 @@ setup() {
   export BATS_LIB_PATH="${BATS_LIB_PATH:-}:${TEST_BREW_PREFIX}/lib:/usr/lib/bats"
   bats_load_library bats-assert
   bats_load_library bats-support
+  bats_load_library bats-file
 
   # shellcheck disable=SC2155
   export DIR="$(cd "$(dirname "${BATS_TEST_FILENAME}")/.." >/dev/null 2>&1 && pwd)"
@@ -104,4 +105,28 @@ teardown() {
     run cat "${DDEV_CALLS_LOG}"
     refute_line "composer install"
   done
+}
+
+@test "setup sets up GrumPHP hooks in a git repository" {
+  export DDEV_APPROOT="${STUB_DIR}/project"
+  mkdir -p "${DDEV_APPROOT}"
+  git -C "${DDEV_APPROOT}" init -q
+
+  run "${SETUP_CMD}" --no-install --no-themes
+  assert_success
+  run cat "${DDEV_CALLS_LOG}"
+  assert_line "exec vendor/bin/grumphp git:init"
+}
+
+@test "setup skips GrumPHP hooks outside a git repository and removes stray hooks" {
+  export DDEV_APPROOT="${STUB_DIR}/project"
+  mkdir -p "${DDEV_APPROOT}/.git/hooks"
+  touch "${DDEV_APPROOT}/.git/hooks/pre-commit"
+
+  GIT_CEILING_DIRECTORIES="${STUB_DIR}" run "${SETUP_CMD}" --no-install --no-themes
+  assert_success
+  assert_output --partial "Not a git repository"
+  assert_dir_not_exists "${DDEV_APPROOT}/.git"
+  run cat "${DDEV_CALLS_LOG}"
+  refute_line "exec vendor/bin/grumphp git:init"
 }
