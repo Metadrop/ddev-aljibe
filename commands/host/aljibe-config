@@ -26,7 +26,7 @@ handle_options() {
 }
 
 readConfigFile () {
-  ddev exec "yq -I=0 '.${1} // \"\"' /mnt/ddev_config/aljibe.yaml" || echo
+  ddev exec "yq -I=0 '.${1} // \"\"' /mnt/ddev_config/aljibe.yaml"
 }
 
 readArray () {
@@ -72,7 +72,8 @@ if [ "$is_web_running" -eq 0 ]; then
 fi
 
 # Get type of value given the key and read accordingly.
-TYPE=$(readConfigFile "$KEY | kind")
+# Stop on yq errors (e.g. invalid YAML) instead of returning an empty value.
+TYPE=$(readConfigFile "$KEY | kind") || exit 1
 case $TYPE in
   "scalar")
     readScalar "$KEY"
