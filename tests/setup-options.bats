@@ -94,3 +94,14 @@ teardown() {
   run cat "${DDEV_CALLS_LOG}"
   assert_line "site-install mysite"
 }
+
+@test "setup fails on usage errors and does nothing" {
+  local args
+  for args in "--bogus" "--sites" "--themes"; do
+    : > "${DDEV_CALLS_LOG}"
+    run "${SETUP_CMD}" "${args}"
+    assert_failure
+    run cat "${DDEV_CALLS_LOG}"
+    refute_line "composer install"
+  done
+}

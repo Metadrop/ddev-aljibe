@@ -80,7 +80,7 @@ handle_options() {
         else
           if [ -z "$2" ]; then
             echo "Sites not specified." >&2
-            exit 0
+            exit 1
           fi
           IFS=',' read -r -a SITES <<< "$2"
           shift 2
@@ -93,7 +93,7 @@ handle_options() {
         else
           if [ -z "$2" ]; then
             echo "Themes not specified." >&2
-            exit 0
+            exit 1
           fi
           IFS=',' read -r -a THEMES <<< "$2"
           shift 2
@@ -118,7 +118,7 @@ handle_options() {
         ;;
       *)
         echo "Invalid option: $1" >&2
-        exit 0
+        exit 1
         ;;
     esac
   done
