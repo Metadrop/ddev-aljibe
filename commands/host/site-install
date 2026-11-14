@@ -141,18 +141,14 @@ fi
 if [ -n "$FILES_ARCHIVE" ]; then
   echo -e "\nProcessing files archive..."
 
-  # Get the target files directory from drush
   FILES_DIR="${DDEV_DOCROOT}/${SITE_PATH}/files"
-  if [ -z "$FILES_DIR" ]; then
-    echo "Error: Could not determine files directory location"
-    exit 1
-  fi
 
   echo "Target files directory: ${FILES_DIR}"
 
   # Create temporary extraction directory
   TEMP_EXTRACT_DIR=$(mktemp -d)
-  trap "rm -rf $TEMP_EXTRACT_DIR" EXIT
+  # Single quotes: expand (quoted) when the trap runs, not when it is set.
+  trap 'rm -rf "$TEMP_EXTRACT_DIR"' EXIT
 
   # Detect file format and extract
   if [[ "$FILES_ARCHIVE" =~ \.tar\.gz$ ]] || [[ "$FILES_ARCHIVE" =~ \.tgz$ ]]; then

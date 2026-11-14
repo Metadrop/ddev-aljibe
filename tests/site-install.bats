@@ -175,3 +175,32 @@ STUB
   run cat web/sites/default/files/images/logo.png
   assert_output "png"
 }
+
+@test "site-install removes only its own temp dir when TMPDIR has spaces" {
+  cat > "${STUB_DIR}/ddev" <<'STUB'
+#!/bin/bash
+echo "$*" >> "${DDEV_CALLS_LOG}"
+case "$*" in
+  "drush @self status --field=site") echo "sites/default" ;;
+esac
+exit 0
+STUB
+  mkdir -p web/sites/default archive/files
+  echo "a" > archive/files/a.txt
+  tar -czf files.tar.gz -C archive files
+
+  # An unrelated directory whose path is a prefix of TMPDIR up to the space.
+  mkdir -p "${STUB_DIR}/my"
+  echo "keep me" > "${STUB_DIR}/my/important.txt"
+  mkdir -p "${STUB_DIR}/my tmp"
+  export TMPDIR="${STUB_DIR}/my tmp"
+
+  run "${SITE_INSTALL_CMD}" self '' files.tar.gz
+  assert_success
+  # The unrelated directory is untouched...
+  run cat "${STUB_DIR}/my/important.txt"
+  assert_output "keep me"
+  # ...and the extraction temp dir was cleaned up.
+  run ls -A "${STUB_DIR}/my tmp"
+  assert_output ""
+}
