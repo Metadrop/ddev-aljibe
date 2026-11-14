@@ -44,15 +44,11 @@ else
 fi
 
 if [ "$CONFIRMATION" != "n" ]; then
-    if [ "$DETECTED_SO" = "mac" ]; then
-      cp -Rf ${DDEV_APPROOT}/.ddev/kickstart/common/.* ${DDEV_APPROOT}
-      cp -Rf ${DDEV_APPROOT}/.ddev/kickstart/common/* ${DDEV_APPROOT}
-      cp -Rf ${DDEV_APPROOT}/.ddev/kickstart/${DRUPAL_VERSION}/.* ${DDEV_APPROOT}
-      cp -Rf ${DDEV_APPROOT}/.ddev/kickstart/${DRUPAL_VERSION}/* ${DDEV_APPROOT}
-    else
-      cp -rTf ${DDEV_APPROOT}/.ddev/kickstart/common ${DDEV_APPROOT}
-      cp -rTf ${DDEV_APPROOT}/.ddev/kickstart/${DRUPAL_VERSION} ${DDEV_APPROOT}
-    fi
+    # Copying "dir/." copies the directory contents, dotfiles included, and
+    # works with both GNU and BSD (macOS) cp. Do not use a ".*" glob: bash 3.2
+    # (macOS /bin/bash) expands it to "." and ".." too.
+    cp -Rf "${DDEV_APPROOT}/.ddev/kickstart/common/." "${DDEV_APPROOT}/"
+    cp -Rf "${DDEV_APPROOT}/.ddev/kickstart/${DRUPAL_VERSION}/." "${DDEV_APPROOT}/"
 
     if [ $DRUPAL_VERSION == "d11" ]; then
       ddev config --project-type=drupal11 --docroot=web
