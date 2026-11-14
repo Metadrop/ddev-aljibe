@@ -42,3 +42,23 @@ EOF
   assert_success
   assert_output "self mylocalsite site.localhost"
 }
+
+@test "install_sites_parallel reports a killed site install as failed" {
+  # site-install of "killed" kills its wrapping subshell before it can write
+  # the exit code file, as an OOM kill or external signal would.
+  cat > "${STUB_DIR}/ddev" <<'EOF'
+#!/bin/bash
+case "$*" in
+  "site-install killed") kill -KILL "$PPID" ;;
+esac
+exit 0
+EOF
+  chmod +x "${STUB_DIR}/ddev"
+
+  run install_sites_parallel 0 good killed
+  assert_failure
+  assert_output --partial "Site good installed successfully."
+  assert_output --partial "Site killed installation failed."
+  refute_output --partial "Site killed installed successfully."
+  assert_output --partial "The following sites failed to install: killed"
+}

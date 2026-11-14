@@ -152,7 +152,11 @@ install_sites_parallel() {
       echo
       echo -e "\033[32m==== Log for site: ${site} ====\033[0m\n"
       cat "${log_dir}/${site}.log"
-      if [ "$(cat "${log_dir}/${site}.exit")" -ne 0 ]; then
+      # A missing .exit file means the install was killed before finishing:
+      # count it as a failure, never as a success.
+      local exit_code
+      exit_code=$(cat "${log_dir}/${site}.exit" 2>/dev/null || true)
+      if [ "${exit_code:-1}" != "0" ]; then
         echo -e "\033[31mSite ${site} installation failed.\033[0m"
         failed_sites+=("$site")
       else
