@@ -45,7 +45,11 @@ grumphp:
     phplint:
       ignore_patterns:
         - '#web/sites/default/example\.settings\.local\.php#'
-    yamllint: ~
+    yamllint:
+      ignore_patterns:
+        # mkdocs-material configs use !!python/name: tags, which Symfony YAML
+        # cannot parse. Validate with: ddev exec -s mkdocs mkdocs build --strict
+        - '#(^|/)mkdocs\.yml$#'
     composer: ~
     jsonlint: ~
 
