@@ -59,6 +59,7 @@ fi
 
 DRUPAL_PROFILE=""
 if [ -f "$SITE_PROFILES_FILE" ]; then
+  # shellcheck source=/dev/null # project file, not part of this add-on.
   source "$SITE_PROFILES_FILE"
 else
   echo "No SITE_PROFILES_FILE found. If your site needs a custom profile, please edit $SITE_PROFILES_FILE file."
@@ -78,7 +79,7 @@ echo -e "\nDropping existing database (if any)"
 ddev_drush sql:drop -y || true
 
 ## Check if drush alias for this site exists when drush @${SITE_ALIAS} return "could not be found"
-if [ "$(ddev_drush status 2>&1 | grep 'could not be found')" ]; then
+if ddev_drush status 2>&1 | grep -q 'could not be found'; then
   echo "Error: Drush alias for '${SITE}' does not exist. Please create it first so that the site can be installed."
   exit 1
 fi
@@ -170,7 +171,7 @@ if [ -n "$FILES_ARCHIVE" ]; then
 
   # Determine source directory structure
   # Check if archive contains a single 'files' directory or multiple items
-  ITEM_COUNT=$(ls -A "$TEMP_EXTRACT_DIR" | wc -l)
+  ITEM_COUNT=$(find "$TEMP_EXTRACT_DIR" -mindepth 1 -maxdepth 1 | wc -l)
 
   if [ "$ITEM_COUNT" -eq 1 ] && [ -d "$TEMP_EXTRACT_DIR/files" ]; then
     # Archive contains only a 'files' directory
@@ -223,5 +224,5 @@ fi
 
 run_hooks "post_site_install"
 ddev status
-echo "Now you can login to your site:\n"
+echo -e "Now you can login to your site:\n"
 ddev_drush uli
