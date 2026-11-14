@@ -10,7 +10,7 @@ if [ -z "$1" ]; then
   exit 1
 fi
 
-if ! ddev get --installed | grep -q "ddev/ddev-solr"; then
+if ! ddev add-on list --installed | grep -q "ddev/ddev-solr"; then
   echo "ddev-solr addon is not installed. Please install it to sync Solr config."
   exit 1
 fi
