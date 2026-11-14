@@ -74,27 +74,27 @@ handle_options() {
         ;;
       -s* | --sites*)
         if [[ $1 == *=* ]]; then
-          IFS=',' read -a SITES <<< "$(extract_argument "$1")"
+          IFS=',' read -r -a SITES <<< "$(extract_argument "$1")"
           shift
         else
           if [ -z "$2" ]; then
             echo "Sites not specified." >&2
             exit 0
           fi
-          IFS=',' read -ar SITES <<< "$2"
+          IFS=',' read -r -a SITES <<< "$2"
           shift 2
         fi
         ;;
       -t* | --themes*)
         if [[ $1 == *=* ]]; then
-          IFS=',' read -ar THEMES <<< "$(extract_argument "$1")"
+          IFS=',' read -r -a THEMES <<< "$(extract_argument "$1")"
           shift
         else
           if [ -z "$2" ]; then
             echo "Themes not specified." >&2
             exit 0
           fi
-          IFS=',' read -ar THEMES <<< "$2"
+          IFS=',' read -r -a THEMES <<< "$2"
           shift 2
         fi
         ;;
