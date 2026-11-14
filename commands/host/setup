@@ -21,7 +21,8 @@ PARALLEL_BATCH_SIZE=0
 star_project
 
 CONFIG_DEFAULT_SITE=$(ddev aljibe-config default_site)
-if [ "$CONFIG_DEFAULT_SITE" == 'null' ]; then
+# aljibe-config returns "" for missing keys; keep 'null' for safety.
+if [ -z "$CONFIG_DEFAULT_SITE" ] || [ "$CONFIG_DEFAULT_SITE" == 'null' ]; then
   SITES=('self')
 else
   SITES=("$CONFIG_DEFAULT_SITE")

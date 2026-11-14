@@ -21,10 +21,15 @@ setup() {
   export DDEV_CALLS_LOG="${STUB_DIR}/ddev-calls.log"
   : > "${DDEV_CALLS_LOG}"
 
-  # Fake ddev: log the arguments of every call, print nothing, succeed.
+  # Fake ddev: log the arguments of every call and succeed. It prints nothing,
+  # except for `aljibe-config default_site`, which prints $STUB_DEFAULT_SITE
+  # (empty by default, like aljibe-config does for a missing key).
   cat > "${STUB_DIR}/ddev" <<'EOF'
 #!/bin/bash
 echo "$*" >> "${DDEV_CALLS_LOG}"
+case "$*" in
+  "aljibe-config default_site") echo "${STUB_DEFAULT_SITE:-}" ;;
+esac
 EOF
   chmod +x "${STUB_DIR}/ddev"
 
@@ -73,4 +78,19 @@ teardown() {
   assert_line "frontend production theme1"
   assert_line "frontend production theme2"
   refute_line "aljibe-config theme_paths --keys"
+}
+
+@test "setup installs 'self' when no default_site is configured" {
+  run "${SETUP_CMD}" --no-themes
+  assert_success
+  run cat "${DDEV_CALLS_LOG}"
+  assert_line "site-install self"
+}
+
+@test "setup installs the configured default_site" {
+  export STUB_DEFAULT_SITE=mysite
+  run "${SETUP_CMD}" --no-themes
+  assert_success
+  run cat "${DDEV_CALLS_LOG}"
+  assert_line "site-install mysite"
 }
