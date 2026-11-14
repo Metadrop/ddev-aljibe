@@ -191,7 +191,8 @@ if [ -n "$FILES_ARCHIVE" ]; then
 
   # Copy files, overwriting existing ones
   echo "Copying files to ${FILES_DIR}..."
-  cp -rf "$SOURCE_DIR"/* "${FILES_DIR}/" || {
+  # "dir/." also copies dotfiles (e.g. .htaccess), unlike "dir/*".
+  cp -Rf "${SOURCE_DIR}/." "${FILES_DIR}/" || {
     echo "Error: Failed to copy files"
     exit 1
   }

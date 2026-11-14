@@ -153,3 +153,25 @@ STUB
   assert_line "ddev [import-db] [--file] [${STUB_DIR}/my dump.sql] [--database] [db]"
   assert_line "ddev [drush] [@self] [deploy]"
 }
+
+@test "site-install copies dotfiles from the files archive" {
+  cat > "${STUB_DIR}/ddev" <<'STUB'
+#!/bin/bash
+echo "$*" >> "${DDEV_CALLS_LOG}"
+case "$*" in
+  "drush @self status --field=site") echo "sites/default" ;;
+esac
+exit 0
+STUB
+  mkdir -p web/sites/default archive/files/images
+  echo "Deny from all" > archive/files/.htaccess
+  echo "png" > archive/files/images/logo.png
+  tar -czf files.tar.gz -C archive files
+
+  run "${SITE_INSTALL_CMD}" self '' files.tar.gz
+  assert_success
+  run cat web/sites/default/files/.htaccess
+  assert_output "Deny from all"
+  run cat web/sites/default/files/images/logo.png
+  assert_output "png"
+}
