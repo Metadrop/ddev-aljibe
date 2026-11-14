@@ -39,6 +39,7 @@ EOF
   # Make star_project() believe the project is already running.
   export DDEV_PROJECT_STATUS=running
   export DDEV_APPROOT="${STUB_DIR}"
+  export DDEV_DOCROOT=web
   cd "${STUB_DIR}"
 }
 
@@ -111,7 +112,6 @@ case "$*" in
 esac
 exit 0
 STUB
-  export DDEV_DOCROOT=web
   export DDEV_PRIMARY_URL=https://test.ddev.site
   mkdir -p web/sites/default web/sites/second
   cat > web/sites/default/settings.ddev.php <<'PHP'
@@ -131,4 +131,25 @@ PHP
   # No backup files left behind (BSD `sed -i -e` would leave local.drush.yml-e).
   run find web/sites/second -maxdepth 1 \( -name '*.yml-e' -o -name '*.bak' \)
   assert_output ""
+}
+
+@test "site-install handles spaces in the project path and database file name" {
+  # Fake ddev: print each argument in brackets so splitting is visible.
+  cat > "${STUB_DIR}/ddev" <<'STUB'
+#!/bin/bash
+{ printf 'ddev'; printf ' [%s]' "$@"; printf '\n'; } >> "${DDEV_CALLS_LOG}"
+case "$*" in
+  "drush @self status --field=site") echo "sites/default" ;;
+esac
+exit 0
+STUB
+  export DDEV_APPROOT="${STUB_DIR}/my project"
+  mkdir -p "${DDEV_APPROOT}/web/sites/default"
+  echo "-- dump" > "${STUB_DIR}/my dump.sql"
+
+  run "${SITE_INSTALL_CMD}" self "${STUB_DIR}/my dump.sql"
+  assert_success
+  run cat "${DDEV_CALLS_LOG}"
+  assert_line "ddev [import-db] [--file] [${STUB_DIR}/my dump.sql] [--database] [db]"
+  assert_line "ddev [drush] [@self] [deploy]"
 }

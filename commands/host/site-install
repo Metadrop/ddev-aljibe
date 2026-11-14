@@ -9,7 +9,7 @@ set -e
 
 # Run a drush command using ddev.
 ddev_drush() {
-  ddev drush @${SITE_ALIAS} "$@"
+  ddev drush "@${SITE_ALIAS}" "$@"
 }
 
 # Include the ddev_checks script
@@ -58,13 +58,13 @@ fi
 
 
 DRUPAL_PROFILE=""
-if [ -f $SITE_PROFILES_FILE ]; then
-  source  $SITE_PROFILES_FILE
+if [ -f "$SITE_PROFILES_FILE" ]; then
+  source "$SITE_PROFILES_FILE"
 else
   echo "No SITE_PROFILES_FILE found. If your site needs a custom profile, please edit $SITE_PROFILES_FILE file."
 fi
 
-cd  $DDEV_APPROOT || exit 1
+cd "$DDEV_APPROOT" || exit 1
 
 ## Refuse remote aliases before touching any database: sql:drop on a remote
 ## alias would drop the remote database. `drush sa` does not bootstrap Drupal,
@@ -89,39 +89,39 @@ SITE_PATH=$(ddev_drush status --field=site)
 
 
 chmod -R u+w "${DDEV_DOCROOT}/${SITE_PATH}"
-mkdir -p ${DDEV_DOCROOT}/${SITE_PATH}/files/behat/errors
+mkdir -p "${DDEV_DOCROOT}/${SITE_PATH}/files/behat/errors"
 
 # Ensure that the settings.ddev.php file exists and is properly configured
 DBNAME=$(get_database_name "${SITE_ALIAS}")
 echo "Using database: ${DBNAME}"
 
 if [ "$SITE_PATH" != "sites/default" ]; then
-  if [ ! -f ${DDEV_DOCROOT}/${SITE_PATH}/settings.ddev.php ]; then
-    cp ${DDEV_DOCROOT}/sites/default/settings.ddev.php ${DDEV_DOCROOT}/${SITE_PATH}/settings.ddev.php
+  if [ ! -f "${DDEV_DOCROOT}/${SITE_PATH}/settings.ddev.php" ]; then
+    cp "${DDEV_DOCROOT}/sites/default/settings.ddev.php" "${DDEV_DOCROOT}/${SITE_PATH}/settings.ddev.php"
     # -i.bak + rm: the only in-place form accepted by both GNU and BSD (macOS) sed.
     sed -i.bak "s/\['database'\] = \"db\"/\['database'\] = \"${DBNAME}\"/g" "${DDEV_DOCROOT}/${SITE_PATH}/settings.ddev.php"
     rm -f "${DDEV_DOCROOT}/${SITE_PATH}/settings.ddev.php.bak"
   fi
-  ddev create-database ${DBNAME} || exit 1
+  ddev create-database "${DBNAME}" || exit 1
 fi
 
 
 # Take care of redis settings if needed
-if [ -f ${DDEV_DOCROOT}/sites/default/settings.ddev.redis.php ]; then
+if [ -f "${DDEV_DOCROOT}/sites/default/settings.ddev.redis.php" ]; then
   if [ "${DDEV_DOCROOT}/sites/default/settings.ddev.redis.php" != "${DDEV_DOCROOT}/${SITE_PATH}/settings.ddev.redis.php" ]; then
-    cp -f ${DDEV_DOCROOT}/sites/default/settings.ddev.redis.php ${DDEV_DOCROOT}/${SITE_PATH}/settings.ddev.redis.php
+    cp -f "${DDEV_DOCROOT}/sites/default/settings.ddev.redis.php" "${DDEV_DOCROOT}/${SITE_PATH}/settings.ddev.redis.php"
   fi
 
   SETTINGS_FILE_NAME="${DDEV_DOCROOT}/${SITE_PATH}/settings.php"
-  if grep "Include settings required for Redis cache" $SETTINGS_FILE_NAME; then
+  if grep "Include settings required for Redis cache" "$SETTINGS_FILE_NAME"; then
     echo "Settings file already includes settings.ddev.redis.php"
   else
     echo "Settings file name: ${SETTINGS_FILE_NAME}"
-    grep -qF 'settings.ddev.redis.php' $SETTINGS_FILE_NAME || echo "
+    grep -qF 'settings.ddev.redis.php' "$SETTINGS_FILE_NAME" || echo "
     // Include settings required for Redis cache.
     if ((file_exists(__DIR__ . '/settings.ddev.redis.php') && getenv('IS_DDEV_PROJECT') == 'true')) {
       include __DIR__ . '/settings.ddev.redis.php';
-    }" >> $SETTINGS_FILE_NAME
+    }" >> "$SETTINGS_FILE_NAME"
   fi
 fi
 
@@ -142,7 +142,7 @@ if [ -n "$FILES_ARCHIVE" ]; then
   echo -e "\nProcessing files archive..."
 
   # Get the target files directory from drush
-  FILES_DIR=${DDEV_DOCROOT}/${SITE_PATH}/files
+  FILES_DIR="${DDEV_DOCROOT}/${SITE_PATH}/files"
   if [ -z "$FILES_DIR" ]; then
     echo "Error: Could not determine files directory location"
     exit 1
@@ -207,14 +207,14 @@ run_hooks "pre_site_install"
 if [ "$INSTALL_MODE" == "db" ]; then
   echo -e "\nLoading database from file $DB_FILE"
   run_hooks "pre_site_install_db"
-  ddev import-db --file $DB_FILE --database ${DBNAME} || exit 1
+  ddev import-db --file "$DB_FILE" --database "${DBNAME}" || exit 1
   ddev_drush deploy
   run_hooks "post_site_install_db"
 elif [ "$INSTALL_MODE" == "config" ]; then
   echo -e "\nInstalling site '${SITE}' using drupal profile '${DRUPAL_PROFILE}'"
   run_hooks "pre_site_install_config"
 
-  ddev_drush site:install ${DRUPAL_PROFILE:+$DRUPAL_PROFILE }--existing-config -y --sites-subdir=${SITE_PATH#sites/} || exit 1
+  ddev_drush site:install ${DRUPAL_PROFILE:+$DRUPAL_PROFILE }--existing-config -y --sites-subdir="${SITE_PATH#sites/}" || exit 1
   ddev_drush cr
   ddev_drush cim -y
   ddev_drush cr
