@@ -19,5 +19,6 @@ if ddev drush pm:list --status=enabled --filter=search_api_solr_admin --format=l
   ddev drush --numShards=1 search-api-solr:upload-configset "$1"
   ddev drush search-api-solr:reload "$1"
 else
-  echo "search_api_solr_admin module is not enabled. Please enable it to sync Solr config."
+  echo "search_api_solr_admin module is not enabled. Please enable it to sync Solr config." >&2
+  exit 1
 fi
