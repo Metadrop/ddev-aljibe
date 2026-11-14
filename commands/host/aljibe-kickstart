@@ -40,10 +40,11 @@ if [ "$AUTO_CONFIRM" = true ]; then
     CONFIRMATION=y
 else
     echo "This will copy the Aljibe kickstart files to the project root and overwrite any existing files. Do you want to continue? [Y/n]"
-    read CONFIRMATION
+    read -r CONFIRMATION
 fi
 
-if [ "$CONFIRMATION" != "n" ]; then
+# Default is yes: anything starting with n/N (n, N, no, No...) cancels.
+if [[ ! "$CONFIRMATION" =~ ^[Nn] ]]; then
     # Copying "dir/." copies the directory contents, dotfiles included, and
     # works with both GNU and BSD (macOS) cp. Do not use a ".*" glob: bash 3.2
     # (macOS /bin/bash) expands it to "." and ".." too.

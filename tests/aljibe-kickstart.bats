@@ -95,3 +95,22 @@ assert_kickstart_copied() {
   assert_success
   assert_kickstart_copied d11
 }
+
+@test "aljibe-kickstart prompt: n, N, no and No cancel without copying" {
+  local answer
+  for answer in n N no No; do
+    run "${KICKSTART_CMD}" <<< "${answer}"
+    assert_success
+    assert_output --partial "Kickstart operation cancelled."
+    assert_file_not_exists "${DDEV_APPROOT}/composer.json"
+  done
+  run cat "${DDEV_CALLS_LOG}"
+  assert_output ""
+}
+
+@test "aljibe-kickstart prompt: Enter (default yes) copies the files" {
+  run "${KICKSTART_CMD}" <<< ""
+  assert_success
+  refute_output --partial "Kickstart operation cancelled."
+  assert_kickstart_copied d11
+}
