@@ -5,7 +5,6 @@
 ## Example: ddev behat
 
 FOLDER=${1:-local}
-ARGS=${*:2}
 
 # Behat command warning
 if [ -n "$2" ]; then
@@ -16,4 +15,6 @@ if [ -n "$2" ]; then
   fi
 fi
 
-behat --colors --config=/var/www/html/tests/behat/$FOLDER/behat.yml $ARGS
+# "${@:2}" keeps each behat option as a single argument, even with spaces
+# (e.g. --tags="@api and ~@wip", --name="My scenario").
+behat --colors --config="/var/www/html/tests/behat/${FOLDER}/behat.yml" "${@:2}"
