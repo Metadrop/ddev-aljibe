@@ -79,7 +79,7 @@ get_all_installable_sites() {
     INSTALLABLE_SITES_ALIASES_LIST=()
     while IFS= read -r line; do
       INSTALLABLE_SITES_ALIASES_LIST+=("$line")
-    done < <(ddev drush site:alias --fields=name --format=list --filter=.local | sed 's/@//' | sed 's/.local//')
+    done < <(ddev drush site:alias --fields=name --format=list --filter=.local | sed -e 's/^@//' -e 's/\.local$//')
     echo "${INSTALLABLE_SITES_ALIASES_LIST[@]}"
   fi
 }
