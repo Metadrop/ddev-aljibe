@@ -1,0 +1,28 @@
+# Editors and IDEs
+.vscode/
+*.code-workspace
+.idea/
+*.iml
+*.sublime-project
+*.sublime-workspace
+.project
+.settings/
+.nova/
+.fleet/
+.zed/
+
+# Vim / Emacs
+*.swp
+*.swo
+*~
+\#*\#
+.\#*
+
+# OS files
+.DS_Store
+Thumbs.db
+Desktop.ini
+
+# Merge / patch leftovers
+*.orig
+*.rej
