@@ -23,6 +23,7 @@
         "composer/installers": "^2.2",
         "cweagans/composer-patches": "^1.7",
         "drupal/core-composer-scaffold": "^11.0",
+        "drupal/core-recipe-unpack": "^11.2",
         "drupal/core-recommended": "^11.0",
         "drush/drush": "^13.0",
 
@@ -44,6 +45,7 @@
             "cweagans/composer-patches": true,
             "dealerdirect/phpcodesniffer-composer-installer": true,
             "drupal/core-composer-scaffold": true,
+            "drupal/core-recipe-unpack": true,
             "liborm85/composer-vendor-cleaner": true,
             "metadrop/backstopjs-addons": true,
             "metadrop/composer-comments": true,
