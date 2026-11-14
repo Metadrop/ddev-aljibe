@@ -8,7 +8,7 @@ set -e
 # This command is executed on the theme directory.
 
 # -t strips the trailing newline from each element so paths can be quoted safely.
-readarray -t THEME_PATH_KEYS < <(yq -I=0 '.theme_paths | keys' /mnt/ddev_config/aljibe.yaml)
+readarray -t THEME_PATH_KEYS < <(yq -I=0 '.theme_paths | keys | .[]' /mnt/ddev_config/aljibe.yaml)
 readarray -t THEME_PATHS < <(yq -I=0 '.theme_paths[]' /mnt/ddev_config/aljibe.yaml)
 
 TASK=${1:-""}
@@ -31,8 +31,16 @@ then
       echo "Done frontend $TASK in ${THEME_PATH}"
   done
 else
-  if [[ " ${THEME_PATH_KEYS[*]} " =~ "${2}" ]]; then
-    THEME_PATH=$(yq -I=0 ".theme_paths.$2" /mnt/ddev_config/aljibe.yaml)
+  # Exact key match; keys and paths come from the same map in the same order.
+  # This also avoids building a yq expression from user input.
+  THEME_PATH=""
+  for i in "${!THEME_PATH_KEYS[@]}"; do
+    if [ "${THEME_PATH_KEYS[$i]}" = "$2" ]; then
+      THEME_PATH="${THEME_PATHS[$i]}"
+      break
+    fi
+  done
+  if [ -n "$THEME_PATH" ]; then
     echo "Running frontend $TASK in ${THEME_PATH}"
     # Run inside the theme dir; see note above on avoiding --prefix.
     ( cd "${THEME_PATH}" && npm install && npm run "$TASK" )
