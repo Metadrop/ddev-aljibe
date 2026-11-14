@@ -311,15 +311,15 @@ check_recipe_unpack() {
   cd "$TESTDIR"
   echo "# ddev get ${DIR} with project ${PROJNAME} in ${TESTDIR} ($(pwd))" >&3
 
+  # These commands are not wrapped in 'run' so their output streams while the
+  # test runs; any failure still fails the test, as bats runs it with set -e.
+
   # Install the add-on and restart ddev to apply changes.
   ddev add-on get "${DIR}"
-  assert_success
   ddev restart -y
-  assert_success
 
   # Run Assistant in automatic mode with standard profile.
   ddev aljibe-assistant --auto -p standard
-  assert_success
 
   # Checks on files and folders required after installation.
   check_required_folders
