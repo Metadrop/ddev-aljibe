@@ -60,3 +60,75 @@ teardown() {
   run cat "${DDEV_CALLS_LOG}"
   assert_line "drush @mysite.local sql:drop -y"
 }
+
+# Put chmod/sed wrappers first in PATH that behave like the BSD (macOS) tools:
+# - chmod: options are only accepted before operands.
+# - sed: -i always takes a backup suffix (attached `-i.bak`, or the next
+#   argument when given as a bare `-i`).
+install_bsd_tool_wrappers() {
+  local real_chmod real_sed
+  real_chmod="$(command -v chmod)"
+  real_sed="$(command -v sed)"
+  BSD_DIR="${STUB_DIR}/bsd"
+  mkdir -p "${BSD_DIR}"
+
+  cat > "${BSD_DIR}/chmod" <<WRAPPER
+#!/bin/bash
+seen_operand=0
+for arg in "\$@"; do
+  if [[ "\$arg" == -* && \$seen_operand -eq 1 ]]; then
+    echo "chmod: \$arg: No such file or directory" >&2
+    exit 1
+  fi
+  [[ "\$arg" != -* ]] && seen_operand=1
+done
+exec "${real_chmod}" "\$@"
+WRAPPER
+
+  cat > "${BSD_DIR}/sed" <<WRAPPER
+#!/bin/bash
+args=()
+while [ \$# -gt 0 ]; do
+  case "\$1" in
+    -i) args+=("-i\$2"); shift 2 ;;
+    *) args+=("\$1"); shift ;;
+  esac
+done
+exec "${real_sed}" "\${args[@]}"
+WRAPPER
+
+  chmod +x "${BSD_DIR}/chmod" "${BSD_DIR}/sed"
+  export PATH="${BSD_DIR}:${PATH}"
+}
+
+@test "site-install sets up a secondary site with BSD (macOS) chmod and sed" {
+  # Fake ddev for a full config install of the secondary site "second".
+  cat > "${STUB_DIR}/ddev" <<'STUB'
+#!/bin/bash
+echo "$*" >> "${DDEV_CALLS_LOG}"
+case "$*" in
+  "drush @second.local status --field=site") echo "sites/second" ;;
+esac
+exit 0
+STUB
+  export DDEV_DOCROOT=web
+  export DDEV_PRIMARY_URL=https://test.ddev.site
+  mkdir -p web/sites/default web/sites/second
+  cat > web/sites/default/settings.ddev.php <<'PHP'
+$databases['default']['default']['database'] = "db";
+PHP
+  echo "uri: http://example.docker.localhost:8000" > web/sites/second/example.local.drush.yml
+
+  install_bsd_tool_wrappers
+
+  run "${SITE_INSTALL_CMD}" second
+  assert_success
+
+  run cat web/sites/second/settings.ddev.php
+  assert_output --partial "['database'] = \"db_second\""
+  run cat web/sites/second/local.drush.yml
+  assert_output "uri: https://test.ddev.site"
+  # No backup files left behind (BSD `sed -i -e` would leave local.drush.yml-e).
+  run find web/sites/second -maxdepth 1 \( -name '*.yml-e' -o -name '*.bak' \)
+  assert_output ""
+}

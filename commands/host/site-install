@@ -88,7 +88,7 @@ SITE_PATH=$(ddev_drush status --field=site)
 
 
 
-chmod u+w ${DDEV_DOCROOT}/${SITE_PATH} -R
+chmod -R u+w "${DDEV_DOCROOT}/${SITE_PATH}"
 mkdir -p ${DDEV_DOCROOT}/${SITE_PATH}/files/behat/errors
 
 # Ensure that the settings.ddev.php file exists and is properly configured
@@ -98,7 +98,9 @@ echo "Using database: ${DBNAME}"
 if [ "$SITE_PATH" != "sites/default" ]; then
   if [ ! -f ${DDEV_DOCROOT}/${SITE_PATH}/settings.ddev.php ]; then
     cp ${DDEV_DOCROOT}/sites/default/settings.ddev.php ${DDEV_DOCROOT}/${SITE_PATH}/settings.ddev.php
-    sed -i'' "s/\['database'\] = \"db\"/\['database'\] = \"${DBNAME}\"/g" ${DDEV_DOCROOT}/${SITE_PATH}/settings.ddev.php
+    # -i.bak + rm: the only in-place form accepted by both GNU and BSD (macOS) sed.
+    sed -i.bak "s/\['database'\] = \"db\"/\['database'\] = \"${DBNAME}\"/g" "${DDEV_DOCROOT}/${SITE_PATH}/settings.ddev.php"
+    rm -f "${DDEV_DOCROOT}/${SITE_PATH}/settings.ddev.php.bak"
   fi
   ddev create-database ${DBNAME} || exit 1
 fi
@@ -130,7 +132,8 @@ fi
 
 if [ -f "${DDEV_DOCROOT}/${SITE_PATH}/example.local.drush.yml" ]; then
   cp "${DDEV_DOCROOT}/${SITE_PATH}/example.local.drush.yml" "${DDEV_DOCROOT}/${SITE_PATH}/local.drush.yml"
-  sed -i -e "s|http://example.docker.localhost:8000|${DDEV_PRIMARY_URL}|g" "${DDEV_DOCROOT}/${SITE_PATH}/local.drush.yml"
+  sed -i.bak -e "s|http://example.docker.localhost:8000|${DDEV_PRIMARY_URL}|g" "${DDEV_DOCROOT}/${SITE_PATH}/local.drush.yml"
+  rm -f "${DDEV_DOCROOT}/${SITE_PATH}/local.drush.yml.bak"
   echo "File 'example.local.drush.yml' in site folder copied to 'local.drush.yml' and configured with DDEV primary URL"
 fi
 
