@@ -6,13 +6,11 @@
 source "$(dirname "$0")/includes/aljibe_includes"
 
 ENV='local'
-COMMAND=''
 SITES=()
 
-COMMAND=$@;
-if [ -z "$COMMAND" ]; then
-  echo "Please provide a drush command"
-  exit
+if [ $# -eq 0 ]; then
+  echo "Please provide a drush command" >&2
+  exit 1
 fi
 
 ## Get all sites from the drush/sites folder.
@@ -21,6 +19,7 @@ set_sites_variable
 ## Run the command in all sites.
 for SITE in "${SITES[@]}"; do
   SITE_ALIAS=$SITE.$ENV
-  echo "Running drush $COMMAND in $SITE"
-  ddev drush @${SITE_ALIAS} $COMMAND
+  echo "Running drush $* in $SITE"
+  # "$@" keeps each drush argument intact, e.g. sqlq "SELECT 1".
+  ddev drush "@${SITE_ALIAS}" "$@"
 done
