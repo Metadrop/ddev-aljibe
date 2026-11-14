@@ -290,6 +290,22 @@ check_aljibe_config_command() {
 
 }
 
+# Checks that requiring a Drupal recipe unpacks it.
+#
+# The recipe must be removed from the root composer.json require section and
+# replaced by its dependencies. easy_email_express is used because it supports
+# Drupal 10.3+ and 11 and depends on other recipes and modules.
+check_recipe_unpack() {
+  run ddev composer require "drupal/easy_email_express:^1.0.4" --no-interaction
+  assert_success
+  assert_output --partial "drupal/easy_email_express unpacked."
+
+  run jq -e '.require | has("drupal/easy_email_express")' "${TESTDIR}/composer.json"
+  assert_failure
+  run jq -e '.require | has("drupal/easy_email")' "${TESTDIR}/composer.json"
+  assert_success
+}
+
 @test "install from directory" {
   set -eu -o pipefail
   cd "$TESTDIR"
@@ -326,4 +342,7 @@ check_aljibe_config_command() {
   # Check commands
   check_create_database_command
   check_aljibe_config_command
+
+  # Check Drupal recipes are unpacked when required.
+  check_recipe_unpack
 }
