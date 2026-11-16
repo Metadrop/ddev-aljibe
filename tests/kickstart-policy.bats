@@ -4,7 +4,7 @@
 #
 # These enforce rules that integration tests cannot catch, for example because
 # CI runs with a GitHub token. They do not need DDEV or Docker: they only
-# inspect the templates in kickstart/d10 and kickstart/d11.
+# inspect the templates in kickstart/d10, kickstart/d11 and kickstart/d12.
 
 setup() {
   set -eu -o pipefail
@@ -26,9 +26,27 @@ setup() {
 # limited), which fails in the DDEV web container.
 @test "kickstart templates do not use GitHub VCS repositories" {
   local version
-  for version in d10 d11; do
+  for version in d10 d11 d12; do
     run jq -r '.repositories[]? | select(.type == "vcs" or .type == "git" or .type == "github") | .url' "${DIR}/kickstart/${version}/composer.json"
     assert_success
     refute_output --partial "github.com"
+  done
+}
+
+# Patches pointing at a URL (for example a merge request diff, which anyone
+# with push access can change) would download unreviewed code into every new
+# project. Patches must be local files shipped with the kickstart.
+@test "kickstart templates only use local patch files" {
+  local version patch
+  for version in d10 d11 d12; do
+    run jq -r '.extra.patches // {} | .[] | .[]' "${DIR}/kickstart/${version}/composer.json"
+    assert_success
+    refute_output --regexp '^[a-zA-Z]+://'
+    while IFS= read -r patch; do
+      [ -n "$patch" ] || continue
+      if [ ! -f "${DIR}/kickstart/common/${patch}" ] && [ ! -f "${DIR}/kickstart/${version}/${patch}" ]; then
+        fail "${version}: patch file '${patch}' not found in kickstart/common or kickstart/${version}"
+      fi
+    done <<< "$output"
   done
 }
