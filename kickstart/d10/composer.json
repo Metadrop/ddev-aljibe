@@ -65,7 +65,8 @@
     "extra": {
         "patches": {
             "drupal/core": {
-                "Stream wrappers not registered when installing module's default config - https://www.drupal.org/project/drupal/issues/3416735": "https://git.drupalcode.org/project/drupal/-/merge_requests/10421.diff"            }
+                "Stream wrappers not registered when installing module's default config - https://www.drupal.org/project/drupal/issues/3416735": "patches/drupal-core-3416735-1.patch"
+            }
         },
         "drupal-scaffold": {
             "locations": {
